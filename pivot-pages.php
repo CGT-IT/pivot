@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Get all the data from table wp_pivot
  * @global Object $wpdb
@@ -9,7 +8,7 @@
 function pivot_get_pages() {
   global $wpdb;
   
-  $pages = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."pivot ORDER BY id ASC");
+  $pages = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."pivot_pages ORDER BY id ASC");
   
   return $pages;
 }
@@ -23,7 +22,7 @@ function pivot_get_pages() {
 function pivot_get_page_path($path) {
   global $wpdb;
   
-  $page = $wpdb->get_results("SELECT * FROM " .$wpdb->prefix ."pivot WHERE path='".$path."'");
+  $page = $wpdb->get_results("SELECT * FROM " .$wpdb->prefix ."pivot_pages WHERE path='".$path."'");
   if(!empty($page[0])) {
     return $page[0];
   }
@@ -40,7 +39,7 @@ function pivot_get_page_path($path) {
 function pivot_get_page($id) {
   global $wpdb;
 
-  $page = $wpdb->get_results("SELECT * FROM " .$wpdb->prefix ."pivot WHERE id='".$id."'");
+  $page = $wpdb->get_results("SELECT * FROM " .$wpdb->prefix ."pivot_pages WHERE id='".$id."'");
   if(!empty($page[0])) {
     return $page[0];
   }
@@ -131,7 +130,7 @@ function pivot_action(){
       // First delete dependencies (filters linked to this page)
       $wpdb->query("DELETE FROM " .$wpdb->prefix ."pivot_filter WHERE page_id='" .$_GET['delete']."'");
       // Delete the page
-      $wpdb->query("DELETE FROM " .$wpdb->prefix ."pivot WHERE id='" .$_GET['delete']."'");
+      $wpdb->query("DELETE FROM " .$wpdb->prefix ."pivot_pages WHERE id='" .$_GET['delete']."'");
   }
 
   // Process the changes in the custom table
@@ -147,11 +146,11 @@ function pivot_action(){
     // Check if path already exist in wordpress or not (to avoid duplicate and conflict)
     if(!$page = get_page_by_path($path)){
       if(empty($_POST['page_id'])){
-        $wpdb->query("INSERT INTO " .$wpdb->prefix ."pivot(type,query,path,map,sortMode,sortField) VALUES('" .$type ."','" .$query."','" .$path."','" .$map."','" .$sortMode."','" .$sortField."');");
+        $wpdb->query("INSERT INTO " .$wpdb->prefix ."pivot_pages(type,query,path,map,sortMode,sortField) VALUES('" .$type ."','" .$query."','" .$path."','" .$map."','" .$sortMode."','" .$sortField."');");
       }else{
         // Update the data
         $page_id = $_POST['page_id'];
-        $wpdb->query("UPDATE " .$wpdb->prefix. "pivot SET type='" .$type ."', query='" .$query ."', path='" .$path ."', map='" .$map ."', sortMode='" .$sortMode ."', sortField='" .$sortField ."' WHERE id='" .$page_id ."'");
+        $wpdb->query("UPDATE " .$wpdb->prefix. "pivot_pages SET type='" .$type ."', query='" .$query ."', path='" .$path ."', map='" .$map ."', sortMode='" .$sortMode ."', sortField='" .$sortField ."' WHERE id='" .$page_id ."'");
       }
     }else{
       $text = esc_html('This path already exists', 'pivot').': <a href="'.get_permalink( $page->ID ).'">'.get_permalink( $page->ID ).'</a>';

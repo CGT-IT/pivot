@@ -1,25 +1,5 @@
 <?php
 
-/*function pivot_install_plugin_create_table() {
-  // Create an instance of the database class
-  global $wpdb;
-
-  // Set the custom table name with the wp prefix "pivot"
-  $table_name = $wpdb->prefix . "pivot_filter";
-  
-  // Execute the sql statement to create or update the custom table
-  $sql = "CREATE TABLE ".$table_name." (
-            id int(9) NOT NULL AUTO_INCREMENT,
-            type varchar(100) NOT NULL,
-            query varchar(100) NOT NULL,
-            path varchar(100) NOT NULL,
-            PRIMARY KEY (id)
-          ) $charset_collate;";
-
-  require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-  dbDelta($sql);
-}*/
-
 /**
  * Get all the data from table wp_pivot_filter
  * @global Object $wpdb

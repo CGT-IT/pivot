@@ -7,6 +7,44 @@ Author: Maxime Degembe
 License: GPL2
 */
 
+function pivot_install() {
+  // Create an instance of the database class
+  global $wpdb;
+  require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+  $charset_collate = $wpdb->get_charset_collate();
+  
+  // Set the custom table name with the wp prefix "pivot"
+  $table_name = $wpdb->prefix . "pivot_pages";
+  // Execute the sql statement to create or update the custom table
+  $sql = "CREATE TABLE ".$table_name." (
+            id int(11) NOT NULL,
+            type varchar(100) NOT NULL,
+            query varchar(100) NOT NULL,
+            path varchar(100) NOT NULL,
+            map tinyint(1) NOT NULL,
+            sortMode varchar(50) DEFAULT NULL,
+            sortField varchar(100) DEFAULT NULL,
+            PRIMARY KEY (id)
+          ) $charset_collate;";
+  dbDelta($sql);
+  
+  // Set the custom table name with the wp prefix "pivot"
+  $table_name = $wpdb->prefix . "pivot_filter";
+  // Execute the sql statement to create or update the custom table
+  $sql = "CREATE TABLE ".$table_name." (
+            id int(11) NOT NULL AUTO_INCREMENT,
+            page_id int(11) NOT NULL,
+            filter_name varchar(200) NOT NULL,
+            filter_title varchar(200) NOT NULL,
+            urn varchar(200) NOT NULL,
+            operator varchar(200) NOT NULL,
+            type varchar(100) NOT NULL,
+            filter_group varchar(200) DEFAULT NULL,
+            PRIMARY KEY (id)
+          ) $charset_collate;";
+  dbDelta($sql);
+}
+
 // Define global variable
 $pivot_offer_type = array(
   array('id' => 1,
@@ -36,31 +74,11 @@ require_once(plugin_dir_path( __FILE__ ). '/pivot-offer-type.php');
 //$bitly_params['access_token'] = get_option('pivot_bitly');
 //$bitly_params['domain'] = 'bit.ly';
 
-register_activation_hook( __FILE__, 'pivot_install_plugin_create_table' );
+register_activation_hook(__FILE__, 'pivot_install');
 add_action('init', 'init');
 add_action('admin_menu', 'pivot_menu');
 add_action('admin_init', 'pivot_settings');
 
-function pivot_install_plugin_create_table() {
-  // Create an instance of the database class
-  global $wpdb;
-
-  // Set the custom table name with the wp prefix "pivot"
-  $table_name = $wpdb->prefix . "pivot";
-  
-  // Execute the sql statement to create or update the custom table
-  $sql = "CREATE TABLE ".$table_name." (
-            id int(9) NOT NULL AUTO_INCREMENT,
-            type varchar(100) NOT NULL,
-            query varchar(100) NOT NULL,
-            path varchar(100) NOT NULL,
-            PRIMARY KEY (id)
-          ) $charset_collate;";
-
-  require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-  dbDelta($sql);
-}
-  
 function pivot_menu() {
   add_menu_page('Pivot administration', 'Pivot', 'manage_options', 'pivot-admin', 'pivot_options');
   add_submenu_page('pivot-admin', 'Pivot administration', 'Pivot', 'manage_options', 'pivot-admin');
@@ -68,7 +86,6 @@ function pivot_menu() {
   add_submenu_page('pivot-admin', 'Pages', 'Manage pages', 'manage_options', 'pivot-pages', 'pivot_pages_settings');
   add_submenu_page('pivot-admin', 'Filters', 'Manage filters', 'manage_options', 'pivot-filters', 'pivot_filters_settings');
 }
-
 
 function init() {
 }
@@ -113,11 +130,11 @@ function pivot_options() {
         <input type="text" id="edit-pivot-key" name="pivot_key" value="<?php echo get_option('pivot_key')?>" size="60" maxlength="128" class="form-text required">
         <p class="description"><?php _e('Personnal Key to access Pivot webservices, take contact with <a href="http://pivot.tourismewallonie.be/index.php/2015-05-05-10-23-26/flux-de-donnees-3-1" target="_blank">Pivot</a>', 'pivot')?></p>
       </div>
-        
+
       <span><button id="check-pivot-config" type="button"><?php esc_html_e('Check Pivot config', 'pivot')?> </button></span>
-      
+
       <div id="pivot-response"></div>
-        
+
       <div class="form-item form-type-textfield form-item-pivot-mdt">
         <label for="edit-pivot-mdt"><?php esc_html_e('Votre maison de tourisme', 'pivot')?></label>
         <select id="edit-pivot-mdt" name="pivot_mdt">
@@ -207,7 +224,7 @@ function _pivot_request($type, $detail, $params = NULL, $postfields = NULL){
     if (curl_errno($request)) {
       echo 'Error:' . curl_error($request);
     }
-    
+
     curl_close($request);
     /* Check if the response is well an XML file.
      * Could be an error like "[CCM006] Results not found (token and/or page number are incorrect)"
@@ -245,7 +262,7 @@ function _xml_query_construction($query_id, $field_params = NULL){
   $schemaLocationAttribute = $domDocument->createAttribute('xsi:schemaLocation');
   $schemaLocationAttribute->value = 'http://pivot.tourismewallonie.be/files/xsd/pivot/3.1 http://pivot.tourismewallonie.be/files/xsd/pivot/3.1/pivot310-import-query.xsd';
   $queryElement->appendChild($schemaLocationAttribute);
-  
+
   // Add sorting if needed
   if(isset($field_params['sortField']) && isset($field_params['sortMode'])){
     // Add sortField
@@ -257,12 +274,12 @@ function _xml_query_construction($query_id, $field_params = NULL){
     $sortMode->value = $field_params['sortMode'];
     $queryElement->appendChild($sortMode);
   }
-  
+
   $criteriaGroupElement = $domDocument->createElement('CriteriaGroup');
 
   $typeAttribute = $domDocument->createAttribute('type');
   $typeAttribute->value = 'and';
-  $criteriaGroupElement->appendChild($typeAttribute);   
+  $criteriaGroupElement->appendChild($typeAttribute);
 
   $criteriaQueryElement = $domDocument->createElement('CriteriaQuery');
   $queryValueElement = $domDocument->createElement('value', $query_id);
@@ -287,22 +304,22 @@ function _xml_query_construction($query_id, $field_params = NULL){
 function _create_dom_criteria_field_element($domDocument, $filter) {
   // Creation of a field element
   $criteriaFieldElement = $domDocument->createElement('CriteriaField');
-  
+
   // Creation of an attribute
   $fieldAttribute = $domDocument->createAttribute('field');
   // Value for the created attribute 'urn:fld:typeofr'
   $fieldAttribute->value = $filter['name'];
   // Append it to the element
   $criteriaFieldElement->appendChild($fieldAttribute);
-  
+
   $operatorAttribute = $domDocument->createAttribute('operator');
   $operatorAttribute->value = $filter['operator'];
   $criteriaFieldElement->appendChild($operatorAttribute);
-  
+
   $targetAttribute = $domDocument->createAttribute('target');
   $targetAttribute->value = 'value';
   $criteriaFieldElement->appendChild($targetAttribute);
-  
+
   // Not always set. In accordance to the "operator" type
   if(isset($filter['searched_value'])){
     foreach($filter['searched_value'] as $filter_value){
@@ -324,6 +341,6 @@ function pivot_lodging_detail_page($offre_id){
   $params['type'] = 'offer';
   $xml_object = _pivot_request('offer-details', 3, $params);
   $offre = $xml_object->offre;
-  
+
   return theme('pivot_lodging_detail_page',array('offre' => $offre));
 }
