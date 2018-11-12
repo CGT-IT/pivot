@@ -83,7 +83,7 @@ add_action('admin_init', 'pivot_settings');
 function pivot_menu() {
   add_menu_page('Pivot administration', 'Pivot', 'manage_options', 'pivot-admin', 'pivot_options');
   add_submenu_page('pivot-admin', 'Pivot administration', 'Pivot', 'manage_options', 'pivot-admin');
-  add_submenu_page('pivot-admin', 'Offer types', 'Manage offer type', 'manage_options', 'pivot-offer-types', 'pivot_offer_type_settings');
+//  add_submenu_page('pivot-admin', 'Offer types', 'Manage offer type', 'manage_options', 'pivot-offer-types', 'pivot_offer_type_settings');
   add_submenu_page('pivot-admin', 'Pages', 'Manage pages', 'manage_options', 'pivot-pages', 'pivot_pages_settings');
   add_submenu_page('pivot-admin', 'Filters', 'Manage filters', 'manage_options', 'pivot-filters', 'pivot_filters_settings');
 }

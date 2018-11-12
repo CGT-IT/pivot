@@ -567,7 +567,7 @@ function pivot_lodging_page($page_id) {
       }
 
       // If operator is no exist, we need the field comparison
-      if($filter->operator != 'exist' && $parent_urn == '' && !isset($field_params['filters']['urn:fld:typeofr'])){
+      if($filter->operator != 'exist' && (!isset($parent_urn) || $parent_urn == '') && !isset($field_params['filters']['urn:fld:typeofr'])){
         // Set value by default
         $value = $_SESSION['pivot']['filters'][$page_id][$key];
         // If the filter is a Date
@@ -582,7 +582,7 @@ function pivot_lodging_page($page_id) {
     }
   }
   
-  print '<pre>'; print_r($field_params['filters']); print '</pre>';
+//  print '<pre>'; print_r($field_params['filters']); print '</pre>';
   
   // Get current page details
   $page = pivot_get_page_path($_SESSION['pivot']['path']);
