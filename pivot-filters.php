@@ -57,6 +57,14 @@ function pivot_filters_meta_box() {
   </div>
 
   <div id="filter-urn-infos">
+    <div id="form-item-pivot-filter-typeofr" class="form-item form-type-textfield">
+      <label for="edit-pivot-filter-typeofr"><?php esc_html_e('Type of offer', 'pivot')?></label>
+      <select id="edit-pivot-filter-typeofr" name="typeofr">
+        <option selected disabled hidden><?php esc_html_e('Choose a type of offer', 'pivot')?></option>
+        <?php print _get_list_typeofr(); ?>
+      </select>
+      <p class="description"><?php esc_html_e('Filters of "choice" type have specific list of choices depending on the <em>offer type</em>', 'pivot')?></p>
+    </div>
     <div class="form-item form-type-textfield form-item-pivot-filter-title">
       <label for="edit-pivot-filter-title"><?php esc_html_e('Filter title', 'pivot')?> </label>
       <input type="text" id="edit-pivot-filter-title" name="title" value="<?php if(isset($edit_page)) echo $edit_page->filter_title;?>" maxlength="128" class="form-text">
@@ -71,6 +79,7 @@ function pivot_filters_meta_box() {
         <option <?php if(isset($edit_page) && $edit_page->operator == 'like') echo 'selected="selected"';?>value="like"><?php esc_html_e('Like', 'pivot')?></option>
         <option <?php if(isset($edit_page) && $edit_page->operator == 'greaterequal') echo 'selected="selected"';?>value="greaterequal"><?php esc_html_e('Greater or equal', 'pivot')?></option>
         <option <?php if(isset($edit_page) && $edit_page->operator == 'between') echo 'selected="selected"';?>value="between"><?php esc_html_e('Between', 'pivot')?></option>
+        <option <?php if(isset($edit_page) && $edit_page->operator == 'in') echo 'selected="selected"';?>value="in"><?php esc_html_e('in', 'pivot')?></option>
       </select>
       <p class="description">Type of comparison</p>
     </div>
@@ -85,16 +94,18 @@ function pivot_filters_meta_box() {
     <label for="edit-filter-group"><?php esc_html_e('Member of group', 'pivot')?> </label>
     <input type="text" id="edit-filter-group" name="filter_group" value="<?php if(isset($edit_page)) echo $edit_page->filter_group;?>" maxlength="128" class="form-text">
     <p class="description">
-      <?php $groups = pivot_get_filter_groups($edit_page->page_id); ?>
-      <?php esc_html_e('Existing groups: ', 'pivot')?>
-      <?php foreach($groups as $key => $group): ?>
-        <?php end($groups); ?>
-        <?php if($key === key($groups)): ?>
-          <?php print '<strong>'.$group->filter_group.'</strong>'; ?>
-        <?php else: ?>
-          <?php print '<strong>'.$group->filter_group.'</strong>' . ', '; ?>
-        <?php endif; ?>
-      <?php endforeach; ?>
+      <?php if(isset($edit_page->page_id)): ?>
+        <?php $groups = pivot_get_filter_groups($edit_page->page_id); ?>
+        <?php esc_html_e('Existing groups: ', 'pivot')?>
+        <?php foreach($groups as $key => $group): ?>
+          <?php end($groups); ?>
+          <?php if($key === key($groups)): ?>
+            <?php print '<strong>'.$group->filter_group.'</strong>'; ?>
+          <?php else: ?>
+            <?php print '<strong>'.$group->filter_group.'</strong>' . ', '; ?>
+          <?php endif; ?>
+        <?php endforeach; ?>
+      <?php endif; ?>
     </p>
   </div>
 <?php 
@@ -133,12 +144,21 @@ function pivot_filters_action(){
     $urn = $_POST['urn'];
     $urnDoc= _get_urn_documentation_full_spec($urn);
     $type = $urnDoc->spec->type->__toString();
+    $typeofr = NULL;
     switch($type){
       case 'Boolean':
-      case 'Type':
         $operator = 'exist';
         break;
+      case 'Type':
+      case 'Value':
+        $operator = 'in';
+        break;
+      /*case 'Choice':
+        $typeofr = $_POST['typeofr'];
+        $operator = $_POST['operator'];
+        break;*/
       default:
+        $typeofr = ($_POST['typeofr'])?$_POST['typeofr']:NULL;
         $operator = $_POST['operator'];
         break;
     }
@@ -149,11 +169,11 @@ function pivot_filters_action(){
 
     if(empty($_POST['id'])) {
       // Insert data
-      $wpdb->query("INSERT INTO " .$wpdb->prefix ."pivot_filter (page_id, filter_name,filter_title,urn,operator,type,filter_group) VALUES('" .$_POST['page_id'] ."','" .$name ."','" .$title."','" .$urn."','" .$operator."','" .$type."','" .$group."');");
+      $wpdb->query("INSERT INTO " .$wpdb->prefix ."pivot_filter (page_id,filter_name,typeofr,filter_title,urn,operator,type,filter_group) VALUES('" .$_POST['page_id'] ."','" .$name ."'," .(isset($typeofr)?"'".$typeofr."'":"NULL").",'" .$title."','" .$urn."','" .$operator."','" .$type."','" .$group."');");
     } else {
       // Update data
       $id = $_POST['id'];
-      $wpdb->query("UPDATE " .$wpdb->prefix. "pivot_filter SET page_id=".$_POST['page_id'].", filter_name='" .$name ."', filter_title='" .$title ."', urn='" .$urn ."', operator='" .$operator ."', type='" .$type ."', filter_group='" .$group ."' WHERE id='" .$id ."'");
+      $wpdb->query("UPDATE " .$wpdb->prefix. "pivot_filter SET page_id=".$_POST['page_id'].", filter_name='" .$name ."',typeofr=".(isset($typeofr)?"'".$typeofr."'":"NULL").", filter_title='" .$title ."', urn='" .$urn ."', operator='" .$operator ."', type='" .$type ."', filter_group='" .$group ."' WHERE id='" .$id ."'");
     }
   }  
 }
@@ -236,7 +256,7 @@ function pivot_manage_filter(){
           <td><?php echo $filter->filter_title?></td>
           <td><?php echo $filter->urn?></td>
           <td><?php echo $filter->operator?></td>
-          <td><?php echo $filter->type?></td>
+          <td><?php echo $filter->type . (isset($filter->typeofr)?' ('.$filter->typeofr.')':'')?></td>
           <td>
             <?php $page = pivot_get_page($filter->page_id)?>
             <?php echo $page->query?>

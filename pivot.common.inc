@@ -221,6 +221,69 @@ function _get_list_typeofr($selected_id = NULL){
   }
   return $typeofr_list;
 }
+/*
+function _get_choice_options($type, $urn= NULL){
+  // Construction of request uri
+  $uri = 'https://pivotweb.tourismewallonie.be:8443/PivotWeb-3.1/thesaurus/typeofr/'.$type.';fmt=xml';
+
+  $ssl_options=array(
+    "ssl"=>array(
+      "verify_peer"=>false,
+      "verify_peer_name"=>false,
+    ),
+  );  
+$context = [
+"ssl"=>[
+        "verify_peer"=>false,
+        "verify_peer_name"=>false,
+    ]
+];
+libxml_set_streams_context(stream_context_create($context));
+
+  $xml = file_get_contents($uri ,false, stream_context_create($ssl_options));;
+
+$dom = new DOMDocument;
+$dom->loadXML($xml);
+
+foreach ($dom->getElementsByTagName('spec') as $element)
+{
+if ($element->getAttribute('urn') == "urn:fld:typeheb")
+{
+ print'<pre>';print_r($element->nodeValue);print'</pre>';
+}
+}
+//$xpath = new DomXpath($dom);
+//
+//// traverse all results
+//foreach ($xpath->query('//spec[@urn="urn:fld:class"]') as $rowNode) {
+//    print '<pre>';print_r($rowNode);print '</pre>';
+//}
+
+$matches = $dom->getElementsByTagName('spec@urn=urn:fld:class');
+foreach ($matches as $book) {
+//    print '<pre>';print_r($book);print '</pre>';
+}
+
+//  $xml_response = file_get_contents($uri, false, stream_context_create($ssl_options));
+//  $options = simplexml_load_string($xml_response);
+//  $matches = $xml->xpath('//spec[@urn=urn:cat:classlab]');
+//  print_r($matches);
+//  $options = simplexml_load_string($xml_response);
+  
+  // Init vars
+  $commune_list = array();
+  $output = '<option selected disabled hidden><Select></option>';
+  //$output = '';
+  
+  
+//  foreach($options as $option){
+//    if(!in_array(_get_translated_value($option->commune), $commune_list)){
+//      $commune_list[] = _get_translated_value($option->commune);
+//      $output .= '<option value="'._get_translated_value($option->commune).'">'._get_translated_value($option->commune).'</option>';
+//    }
+//  }
+  return $output;
+}*/
 
 function _get_commune_from_pivot($type, $value){
   // Construction of request uri

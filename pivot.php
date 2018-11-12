@@ -15,7 +15,7 @@ function pivot_install() {
   
   // Set the custom table name with the wp prefix "pivot"
   $table_name = $wpdb->prefix . "pivot_pages";
-  // Execute the sql statement to create or update the custom table
+  // Define sql statement to create the table
   $sql = "CREATE TABLE ".$table_name." (
             id int(11) NOT NULL,
             type varchar(100) NOT NULL,
@@ -26,11 +26,11 @@ function pivot_install() {
             sortField varchar(100) DEFAULT NULL,
             PRIMARY KEY (id)
           ) $charset_collate;";
+  // Execute the sql statement to create the custom table
   dbDelta($sql);
   
   // Set the custom table name with the wp prefix "pivot"
   $table_name = $wpdb->prefix . "pivot_filter";
-  // Execute the sql statement to create or update the custom table
   $sql = "CREATE TABLE ".$table_name." (
             id int(11) NOT NULL AUTO_INCREMENT,
             page_id int(11) NOT NULL,
@@ -42,6 +42,7 @@ function pivot_install() {
             filter_group varchar(200) DEFAULT NULL,
             PRIMARY KEY (id)
           ) $charset_collate;";
+  // Execute the sql statement to create the custom table
   dbDelta($sql);
 }
 
@@ -67,7 +68,7 @@ $pivot_offer_type = array(
 
 require_once(plugin_dir_path( __FILE__ ). '/pivot-filters.php');
 require_once(plugin_dir_path( __FILE__ ). '/pivot-pages.php');
-require_once(plugin_dir_path( __FILE__ ). '/pivot-offer-type.php');
+//require_once(plugin_dir_path( __FILE__ ). '/pivot-offer-type.php');
 //require_once(plugin_dir_path( __FILE__ ). '/bitly.php');
 
 //$bitly_params = array();

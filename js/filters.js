@@ -10,13 +10,15 @@
     }
     
     // Default ajax call and actions on load
+    $('#form-item-pivot-filter-typeofr').hide();
     pivot_ajax_call_on_load();
     
     // On click on "Load URN Infos" button
     $('#load-urn-info').click(function(){
-        $('#edit-pivot-operator option').show();
+      $('#edit-pivot-operator option').show();
       // Show URN Infos
       $('#filter-urn-infos').show();
+      $('#form-item-pivot-filter-typeofr').hide();
       // Ajax call to Pivot
       pivot_ajax_call();
     });
@@ -31,34 +33,13 @@
       dataType: "json",
       success: function(data) {
         for (i in data.spec[0].label) {
-          if(data.spec[0].label[i].lang === 'fr'){
+          if(data.spec[0].label[i].lang === 'fr' && data.spec[0].label[i].value !== 'Accueil'){
             // Fill "filter title" with value from Pivot
             $('#edit-pivot-filter-title').val(data.spec[0].label[i].value);
+            $('#filter-urn-infos').show();
           }
         }
-        switch(data.spec[0].type){
-          case 'Boolean':
-          case 'Type':
-            $('#edit-pivot-operator').val('exist');
-            $('#edit-pivot-operator').prop('disabled', true);
-            break;
-          case 'SFloat':
-          case 'UFloat':
-          case 'UInt':
-            $('#edit-pivot-operator option[value=exist]').hide();
-            $('#edit-pivot-operator option[value=like]').hide();
-            $('#edit-pivot-operator option[value=between]').hide();
-            break;
-          case 'Date':
-            $('#edit-pivot-operator option[value=exist]').hide();
-            $('#edit-pivot-operator option[value=like]').hide();
-            break;
-          default:
-            $('#edit-pivot-operator option[value=exist]').hide();
-            $('#edit-pivot-operator option[value=greaterequal]').hide();
-            $('#edit-pivot-operator option[value=between]').hide();
-            break;
-        }
+        switch_decision(data);
       }
     });
   }
@@ -70,31 +51,53 @@
       url: "https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/thesaurus/urn/"+$('#edit-pivot-urn').val()+";pretty=true;fmt=json",
       dataType: "json",
       success: function(data) {
-        switch(data.spec[0].type){
-          case 'Boolean':
-          case 'Type':
-            $('#edit-pivot-operator').val('exist');
-            $('#edit-pivot-operator').prop('disabled', true);
-            break;
-          case 'SFloat':
-          case 'UFloat':
-          case 'UInt':
-            $('#edit-pivot-operator option[value=exist]').hide();
-            $('#edit-pivot-operator option[value=like]').hide();
-            $('#edit-pivot-operator option[value=between]').hide();
-            break;
-          case 'Date':
-            $('#edit-pivot-operator option[value=exist]').hide();
-            $('#edit-pivot-operator option[value=like]').hide();
-            break;
-          default:
-            $('#edit-pivot-operator option[value=exist]').hide();
-            $('#edit-pivot-operator option[value=greaterequal]').hide();
-            $('#edit-pivot-operator option[value=between]').hide();
-            break;
-        }
+        switch_decision(data);
       }
     });
+  }
+  
+  function switch_decision(data){
+    switch(data.spec[0].type){
+      case 'Boolean':
+        $('#edit-pivot-operator').val('exist');
+        $('#edit-pivot-operator').prop('disabled', true);
+        break;
+      case 'Type':
+      case 'Value':
+        $('#edit-pivot-operator').val('in');
+        $('#edit-pivot-operator').prop('disabled', true);
+        break;  
+      case 'SFloat':
+      case 'UFloat':
+      case 'UInt':
+        $('#edit-pivot-operator option[value=exist]').hide();
+        $('#edit-pivot-operator option[value=like]').hide();
+        $('#edit-pivot-operator option[value=between]').hide();
+        $('#edit-pivot-operator option[value=in]').hide();
+        break;
+      case 'Date':
+        $('#edit-pivot-operator option[value=exist]').hide();
+        $('#edit-pivot-operator option[value=like]').hide();
+        $('#edit-pivot-operator option[value=in]').hide();
+        break;
+      case 'Choice':
+      case 'MultiChoice':
+      case 'Object':
+      case 'Panel':
+      case 'Type de champ':
+      case 'HMultiChoice':
+        $('#filter-urn-infos').hide();
+        $('#edit-pivot-urn').val('');
+        $('#edit-pivot-filter-title').val('');
+        alert("Il n'est pas possible d'ajouter les URN de ce type: "+data.spec[0].type);
+        break;
+      default:
+        $('#edit-pivot-operator option[value=exist]').hide();
+        $('#edit-pivot-operator option[value=greaterequal]').hide();
+        $('#edit-pivot-operator option[value=between]').hide();
+        $('#edit-pivot-operator option[value=in]').hide();
+        break;
+    }
   }
 
 })(jQuery);

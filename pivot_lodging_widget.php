@@ -26,7 +26,7 @@ function add_admin_script() {
   // Add script only in this case
   // page is "pivot-filters" and "edit" is set to true
   if(isset($_GET['page']) && $_GET['page'] === "pivot-filters" && isset($_GET['edit']) && $_GET['edit'] === 'true'){
-    wp_enqueue_script('my_custom_script', plugin_dir_url(__FILE__) . '/js/filters.js',array('jquery'), '1.5', true);
+    wp_enqueue_script('my_custom_script', plugin_dir_url(__FILE__) . '/js/filters.js',array('jquery'), '1.6', true);
   }
   
   if(isset($_GET['page']) && $_GET['page'] === "pivot-pages" && isset($_GET['edit']) && $_GET['edit'] === 'true'){
@@ -406,9 +406,9 @@ class pivot_lodging_widget extends WP_Widget {
       foreach($filters as $filter){
         // if not first iteration and filter is member of a group already inserted, we do not recreate this group
         if(isset($last_filter_group) && $last_filter_group == $filter->filter_group){
-          echo pivot_add_filter_to_form($page->id, $filter->filter_name, $filter->id, $filter->filter_title, $filter->urn, $filter->operator, $filter->type);
+          echo pivot_add_filter_to_form($page->id, $filter);
         }else{
-          echo pivot_add_filter_to_form($page->id, $filter->filter_name, $filter->id, $filter->filter_title, $filter->urn, $filter->operator, $filter->type, $filter->filter_group);
+          echo pivot_add_filter_to_form($page->id, $filter, $filter->filter_group);
         }
         // to remember filter_group of this iteration
         $last_filter_group = $filter->filter_group; 
@@ -455,72 +455,80 @@ function pivot_reset_filters($page_id){
  * @param string $operator exist/in
  * @return string HTML output (div containing filter)
  */
-function pivot_add_filter_to_form($page_id, $filter_name, $filter_id, $filter_title, $urn, $operator, $type, $group = NULL){
+function pivot_add_filter_to_form($page_id, $filter, $group = NULL){
   $field_params = array();
   $output = '';
-  $field_params['filters'][$filter_name]['name'] = $urn;
-  $field_params['filters'][$filter_name]['operator'] = $operator;
+  $field_params['filters'][$filter->filter_name]['name'] = $filter->urn;
+  $field_params['filters'][$filter->filter_name]['operator'] = $filter->operator;
   
   if(isset($group)){
     $output .= '<h2>'.$group.'</h2>';
   }
-  switch($type){
+  switch($filter->type){
     case 'Boolean':
       $number_of_offers = _get_number_of_offers($field_params);
       if($number_of_offers > 0){
-        $output .= '<div class="form-item form-item-'.$filter_name.'">'
-                .   '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter_name.'" data-original-title="Filter on '.$filter_title.'">'
-                .     '<input type="checkbox" id="edit-'.$filter_name.'" name="'.$filter_id.'"  class="form-checkbox"'.(isset($_SESSION['pivot']['filters'][$page_id][$filter_id])?'checked':'').'> '
-                .     '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$urn.';h=12"> '.$filter_title.' <span class="badge">'.$number_of_offers.'</span>'
-                .   '</label>'
-                . '</div>';
+        $output .= '<div class="form-item form-item-'.$filter->filter_name.'">'
+                  .  '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.$filter->filter_title.'">'
+                  .    '<input type="checkbox" id="edit-'.$filter->filter_name.'" name="'.$filter->id.'"  class="form-checkbox"'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?'checked':'').'> '
+                  .    '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$filter->urn.';h=12"> '.$filter->filter_title.' <span class="badge">'.$number_of_offers.'</span>'
+                  .  '</label>'
+                  .'</div>';
 
         return $output;
       }
       break;
     case 'Type':
-      $output .= '<div class="form-item form-item-'.$filter_name.'">'
-              .   '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter_name.'" data-original-title="Filter on '.$filter_title.'">'
-              .     '<input type="checkbox" id="edit-'.$filter_name.'" name="'.$filter_id.'"  class="form-checkbox"'.(isset($_SESSION['pivot']['filters'][$page_id][$filter_id])?'checked':'').'> '
-              .     '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$urn.';h=12"> '.$filter_title
-              .   '</label>'
-              . '</div>';
-
+    case 'Value':
+      $output .= '<div class="form-item form-item-'.$filter->filter_name.'">'
+                .  '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.$filter->filter_title.'">'
+                .    '<input type="checkbox" id="edit-'.$filter->filter_name.'" name="'.$filter->id.'"  class="form-checkbox"'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?'checked':'').'> '
+                .    '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$filter->urn.';h=12"> '.$filter->filter_title
+                .  '</label>'
+                .'</div>';
       return $output;
     case 'Date':
-      $output .= '<div class="form-item form-item-'.$filter_name.'">'
-                .   '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter_name.'" data-original-title="Filter on '.$filter_title.'">'
-                .     $filter_title      
-                .   '<input type="date" id="edit-'.$filter_name.'" name="'.$filter_id.'" value="'.(isset($_SESSION['pivot']['filters'][$page_id][$filter_id])?$_SESSION['pivot']['filters'][$page_id][$filter_id]:'').'">'
-                . '</div>';
+      $output .= '<div class="form-item form-item-'.$filter->filter_name.'">'
+                .  '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.$filter->filter_title.'">'
+                .    $filter->filter_title      
+                .  '<input type="date" id="edit-'.$filter->filter_name.'" name="'.$filter->id.'" value="'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?$_SESSION['pivot']['filters'][$page_id][$filter->id]:'').'">'
+                .'</div>';
       return $output;
     case 'UInt':
-      $output .= '<div class="form-item form-item-'.$filter_name.'">'
-                .   '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter_name.'" data-original-title="Filter on '.$filter_title.'">'
-                .     $filter_title
-                .   '<input type="number" id="edit-'.$filter_name.'" name="'.$filter_id.'" min="1" max="30" placeholder="'.$filter_name.' 0 à 30"  value="'.(isset($_SESSION['pivot']['filters'][$page_id][$filter_id])?$_SESSION['pivot']['filters'][$page_id][$filter_id]:'').'">'
-                . '</div>';
+      $output .= '<div class="form-item form-item-'.$filter->filter_name.'">'
+                .  '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.$filter->filter_title.'">'
+                .    $filter->filter_title
+                .  '<input type="number" id="edit-'.$filter->filter_name.'" name="'.$filter->id.'" min="1" max="30" placeholder="'.$filter->filter_name.' 0 à 30"  value="'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?$_SESSION['pivot']['filters'][$page_id][$filter->id]:'').'">'
+                .'</div>';
       return $output;
+//    case 'Choice':
+//      $output .= '<div class="form-item form-item-'.$filter->filter_name.' form-type-select select">'
+//                .  '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.$filter->filter_title.'">'
+//                .  '<select id="edit-'.$filter->filter_name.'" name="'.$filter->id.'">'
+//                .    _get_choice_options(1)
+//                .  '</select>'
+//                .'</div>';
+//      return $output;
     case 'String':
-      if($urn == 'urn:fld:adrcom'){
-        $output .= '<div class="form-item form-item-'.$filter_name.' form-type-select select">'
-                .   '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter_name.'" data-original-title="Filter on '.$filter_title.'">'
-                .   '<select id="edit-'.$filter_name.'" name="'.$filter_id.'">'
-                .     _get_commune_from_pivot('mdt', get_option('pivot_mdt'))
-                .   '</select>'
-                . '</div>';
+      if($filter->urn == 'urn:fld:adrcom'){
+        $output .= '<div class="form-item form-item-'.$filter->filter_name.' form-type-select select">'
+                  .  '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.$filter->filter_title.'">'
+                  .  '<select id="edit-'.$filter->filter_name.'" name="'.$filter->id.'">'
+                  .    _get_commune_from_pivot('mdt', get_option('pivot_mdt'))
+                  .  '</select>'
+                  .'</div>';
       }else{
-        $output .= '<div class="form-item form-item-'.$filter_name.'">'
-                .   '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter_name.'" data-original-title="Filter on '.$filter_title.'">'
-                .   '<input type="text" id="edit-'.$filter_name.'" name="'.$filter_id.'" value="'.(isset($_SESSION['pivot']['filters'][$page_id][$filter_id])?$_SESSION['pivot']['filters'][$page_id][$filter_id]:'').'">'
-                . '</div>';
+        $output .= '<div class="form-item form-item-'.$filter->filter_name.'">'
+                  .  '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.$filter->filter_title.'">'
+                  .  '<input type="text" id="edit-'.$filter->filter_name.'" name="'.$filter->id.'" value="'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?$_SESSION['pivot']['filters'][$page_id][$filter->id]:'').'">'
+                  .'</div>';
       }
       return $output;
     default:
-      $output .= '<div class="form-item form-item-'.$filter_name.'">'
-              .   '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter_name.'" data-original-title="Filter on '.$filter_title.'">'
-              .   '<input type="text" id="edit-'.$filter_name.'" name="'.$filter_id.'" value="'.(isset($_SESSION['pivot']['filters'][$page_id][$filter_id])?$_SESSION['pivot']['filters'][$page_id][$filter_id]:'').'">'
-              . '</div>';
+      $output .= '<div class="form-item form-item-'.$filter->filter_name.'">'
+                .  '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.$filter->filter_title.'">'
+                .  '<input type="text" id="edit-'.$filter->filter_name.'" name="'.$filter->id.'" value="'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?$_SESSION['pivot']['filters'][$page_id][$filter->id]:'').'">'
+                .'</div>';
       return $output;
   }
   return;
@@ -540,17 +548,26 @@ function pivot_lodging_page($page_id) {
       // Get details of filter based on his ID
       $filter = pivot_get_filter($key);
 
-      if(substr($filter->urn, 0, 8) == 'urn:typ:'){
-        $field_params['filters']['urn:fld:typeofr']['name'] = 'urn:fld:typeofr';
-        $field_params['filters']['urn:fld:typeofr']['operator'] = 'in';
-        $field_params['filters']['urn:fld:typeofr']['searched_value'][] = $filter->filter_name;
-      }else{
-        $field_params['filters'][$key]['name'] = $filter->urn;
-        $field_params['filters'][$key]['operator'] = $filter->operator;
+      switch($filter->type){
+        case 'Type':
+          $field_params['filters']['urn:fld:typeofr']['name'] = 'urn:fld:typeofr';
+          $field_params['filters']['urn:fld:typeofr']['operator'] = $filter->operator;
+          $field_params['filters']['urn:fld:typeofr']['searched_value'][] = $filter->filter_name;
+          break;
+        case 'Value':
+          $parent_urn = preg_replace("'\:.*?:'" ,':fld:',substr($filter->urn, 0, strripos($filter->urn, ':')));
+          $field_params['filters'][$parent_urn]['name'] = $parent_urn;
+          $field_params['filters'][$parent_urn]['operator'] = $filter->operator;
+          $field_params['filters'][$parent_urn]['searched_value'][] = $filter->urn;
+          break;
+        default:
+          $field_params['filters'][$key]['name'] = $filter->urn;
+          $field_params['filters'][$key]['operator'] = $filter->operator;
+          break;
       }
 
       // If operator is no exist, we need the field comparison
-      if($filter->operator != 'exist' && !isset($field_params['filters']['urn:fld:typeofr'])){
+      if($filter->operator != 'exist' && $parent_urn == '' && !isset($field_params['filters']['urn:fld:typeofr'])){
         // Set value by default
         $value = $_SESSION['pivot']['filters'][$page_id][$key];
         // If the filter is a Date
@@ -560,6 +577,8 @@ function pivot_lodging_page($page_id) {
         }        
         $field_params['filters'][$key]['searched_value'][] = $value;
       }
+      // Reset var
+      $parent_urn = '';
     }
   }
   
