@@ -105,7 +105,7 @@
                 </span>
               </li>
             <?php endif ?>
-        <?php endforeach ?>
+          <?php endforeach ?>
         </ul>
         <p class="pivot-id-type-offre item"><?php print $offre->typeOffre->attributes()->idTypeOffre->__toString(); ?></p>
       </section>

@@ -46,19 +46,22 @@ function add_admin_script() {
 add_action('init', 'pivot_register_script');
 function pivot_register_script() {
   wp_register_style('bootstrapexternal', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css', array(), '1.0.0', false);
-  wp_register_script('slimmin', 'https://code.jquery.com/jquery-3.2.1.slim.min.js', array(), null, true);
-  wp_register_script('poppermin', 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js', array(), null, true);
+  wp_register_script('slimmin', 'https://code.jquery.com/jquery-3.3.1.min.js', array(), null, false);
+  wp_register_script('poppermin', 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js', array(), null, true);
   wp_register_script('bootstrapmin', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js', array(), null, true);
+  wp_register_script('dataTablesmin', 'https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js', array(), null, true);
 }
 
 // use the registered jquery and style above
 add_action('wp_enqueue_scripts', 'pivot_enqueue_script');
 function pivot_enqueue_script(){
   if(get_option('pivot_bootstrap') == 'on'){
+    wp_enqueue_script('pivot_config_test', plugin_dir_url(__FILE__) . '/js/cgtvarious.js',array('jquery'), '1.0', true);
     wp_enqueue_style('bootstrapexternal');
     wp_enqueue_script('slimmin');
     wp_enqueue_script('poppermin');
     wp_enqueue_script('bootstrapmin');
+    wp_enqueue_script('dataTablesmin');
   }
 }
 
@@ -113,16 +116,37 @@ function pivot_lodging_shortcode($atts) {
       print _show_warning($text);
     }else{
       $offres = _construct_output('offer-init-list', $atts['nboffers'], $xml_query);
-      
-      $output = '<div class="container pivot-list">'
-               .'<div class="row row-eq-height pivot-row">';
+      if($atts['type'] == 'guide'){
+        $output = '<div class="container">
+                    <div class="row">
+                    <div class="col-md-12">
+                    <table id="cgt-table-search-paging" class="table table-striped table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Nom</th>
+                          <th>Province</th>
+                          <th>Contact</th>
+                          <th>Adresse</th>
+                          <th>Email</th>
+                          <th>Salary</th>
+                        </tr>
+                      </thead>
+                      <tbody>';
+      }else{
+        $output = '<div class="container pivot-list">'
+                 .'<div class="row row-eq-height pivot-row">';
+      }
       
       foreach($offres as $offre){
         $offre->path = 'details';
         $output.= _template($name, $offre);
       }
       
-      $output .= '</div></div>';
+      if($atts['type'] == 'guide'){
+        $output .= '</tbody></table></div></div></div>';
+      }else{
+        $output .= '</div></div>';
+      }
     }
   }
   return $output;

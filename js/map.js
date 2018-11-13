@@ -1,13 +1,6 @@
 (function($) {
 
   $().ready(function(){
-      
-/*    var monkeyList = new List('test-list', {
-      valueNames: ['name'],
-      page: 3,
-      pagination: true
-    });*/
-    
     // Init map
     var pivotMap = L.map('mapid');
     // Init array of point (usefull to center the map)
