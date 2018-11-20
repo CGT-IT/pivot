@@ -5,7 +5,7 @@
   <td>
     <?php print $offre->nom->__toString(); ?>
   </td>
-  <td><?php print $offre->adresse1->commune->value->__toString(); ?></td>
+  <td><?php print (isset($offre->adresse1->commune->value)?$offre->adresse1->commune->value->__toString():''); ?></td>
   <td>
     <?php foreach($offre->spec as $specification): ?>
       <?php if($specification->urnCat->__toString() == 'urn:cat:moycom'): ?>
@@ -36,7 +36,7 @@
       <span class="street-address"><span class="glyphicon glyphicon-map-marker"></span> <?php print $offre->adresse1->rue->__toString(); ?>, <?php print $offre->adresse1->numero->__toString(); ?></span></br>
       <span>
         <span class="postal-code"><?php print $offre->adresse1->cp->__toString(); ?></span>
-        <span class="locality"><?php print $offre->adresse1->commune->value->__toString(); ?></span>
+        <span class="locality"><?php print (isset($offre->adresse1->commune->value)?$offre->adresse1->commune->value->__toString():''); ?></span>
       </span></br>
       <span class="country-name"><?php print $offre->adresse1->pays->__toString(); ?></span>
       <span class="pivot-latitude d-none"><?php print $offre->adresse1->latitude->__toString(); ?></span>

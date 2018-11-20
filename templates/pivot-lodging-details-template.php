@@ -91,10 +91,10 @@
       </section>
 
       <section class="pivot-details tab-pane fade" id="tab-details" role="tabpanel">
-        <ul>
+        <ul class="list-group list-group-flush">
           <?php foreach($offre->spec as $specification): ?>
             <?php if($specification->urnCat->__toString() == 'urn:cat:accueil'): ?>
-              <li class="pivot-acceuil <?php print str_replace(":", "-", $specification->attributes()->urn->__toString()); ?>">
+              <li class="list-group-item list-group-item-action pivot-details <?php print str_replace(":", "-", $specification->attributes()->urn->__toString()); ?>">
                 <span>
                   <?php print _get_urn_documentation($specification->attributes()->urn->__toString()); ?>
                   <?php if($specification->type->__toString() == 'Boolean'): ?>
@@ -107,7 +107,6 @@
             <?php endif ?>
           <?php endforeach ?>
         </ul>
-        <p class="pivot-id-type-offre item"><?php print $offre->typeOffre->attributes()->idTypeOffre->__toString(); ?></p>
       </section>
 
       <section class="pivot-contacts tab-pane fade" id="tab-contacts" role="tabpanel">
@@ -156,8 +155,8 @@
     <section class="pivot-share">  
       <!--<div id="share-icons">-->
         <span><?php esc_html_e('Share on', 'pivot')?></span>
-        <span><a class="social-icon" href="https://www.facebook.com/sharer.php?u=<?php print $url;?>&amp;t=<?php print $offre->nom->__toString();?>" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urlfacebook;h=45" alt="Facebook Share button"/></a></span>
-        <span><a class="social-icon" href="https://twitter.com/share?text=<?php print $offre->nom->__toString();?>&amp;url=<?php print $url;?>" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urltwitter;h=45" alt="Twitter Share button"/></a></span>
+        <span><a class="social-icon" href="https://www.facebook.com/sharer.php?u=<?php print $url;?>&amp;t=<?php print $offre->nom->__toString();?>" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urlfacebook;h=35" alt="Facebook Share button"/></a></span>
+        <span><a class="social-icon" href="https://twitter.com/share?text=<?php print $offre->nom->__toString();?>&amp;url=<?php print $url;?>" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urltwitter;h=35" alt="Twitter Share button"/></a></span>
       <!--</div>-->
     </section>
 

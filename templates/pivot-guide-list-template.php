@@ -25,10 +25,11 @@ $(document).ready(function() {
 $page=pivot_get_page_path($_SESSION['pivot']['path']);
 $offres = pivot_lodging_page($page->id); ?>
 
+<p><?php echo esc_html('There are', 'pivot') .' '. $_SESSION['pivot']['nb_offres'] .' '.  esc_html('offers', 'pivot'); ?></p>
 <div class="container">
   <div class="row">
     <div class="col-md-12 table-responsive-lg">
-      <table id="cgt-table-search-paging" class="table table-striped table-bordered">
+      <table id="cgt-table-search-pagin" class="table table-striped table-bordered">
         <thead>
           <tr>
             <th>Nom</th>
@@ -36,7 +37,7 @@ $offres = pivot_lodging_page($page->id); ?>
             <th>Contact</th>
             <th>Adresse</th>
             <th>Langues</th>
-            <th>Salary</th>
+            <th>Thématiques</th>
           </tr>
         </thead>
         <tbody>
@@ -93,14 +94,20 @@ $offres = pivot_lodging_page($page->id); ?>
                         <?php if($specification->type->__toString() == 'Boolean'): ?>
                           <img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $specification->attributes()->urn->__toString(); ?>;h=16"/>
                         <?php else: ?>
-                          : <span class="pivot-desc item"><?php print _get_urn_value($offre, $specification->attributes()->urn->__toString()) ;?></span>
+                          <span class="pivot-desc item"><?php print _get_urn_value($offre, $specification->attributes()->urn->__toString()) ;?></span>
                         <?php endif ?>
                       </span>
                     </dd>
                   <?php endif ?>
                 <?php endforeach ?>
               </td>
-              <td>$320,800</td>
+              <td>
+                <?php foreach($offre->spec as $specification): ?>
+                  <?php if($specification->urnSubCat->__toString() == 'urn:cat:classlab:themat'): ?>
+                    <dd><?php print _get_urn_documentation($specification->attributes()->urn->__toString()); ?></dd>
+                  <?php endif; ?>
+                <?php endforeach; ?>
+              </td>
             </tr>
           <?php endforeach; ?>
         </tbody>
@@ -108,5 +115,7 @@ $offres = pivot_lodging_page($page->id); ?>
     </div>
   </div>
 </div>
+
+<?php echo _add_pagination($_SESSION['pivot']['nb_offres']); ?>
 
 <?php get_footer();
