@@ -236,10 +236,12 @@ function _pivot_request($type, $detail, $params = NULL, $postfields = NULL){
 
       return $xml_object;
     }else{
-      global $wp_query;
+      echo 'Error:' . curl_error($request);
+      print_r($response);
+      /*global $wp_query;
       $wp_query->set_404();
       status_header( 404 );
-      get_template_part( 404 ); exit();
+      get_template_part( 404 ); exit();*/
     }
   }
 }

@@ -1,27 +1,43 @@
-#mapid { height: 500px; }
+#mapid {
+    position: relative; 
+    overflow: hidden;
+    position: fixed !important;
+    top: 0;
+    height: 100%!important;
+    width: 100%!important;
+}
 
 .pivot-row article{
-    border-radius: 5px;
-    background-color: #F7F7F7;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
     border: 1px solid #E6E6E6;
-    text-align: center;
     margin-bottom: 10px;
-    height: 420px;
 }
 
-.pivot-row .pivot-title{
-    text-transform: uppercase;
-    padding: 0px 5px 0px 5px;
-    height: 50px;
-    overflow: hidden;
+.pivot-row h4.pivot-title{
+/*    color: #222222;
+    text-decoration: none;*/
+/*    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    padding-top: 1.25rem;*/
 }
+.pivot-row a h4.pivot-title:hover,
+.pivot-row a h4.pivot-title:focus{
+    text-decoration: none;
+}
+
+.pivot-row .pivot-title a{
+
+}
+
+/*.pivot-row .pivot-summary{
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    padding-bottom: 1.25rem;
+}*/
 
 .pivot-row .item{
-    border-top: 1px solid #E6E6E6;
-    padding: 10px 10px 0px 10px;
-}
-.pivot-row .item:last-child{
-    padding: 10px;
+    margin-bottom: 1rem;
 }
 
 .pivot-row .pivot-img{
@@ -82,38 +98,23 @@ aside.pivot-contacts.col-md-4{
  
 .top-right-corner {
     position: absolute;
+    top: 20px;
+    right: 20px;
     z-index: 5;
-    top: 0;
-    left: auto;
-    right: 15px;
-    text-align: right;
-    padding: 5px;
+    background-color: rgba(0,0,0,.5);
 }
 .top-right-corner .item-service{
     padding: 5px;
-    /*margin-right: 4px;*/
-    background-color: rgba(0,0,0,.5);
-}
-.bottom-left-corner {
-    position: absolute;
-    z-index: 5;
-    bottom: 50%;
-    right: auto;
-    left: 15px;
-    text-align: left;
-    padding: 5px;
-}
-.bottom-left-corner .item-service{
-    padding: 5px;
-    /*background-color: rgba(0,0,0,.5);*/
 }
 
 .pivot-offer .container-img{
     overflow: hidden;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
 }
 
 .zoom {
-    transition: transform .3s;
+    transition: transform 0.7s;
 }
 
 .zoom:hover {

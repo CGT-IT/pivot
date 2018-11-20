@@ -45,6 +45,9 @@ function add_admin_script() {
 // register jquery and style on initialization
 add_action('init', 'pivot_register_script');
 function pivot_register_script() {
+  wp_register_style('lodging_style', plugins_url('/pivot_lodging.css', __FILE__), array(), '1.2.1', false);
+  wp_register_style('event_style', plugins_url('/pivot_event.css', __FILE__), array(), '1.2.9', false);
+  wp_register_style('fontawesome', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css', array(), '1.0.0', false);
   wp_register_style('bootstrapexternal', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css', array(), '1.0.0', false);
   wp_register_script('slimmin', 'https://code.jquery.com/jquery-3.3.1.min.js', array(), null, false);
   wp_register_script('poppermin', 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js', array(), null, true);
@@ -55,8 +58,11 @@ function pivot_register_script() {
 // use the registered jquery and style above
 add_action('wp_enqueue_scripts', 'pivot_enqueue_script');
 function pivot_enqueue_script(){
+  wp_enqueue_style('lodging_style');
+  wp_enqueue_style('event_style');
   if(get_option('pivot_bootstrap') == 'on'){
     wp_enqueue_script('pivot_config_test', plugin_dir_url(__FILE__) . '/js/cgtvarious.js',array('jquery'), '1.0', true);
+    wp_enqueue_style('fontawesome');
     wp_enqueue_style('bootstrapexternal');
     wp_enqueue_script('slimmin');
     wp_enqueue_script('poppermin');
@@ -372,20 +378,6 @@ add_action( 'widgets_init', function(){
 	register_widget('pivot_lodging_widget');
 });
 
-// register css files on initialization
-add_action('init', 'register_script');
-function register_script() {
-  wp_register_style('lodging_style', plugins_url('/pivot_lodging.css', __FILE__), false, '1.1.3', 'all');
-  wp_register_style('event_style', plugins_url('/pivot_event.css', __FILE__), false, '1.2.9', 'all');
-}
-
-// use the css files registered above
-add_action('wp_enqueue_scripts', 'enqueue_style');
-function enqueue_style(){
-  wp_enqueue_style('lodging_style');
-  wp_enqueue_style('event_style');
-}
-
 class pivot_lodging_widget extends WP_Widget {
   
 	// class constructor
@@ -407,20 +399,20 @@ class pivot_lodging_widget extends WP_Widget {
 	
 	// output the widget content on the front-end
 	public function widget($args, $instance) {
-    
+
     global $wp_query;
     if(isset($wp_query->query['pagename'])){
       $page = pivot_get_page_path($wp_query->query['pagename']);
     }else{
       $page = pivot_get_page_path(key($wp_query->query));
     }
-    
+
     if(isset($page->id) && $page->id != null){
       pivot_reset_filters($page->id);
-
+      
       // Print head section and HTML Form
       echo '<section id="block-pivot-lodging-pivot-lodging-filter" class="block block-pivot-lodging clearfix">'
-           . '<form action="'.$_SERVER['REQUEST_URI'].'" method="post" id="pivot-lodging-form" accept-charset="UTF-8">'
+           . '<form action="'.get_bloginfo('wpurl').'/'.$page->path.'" method="post" id="pivot-lodging-form" accept-charset="UTF-8">'
            .   '<div  id="edit-equipment-body">';
 
 
@@ -590,7 +582,7 @@ function pivot_lodging_page($page_id) {
           break;
       }
 
-      // If operator is no exist, we need the field comparison
+      // If operator is no "exist", we need the field comparison
       if($filter->operator != 'exist' && (!isset($parent_urn) || $parent_urn == '') && !isset($field_params['filters']['urn:fld:typeofr'])){
         // Set value by default
         $value = $_SESSION['pivot']['filters'][$page_id][$key];
@@ -647,7 +639,7 @@ function _construct_output($case, $offers_per_page, $xml_query = NULL){
     // Define number of offers per page
     $params['items_per_page'] = $offers_per_page;
     // Define content details we want to receive from Pivot
-    $params['content_details'] = ';content=1';
+    $params['content_details'] = ';content=2';
     
     // Get offers
     $xml_object = _pivot_request($case, 2, $params, $xml_query);

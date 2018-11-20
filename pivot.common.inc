@@ -67,7 +67,7 @@ function _get_urn_documentation_full_spec($urn_name){
   return $xml_object;
 }
 
-function _search_specific_urn($offre, $urn, $height, $color, $original = FALSE){
+function _search_specific_urn_img($offre, $urn, $height, $color, $original = FALSE){
   // Loop on each specific field
   foreach($offre->spec as $specification){
     // Check if it's the one we are looking for
@@ -96,6 +96,18 @@ function _search_specific_urn($offre, $urn, $height, $color, $original = FALSE){
   }
 }
 
+function _search_specific_urn($offre, $urn){
+  // Loop on each specific field
+  foreach($offre->spec as $specification){
+    // Check if it's the one we are looking for
+    if($specification->attributes()->urn->__toString() == $urn){
+      $output = $specification->value->__toString();
+      
+      return $output;
+    }
+  }
+}
+
 function _get_ranking_picto($offre, $urn){
   // Loop on each specific field
   foreach($offre->spec as $specification){
@@ -103,7 +115,7 @@ function _get_ranking_picto($offre, $urn){
     if($specification->attributes()->urn->__toString() == $urn){
       $urn = $specification->value->__toString();
       // add specific class to allow overriding. Replace : by -
-      $output = '<span class="pivot-ranking item">';
+      $output = '<span class="pivot-ranking">';
       // prepare img title attribute
       $title_attribute = 'title="'._get_urn_documentation($urn).'"';
       // prepare img alt attribute
