@@ -46,8 +46,7 @@
     
     var bounds = new L.LatLngBounds(arrayOfLatLngs);
     // Auto center and zoom based on all markers
-//    pivotMap.fitBounds(bounds);
-    alert("couocu");
+    pivotMap.fitBounds(bounds);
     
     // Disable scrool zoom
     pivotMap.scrollWheelZoom.disable();

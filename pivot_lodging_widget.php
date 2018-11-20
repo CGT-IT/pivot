@@ -184,7 +184,7 @@ function pivot_add_rewrite_rules() {
     );
   }
 }
-add_action('init', 'pivot_add_rewrite_rules', 1);
+add_action('init', 'pivot_add_rewrite_rules');
  
 /*
  * Function to get active page number used for pagination
@@ -216,13 +216,21 @@ function pivot_template_include($template) {
   $new_template = '';
   
   if(isset($wp_query->query['pagename'])){
-    $page = pivot_get_page_path($wp_query->query['pagename']);
+    $query_page = $wp_query->query['pagename'];
+  }else{
+    if(isset($wp_query->query['name'])){
+      $query_page = $wp_query->query['name'];
+    }
+  }
+  
+  if(isset($query_page)){
+    $page = pivot_get_page_path($query_page);
 
     /*
      * Basic case
      * = we are listing offers
      */
-    if($wp_query->query['pagename'] == $page->path){
+    if($query_page == $page->path){
       // Search template file in plugins folder depending on query type
       switch($page->type){
         case 'hebergement':
@@ -388,9 +396,9 @@ class pivot_lodging_widget extends WP_Widget {
     );
     parent::__construct(
       // Base ID of your widget
-      'lodging_widget', 
+      'lodging_widget',
       // Widget name will appear in UI
-      'Lodging Widget', 
+      'Lodging Widget',
       // array of options
       $widget_ops
     );
@@ -399,10 +407,17 @@ class pivot_lodging_widget extends WP_Widget {
 	
 	// output the widget content on the front-end
 	public function widget($args, $instance) {
-
     global $wp_query;
     if(isset($wp_query->query['pagename'])){
-      $page = pivot_get_page_path($wp_query->query['pagename']);
+     $query_page = $wp_query->query['pagename'];
+    }else{
+      if(isset($wp_query->query['name'])){
+        $query_page = $wp_query->query['name'];
+      }
+    }
+    
+    if(isset($query_page)){
+      $page = pivot_get_page_path($query_page);
     }else{
       $page = pivot_get_page_path(key($wp_query->query));
     }
@@ -444,6 +459,55 @@ class pivot_lodging_widget extends WP_Widget {
 
 	// save options
 	public function update($new_instance, $old_instance) {}
+}
+
+function add_filters(){
+  global $wp_query;
+  if(isset($wp_query->query['pagename'])){
+   $query_page = $wp_query->query['pagename'];
+  }else{
+    if(isset($wp_query->query['name'])){
+      $query_page = $wp_query->query['name'];
+    }
+  }
+
+  if(isset($query_page)){
+    $page = pivot_get_page_path($query_page);
+  }else{
+    $page = pivot_get_page_path(key($wp_query->query));
+  }
+
+  if(isset($page->id) && $page->id != null){
+    pivot_reset_filters($page->id);
+    // Get filters attach to current page
+    $filters = pivot_get_filters($page->id);
+    if(empty($filters)){
+      return;
+    }
+    
+    // Print head section and HTML Form
+    echo '<section id="block-pivot-lodging-pivot-lodging-filter" class="block block-pivot-lodging clearfix">'
+         . '<form action="'.get_bloginfo('wpurl').'/'.$page->path.'" method="post" id="pivot-lodging-form" accept-charset="UTF-8">'
+         .   '<div  id="edit-equipment-body">';
+
+    foreach($filters as $filter){
+      // if not first iteration and filter is member of a group already inserted, we do not recreate this group
+      if(isset($last_filter_group) && $last_filter_group == $filter->filter_group){
+        echo pivot_add_filter_to_form($page->id, $filter);
+      }else{
+        echo pivot_add_filter_to_form($page->id, $filter, $filter->filter_group);
+      }
+      // to remember filter_group of this iteration
+      $last_filter_group = $filter->filter_group; 
+    }
+
+    // Print footer section and close HTML form
+    echo     '</div>'
+         .   '<button type="submit" id="filter-submit" name="op" value="Submit" class="btn btn-primary form-submit">'.esc_html("Submit").'</button>'
+         .   '<input type="hidden" name="filter-submit" value="1" />'
+         . '</form>'
+        .'</section>';
+  }
 }
 
 function pivot_reset_filters($page_id){

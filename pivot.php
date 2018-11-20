@@ -91,7 +91,7 @@ require_once(plugin_dir_path( __FILE__ ). '/pivot-pages.php');
 //$bitly_params['domain'] = 'bit.ly';
 
 register_activation_hook(__FILE__, 'pivot_install');
-register_deactivation_hook( __FILE__, 'pivot_uninstall' );
+register_deactivation_hook(__FILE__, 'pivot_uninstall');
 
 add_action('init', 'init');
 add_action('admin_menu', 'pivot_menu');
@@ -132,7 +132,7 @@ function pivot_options() {
         }else{
           if(substr(get_option('pivot_uri'), -1) !== '/'){
             print _show_admin_notice("Base Uri should end with /");
-          }//aa0f76f6-1994-49a0-9802-40109a5eb9b4
+          }
         }
         if(empty(get_option('pivot_key'))){
           print _show_admin_notice("WS_KEY is required");

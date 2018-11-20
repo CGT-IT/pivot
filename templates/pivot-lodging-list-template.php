@@ -17,6 +17,7 @@ $offres = pivot_lodging_page($page->id); ?>
   <p><?php echo esc_html('There are', 'pivot') .' '. $_SESSION['pivot']['nb_offres'] .' '.  esc_html('offers', 'pivot'); ?></p>
   <div class="row row-eq-height pivot-row">
     <div class="col-12 col-lg-6 py-5 order-lg-1 order-2 left-sidebar z-index-99">
+      <?php add_filters(); ?>
       <div class="row">  
         <?php foreach($offres as $offre): ?>
           <?php $name = 'pivot-lodging-details-part-template'; ?>
