@@ -184,7 +184,7 @@ function pivot_add_rewrite_rules() {
     );
   }
 }
-add_action('init', 'pivot_add_rewrite_rules');
+add_action('init', 'pivot_add_rewrite_rules', 1);
  
 /*
  * Function to get active page number used for pagination
