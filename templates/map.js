@@ -10,7 +10,7 @@
     // Set layer to the map
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-      maxZoom: 18,
+      maxZoom: 20,
       id: 'mapbox.streets',
       accessToken: 'pk.eyJ1IjoibWRlZ2VtYmUiLCJhIjoiY2prMHY3Y2prMGE2NDNwazZuMWUxOWV5OCJ9.WkGG_tCifQuDbnVR9kniFw'
     }).addTo(pivotMap);
@@ -46,7 +46,8 @@
     
     var bounds = new L.LatLngBounds(arrayOfLatLngs);
     // Auto center and zoom based on all markers
-    pivotMap.fitBounds(bounds);
+//    pivotMap.fitBounds(bounds);
+    alert("couocu");
     
     // Disable scrool zoom
     pivotMap.scrollWheelZoom.disable();

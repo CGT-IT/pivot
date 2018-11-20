@@ -2,7 +2,7 @@
 
 <?php $offre = $args; ?>
 
-<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+<div class="col-4 col-lg-6 col-md-6 col-sm-6 col-xs-12">
   <article class="pivot-offer">
     <header>
       <?php $url = get_bloginfo('wpurl').'/'.$offre->path.'/'.$offre->attributes()->codeCgt->__toString().'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString(); ?>

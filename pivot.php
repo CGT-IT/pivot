@@ -17,7 +17,7 @@ function pivot_install() {
   $table_name = $wpdb->prefix . "pivot_pages";
   // Define sql statement to create the table
   $sql = "CREATE TABLE ".$table_name." (
-            id int(11) NOT NULL,
+            id int(11) NOT NULL AUTO_INCREMENT,
             type varchar(100) NOT NULL,
             query varchar(100) NOT NULL,
             path varchar(100) NOT NULL,
@@ -44,6 +44,21 @@ function pivot_install() {
           ) $charset_collate;";
   // Execute the sql statement to create the custom table
   dbDelta($sql);
+}
+
+// Delete table when deactivate
+function pivot_uninstall() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . "pivot_filter";
+    $sql = "DROP TABLE IF EXISTS $table_name;";
+    $wpdb->query($sql);
+
+    $table_name = $wpdb->prefix . "pivot_pages";
+    $sql = "DROP TABLE IF EXISTS $table_name;";
+    $wpdb->query($sql);
+    
+    delete_option("my_plugin_db_version");
+    flush_rewrite_rules();
 }
 
 // Define global variable
@@ -76,6 +91,8 @@ require_once(plugin_dir_path( __FILE__ ). '/pivot-pages.php');
 //$bitly_params['domain'] = 'bit.ly';
 
 register_activation_hook(__FILE__, 'pivot_install');
+register_deactivation_hook( __FILE__, 'pivot_uninstall' );
+
 add_action('init', 'init');
 add_action('admin_menu', 'pivot_menu');
 add_action('admin_init', 'pivot_settings');

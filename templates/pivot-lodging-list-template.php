@@ -24,6 +24,7 @@ $offres = pivot_lodging_page($page->id); ?>
           <?php print _template($name, $offre); ?>
         <?php endforeach; ?>
       </div>
+      <?php echo _add_pagination($_SESSION['pivot']['nb_offres']); ?>
     </div>
     <div class="col-12 col-lg-6 order-lg-2 order-1 px-0">
       <!--Check if we want to show a map-->
@@ -45,8 +46,6 @@ $offres = pivot_lodging_page($page->id); ?>
     </div>
   </div>
 </div>
-
-<?php echo _add_pagination($_SESSION['pivot']['nb_offres']); ?>
 
 <!--Include footer-->
 <?php get_footer();
