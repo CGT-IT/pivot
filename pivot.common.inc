@@ -421,7 +421,7 @@ function _add_pagination($nb_offres){
   // Check if we have more than 1 page!
   if($total > 1)  {
     // Get the current page
-    $current_page = max(1, get_query_var('paged'));
+    $current_page = max(1, abs(get_query_var('paged')));
     // Set format
     $format = '/&paged=%#%';
     $pagination = paginate_links(array(

@@ -78,19 +78,58 @@
     <h2 class="pivot-title"><?php print $offre->nom->__toString(); ?></h2>
     
     <!-- Menu tab declaration -->
-    <ul class="nav nav-tabs">
-      <li class="nav-item"><a class="nav-link active" data-toggle="tab" role="tab" href="#tab-desc"><?php esc_html_e('Description', 'pivot')?></a></li>
-      <li class="nav-item"><a class="nav-link" data-toggle="tab" role="tab" href="#tab-details"><?php esc_html_e('More details', 'pivot')?></a></li>
-      <li class="nav-item"><a class="nav-link" data-toggle="tab" role="tab" href="#tab-contacts"><?php esc_html_e('Contacts', 'pivot')?></a></li>
-    </ul>
+<!--    <ul class="nav nav-tabs">
+      <li class="nav-item"><a class="nav-link active" data-toggle="tab" role="tab" href="#tab-desc"><?php // esc_html_e('Description', 'pivot')?></a></li>
+      <li class="nav-item"><a class="nav-link" data-toggle="tab" role="tab" href="#tab-details"><?php // esc_html_e('More details', 'pivot')?></a></li>
+      <li class="nav-item"><a class="nav-link" data-toggle="tab" role="tab" href="#tab-contacts"><?php // esc_html_e('Contacts', 'pivot')?></a></li>
+    </ul>-->
 
-    <div class="tab-content card">
-
-      <section class="pivot-summary tab-pane fade in active show" id="tab-desc" role="tabpanel">
-        <p class="pivot-desc item"><?php print _get_urn_value($offre, 'urn:fld:descmarket') ;?></p>
+    <!--<div class="tab-content card">-->
+      <h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 lis-f-14"></i><?php esc_html_e('Description', 'pivot')?></h5>
+      <section class="card lis-brd-light wow fadeInUp mb-4" style="visibility: visible; animation-name: fadeInUp;">
+          <div class="card-body p-4">
+              <p class="pivot-desc item mb-0"><?php print _get_urn_value($offre, 'urn:fld:descmarket') ;?></p>
+          </div>
+      </section>
+      
+      <h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-thumb-tack"></i><?php esc_html_e('Equipments', 'pivot')?></h5>
+      <section class="card lis-brd-light wow fadeInUp mb-4" style="visibility: visible; animation-name: fadeInUp;">
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col-lg-4">
+              <ul class="list-unstyled lis-line-height-2 mb-0">
+                <?php foreach($offre->spec as $specification): ?>
+                  <?php if($specification->urnCat->__toString() == 'urn:cat:eqpsrv'): ?>
+                    <?php $urn_value = _get_urn_documentation($specification->attributes()->urn->__toString()); ?>
+                    <li class="pivot-service <?php print str_replace(":", "-", $specification->attributes()->urn->__toString()); ?>">
+                        <i class="pr-2"><img alt="<?php print $urn_value; ?>" title="<?php print $urn_value; ?>" class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $specification->attributes()->urn->__toString(); ?>;h=16"/></i>
+                      <?php print $urn_value; ?>
+                    </li>
+                  <?php endif ?>
+                <?php endforeach ?>
+              </ul>
+            </div>
+            <div class="col-lg-4">
+              <ul class="list-unstyled lis-line-height-2 mb-0">
+                <li><i class="fa fa-check-square pr-2 lis-primary"></i> Acceted Bank Cards</li>
+                <li><i class="fa fa-check-square pr-2 lis-primary"></i> Events</li>
+                <li><i class="fa fa-check-square pr-2 lis-primary"></i> Friendly Workspace</li>
+                <li><i class="fa fa-check-square pr-2 lis-primary"></i> Street Parking</li>
+              </ul>
+            </div>
+            <div class="col-lg-4">
+              <ul class="list-unstyled lis-line-height-2 mb-0">
+                <li><i class="fa fa-check-square pr-2 lis-primary"></i> Wheelchair Accessible</li>
+                <li><i class="fa fa-check-square pr-2 lis-primary"></i> Good for Kids</li>
+                <li><i class="fa fa-check-square pr-2 lis-primary"></i> Outdoor Seating</li>
+                <li><i class="fa fa-check-square pr-2 lis-primary"></i> Takes Reservations</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section class="pivot-details tab-pane fade" id="tab-details" role="tabpanel">
+      <section class="pivot-details card-body p-4">
         <ul class="list-group list-group-flush">
           <?php foreach($offre->spec as $specification): ?>
             <?php if($specification->urnCat->__toString() == 'urn:cat:accueil'): ?>
@@ -109,7 +148,7 @@
         </ul>
       </section>
 
-      <section class="pivot-contacts tab-pane fade" id="tab-contacts" role="tabpanel">
+      <section class="pivot-contacts card-body p-4" >
         <dl class="vcard">
           <dt class="fn"><h3 class="pito-title"><?php print $offre->nom->__toString(); ?></h3></dt>
           <?php foreach($offre->spec as $specification): ?>
@@ -147,10 +186,10 @@
         </dl>
       </section>
 
-    </div>
+    <!--</div>-->
   </header>
 
-  <aside class="well pivot-contacts col-xs-12 col-md-4">
+  <aside class="col-xs-12 col-md-4">
     <?php $url = get_bloginfo('wpurl').'/'.$_SESSION['pivot']['path'].'/'.$offre->attributes()->codeCgt->__toString(); ?>
     <section class="pivot-share">  
       <!--<div id="share-icons">-->
@@ -160,12 +199,14 @@
       <!--</div>-->
     </section>
 
-    <section class="pivot-contacts">
-      <dl class="vcard">
-        <dt class="fn"><h3 class="pito-title"><?php print $offre->nom->__toString(); ?></h3></dt>
+    <h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-id-card-o"></i><?php esc_html_e('Contact', 'pivot')?></h5>
+    <section class="pivot-contacts card lis-brd-light wow fadeInUp mb-4">
+      <div class="card-body p-4">
+        <h6 class="pivo-title"><?php print $offre->nom->__toString(); ?></h6>
+        <ul class="list-unstyled lis-line-height-2 mb-0">
         <?php foreach($offre->spec as $specification): ?>
           <?php if($specification->urnCat->__toString() == 'urn:cat:moycom'): ?>
-            <dd>
+            <li>
               <img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $specification->attributes()->urn->__toString(); ?>;h=16"/>
               <?php switch ($specification->type->__toString()): 
                 case 'EMail': ?>
@@ -188,25 +229,27 @@
                   <?php endif; ?>
                   <?php break ?>  
               <?php endswitch ?>
-            </dd>
+            </li>
           <?php endif; ?>
         <?php endforeach; ?>
+        </ul>
             
-        <div class="adr">
-          <dd class="street-address"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> <?php print $offre->adresse1->rue->__toString(); ?>, <?php print $offre->adresse1->numero->__toString(); ?></dd>
+        <ul class="adr list-unstyled lis-line-height-2 mb-0">
+          <li class="street-address"><i class="fa fa-map-o"></i> <?php print $offre->adresse1->rue->__toString(); ?>, <?php print $offre->adresse1->numero->__toString(); ?></li>
           <span class="postal-code"><?php print $offre->adresse1->cp->__toString(); ?></span>
           <span class="locality"><?php print $offre->adresse1->commune->value->__toString(); ?></span>
-          <dd class="country-name"><?php print $offre->adresse1->pays->__toString(); ?></dd>
-          <dd class="pivot-latitude d-none"><?php print $offre->adresse1->latitude->__toString(); ?></dd>
-          <dd class="pivot-longitude d-none"><?php print $offre->adresse1->longitude->__toString(); ?></dd>
-        </div>
+          <li class="country-name"><?php print $offre->adresse1->pays->__toString(); ?></li>
+          <li class="pivot-latitude d-none"><?php print $offre->adresse1->latitude->__toString(); ?></li>
+          <li class="pivot-longitude d-none"><?php print $offre->adresse1->longitude->__toString(); ?></li>
+        </ul>
             
-      </dl>
+      </div>
     </section>
     
-    <section class="pivot-ranking">
-      <h3><?php esc_html_e('Ranking', 'pivot')?></h3>
-      <ul class="list-group">
+    <h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-id-card-o"></i><?php esc_html_e('Ranking', 'pivot')?></h5>
+    <section class="pivot-ranking card lis-brd-light wow fadeInUp mb-4">
+      <div class="card-body p-4">
+      <ul class="list-unstyled lis-line-height-2 mb-0">
       <?php foreach($offre->spec as $specification): ?>
         <?php if($specification->urnCat->__toString() == 'urn:cat:classlab'): ?>
           <li class="list-group-item <?php print str_replace(":", "-", $specification->attributes()->urn->__toString()); ?>">
@@ -218,42 +261,10 @@
           </li>
         <?php endif; ?>
       <?php endforeach; ?>
+      </div>
       </ul>
     </section>
 
-    <section class="pivot-equipments">
-      <h3><?php esc_html_e('Equipments', 'pivot')?></h3>
-      <div class="container">
-        <div class="row">
-          <?php foreach($offre->spec as $specification): ?>
-            <?php if($specification->urnCat->__toString() == 'urn:cat:eqpsrv'): ?>
-              <?php $urn_value = _get_urn_documentation($specification->attributes()->urn->__toString()); ?>
-               <div class="col-2aa pivot-service <?php print str_replace(":", "-", $specification->attributes()->urn->__toString()); ?>">
-                <img alt="<?php print $urn_value; ?>" title="<?php print $urn_value; ?>" class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $specification->attributes()->urn->__toString(); ?>;h=30"/>
-              </div>
-            <?php endif ?>
-          <?php endforeach ?>
-        </div>
-      </div>
-    </section>
-
-    <section class="pivot-equipments">
-      <h3><?php esc_html_e('Equipments', 'pivot')?></h3>
-      <div class="table-responsive">
-        <table class="table table-striped table-condensed">
-          <?php foreach($offre->spec as $specification): ?>
-            <?php if($specification->urnCat->__toString() == 'urn:cat:eqpsrv'): ?>
-              <?php $urn_value = _get_urn_documentation($specification->attributes()->urn->__toString()); ?>
-              <tr class="pivot-service <?php print str_replace(":", "-", $specification->attributes()->urn->__toString()); ?> list-group-item">
-                <td><img alt="<?php print $urn_value; ?>" title="<?php print $urn_value; ?>" class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $specification->attributes()->urn->__toString(); ?>;h=16"/>
-                <?php print $urn_value; ?></td>
-              </tr>
-            <?php endif ?>
-          <?php endforeach ?>
-        </table>
-      </div>
-    </section>
-    
   </aside>
 
 </article>

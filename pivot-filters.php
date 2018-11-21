@@ -163,7 +163,7 @@ function pivot_filters_action(){
     } else {
       // Update data
       $id = $_POST['id'];
-      $wpdb->query("UPDATE " .$wpdb->prefix. "pivot_filter SET page_id=".$_POST['page_id'].", filter_name='" .$name .", filter_title='" .$title ."', urn='" .$urn ."', operator='" .$operator ."', type='" .$type ."', filter_group='" .$group ."' WHERE id='" .$id ."'");
+      $wpdb->query("UPDATE " .$wpdb->prefix. "pivot_filter SET page_id=".$_POST['page_id'].", filter_name='" .$name ."', filter_title='" .$title ."', urn='" .$urn ."', operator='" .$operator ."', type='" .$type ."', filter_group='" .$group ."' WHERE id='" .$id ."'");
     }
   }  
 }

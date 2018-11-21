@@ -52,8 +52,9 @@
 }
 
 #pivotCarousel{
-   max-width: 1300px;
-   max-height: 600px;
+    width: 773.328px; margin-right: 0px; float: left; display: block;
+   /*max-width: 1300px;*/
+   /*max-height: 600px;*/
 }
 
 #pivotCarousel .carousel-indicators li{

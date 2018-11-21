@@ -17,7 +17,7 @@ $(document).ready(function() {
 } );
 </script>
 <!--Include sidebar-->
-<?php get_sidebar(); ?>
+<?php // get_sidebar(); ?>
 <?php global $base_url; ?>
 
 <!--Get offers-->
@@ -27,6 +27,7 @@ $offres = pivot_lodging_page($page->id); ?>
 
 <p><?php echo esc_html('There are', 'pivot') .' '. $_SESSION['pivot']['nb_offres'] .' '.  esc_html('offers', 'pivot'); ?></p>
 <div class="container">
+  <?php add_filters(); ?>
   <div class="row">
     <div class="col-md-12 table-responsive-lg">
       <table id="cgt-table-search-pagin" class="table table-striped table-bordered">
