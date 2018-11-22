@@ -199,7 +199,7 @@ function pivot_get_current_page(){
   }else{
     $current_page = 0;
   }
-  
+  print $current_page;
   return $current_page;
 }
 
