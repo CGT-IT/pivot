@@ -1,8 +1,7 @@
 
 <?php /* Template Name: pivot-lodging-list-template */ ?>
 
-<!--Include header-->
-<?php get_header(); ?>
+
 <script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -10,24 +9,25 @@
 <!--<script defer src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
-
+<title><?php print $_SESSION['pivot']['page_title'] ?> - CGT</title>
+<!--Include header-->
+<?php get_header(); ?>
 <script>
 $(document).ready(function() {
     $('#tourist-guide').DataTable();
 } );
 </script>
 <!--Include sidebar-->
-<?php // get_sidebar(); ?>
+<?php get_sidebar(); ?>
 <?php global $base_url; ?>
 
 <!--Get offers-->
 <?php 
 $page=pivot_get_page_path($_SESSION['pivot']['path']);
 $offres = pivot_lodging_page($page->id); ?>
-
 <p><?php echo esc_html('There are', 'pivot') .' '. $_SESSION['pivot']['nb_offres'] .' '.  esc_html('offers', 'pivot'); ?></p>
-<div class="container">
-  <?php add_filters(); ?>
+<div class="container-fluid et_pb_section">
+  <?php // add_filters(); ?>
   <div class="row">
     <div class="col-md-12 table-responsive-lg">
       <table id="cgt-table-search-pagin" class="table table-striped table-bordered">

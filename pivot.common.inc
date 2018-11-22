@@ -335,8 +335,9 @@ function _add_meta_data($offre){
     $bitly_params['longUrl'] = get_bloginfo('wpurl').'/'.$_SESSION['pivot']['path'].'/'.$offre->attributes()->codeCgt->__toString(); 
     $bitly_url = bitly_get('shorten', $bitly_params);
   }
-  if(is_object($offre)){
-    echo  '<meta property="og:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:'').'">'
+  if(isset($offre) && s_object($offre)){
+    echo  '<title>'.$offre->nom->__toString().' - CGT</title>'
+         .'<meta property="og:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:'').'">'
          .'<meta property="og:type" content="article">'
          .'<meta property="og:title" content="'.$offre->nom->__toString().'">'
          .'<meta property="og:description" content="'.wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket')).'">'

@@ -1,5 +1,6 @@
 <?php /* Template Name: pivot-lodging-list-template */ ?>
 
+<title><?php print $_SESSION['pivot']['page_title'] ?> - CGT</title>
 <!--Include header-->
 <?php get_header(); ?>
 <!--Include sidebar-->
@@ -10,8 +11,6 @@
 <?php 
 $page=pivot_get_page_path($_SESSION['pivot']['path']);
 $offres = pivot_lodging_page($page->id); ?>
-
-
   
 <div class="container-fluid pivot-list">
   <p><?php echo esc_html('There are', 'pivot') .' '. $_SESSION['pivot']['nb_offres'] .' '.  esc_html('offers', 'pivot'); ?></p>

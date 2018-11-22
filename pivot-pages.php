@@ -72,6 +72,11 @@ function pivot_meta_box() {
     <input type="text" id="edit-pivot-path" name="path" value="<?php if(isset($edit_page)) echo $edit_page->path;?>" size="60" maxlength="128" class="form-text">
     <p class="description"><?php esc_html_e('Path to access results', 'pivot') ?></p>
   </div>
+  <div class="form-item form-type-textfield form-item-pivot-title">
+    <label for="edit-pivot-title"><?php esc_html_e('Title', 'pivot') ?> </label>
+    <input type="text" id="edit-pivot-title" name="title" value="<?php if(isset($edit_page)) echo $edit_page->title;?>" size="60" maxlength="128" class="form-text">
+    <p class="description"><?php esc_html_e('Page title', 'pivot') ?></p>
+  </div>
   <div class="form-item form-type-textfield form-item-pivot-map">
     <input type="checkbox" id="edit-pivot-map" name="map" class="form-checkbox" <?php echo (isset($edit_page) && $edit_page->map == 1?'checked':'');?>>
     <label for="edit-pivot-map"><?php esc_html_e('Show map', 'pivot') ?> </label>
@@ -134,11 +139,12 @@ function pivot_action(){
   }
 
   // Process the changes in the custom table
-  if(isset($_POST['pivot_add_page']) && $_POST['type'] != '' && $_POST['query'] != '' && $_POST['path'] != '') {
+  if(isset($_POST['pivot_add_page']) && $_POST['type'] != '' && $_POST['query'] != '' && $_POST['path'] != '' && $_POST['title'] != '') {
     // Add new row in the custom table
     $type = $_POST['type'];
     $query = $_POST['query'];
     $path = $_POST['path'];
+    $title = $_POST['title'];
     $map = isset($_POST['map'])?1:0;
     $sortMode = $_POST['sortMode'];
     $sortField = $_POST['sortField'];
@@ -146,11 +152,11 @@ function pivot_action(){
     // Check if path already exist in wordpress or not (to avoid duplicate and conflict)
     if(!$page = get_page_by_path($path)){
       if(empty($_POST['page_id'])){
-        $wpdb->query("INSERT INTO " .$wpdb->prefix ."pivot_pages(type,query,path,map,sortMode,sortField) VALUES('" .$type ."','" .$query."','" .$path."','" .$map."','" .$sortMode."','" .$sortField."');");
+        $wpdb->query("INSERT INTO " .$wpdb->prefix ."pivot_pages(type,query,path,title,map,sortMode,sortField) VALUES('" .$type ."','" .$query."','" .$path."','" .$title."','" .$map."','" .$sortMode."','" .$sortField."');");
       }else{
         // Update the data
         $page_id = $_POST['page_id'];
-        $wpdb->query("UPDATE " .$wpdb->prefix. "pivot_pages SET type='" .$type ."', query='" .$query ."', path='" .$path ."', map='" .$map ."', sortMode='" .$sortMode ."', sortField='" .$sortField ."' WHERE id='" .$page_id ."'");
+        $wpdb->query("UPDATE " .$wpdb->prefix. "pivot_pages SET type='" .$type ."', query='" .$query ."', path='" .$path ."', title='" .$title ."', map='" .$map ."', sortMode='" .$sortMode ."', sortField='" .$sortField ."' WHERE id='" .$page_id ."'");
       }
     }else{
       $text = esc_html('This path already exists', 'pivot').': <a href="'.get_permalink( $page->ID ).'">'.get_permalink( $page->ID ).'</a>';
@@ -170,6 +176,11 @@ function pivot_action(){
       $text = esc_html('Path is required', 'pivot');
       print _show_admin_notice($text);
     }
+    if(isset($_POST['pivot_add_page']) && (!isset($_POST['title']) || $_POST['title'] == '')){
+      $text = esc_html('Page title is required', 'pivot');
+      print _show_admin_notice($text);
+    }
+    
   } 
 }
 
@@ -223,6 +234,7 @@ function pivot_manage_page(){
           <th class="manage-column"><?php esc_html_e('Query', 'pivot')?></th>
           <th class="manage-column"><?php esc_html_e('Type', 'pivot')?></th>
           <th class="manage-column"><?php esc_html_e('Path', 'pivot')?></th>
+          <th class="manage-column"><?php esc_html_e('Page title', 'pivot')?></th>
           <th class="manage-column"><?php esc_html_e('Map ?', 'pivot')?></th>
           <th class="manage-column"><?php esc_html_e('Sorting', 'pivot')?></th>
           <th class="manage-column"><?php esc_html_e('Filters', 'pivot')?></th>
@@ -250,6 +262,7 @@ function pivot_manage_page(){
           </td>
           <td><?php echo $page->type?></td>
           <td><?php echo '<a href="'.get_bloginfo('wpurl').'/'.$page->path.'">'.$page->path.'</a>';?></td>
+          <td><?php echo $page->title?></td>
           <td><?php echo ($page->map == 1)?'&#10004;':'&#10008;';?></td>
           <td>
             <?php if($page->sortMode != ''){

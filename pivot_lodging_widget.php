@@ -320,6 +320,9 @@ function pivot_template_include($template) {
   if(isset($page->query)){
     $_SESSION['pivot']['query'] = $page->query;
   }
+  if(isset($page->title)){
+    $_SESSION['pivot']['page_title'] = $page->title;
+  }
 
   if ($new_template != '') {
     return $new_template;
@@ -503,7 +506,7 @@ function add_filters(){
 
     // Print footer section and close HTML form
     echo     '</div>'
-         .   '<button type="submit" id="filter-submit" name="op" value="Submit" class="btn btn-primary form-submit">'.esc_html("Submit").'</button>'
+         .   '<button type="submit" id="filter-submit" name="op" value="Submit" class="btn btn-primary form-submit">'.esc_html("Search").'</button>'
          .   '<input type="hidden" name="filter-submit" value="1" />'
          . '</form>'
         .'</section>';

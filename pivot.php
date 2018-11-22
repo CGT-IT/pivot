@@ -21,6 +21,7 @@ function pivot_install() {
             type varchar(100) NOT NULL,
             query varchar(100) NOT NULL,
             path varchar(100) NOT NULL,
+            title varchar(128) NOT NULL,
             map tinyint(1) NOT NULL,
             sortMode varchar(50) DEFAULT NULL,
             sortField varchar(100) DEFAULT NULL,
