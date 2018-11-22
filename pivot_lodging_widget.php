@@ -450,7 +450,7 @@ class pivot_lodging_widget extends WP_Widget {
 
       // Print footer section and close HTML form
       echo     '</div>'
-           .   '<button type="submit" id="filter-submit" name="op" value="Submit" class="btn btn-primary form-submit">'.esc_html("Submit").'</button>'
+           .   '<button type="submit" id="filter-submit" name="op" value="Submit" class="btn btn-primary form-submit">'.esc_html("Search").'</button>'
            .   '<input type="hidden" name="filter-submit" value="1" />'
            . '</form>'
           .'</section>';
@@ -602,15 +602,15 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL){
                   .'</div>';
       }else{
         $output .= '<div class="form-item form-item-'.$filter->filter_name.'">'
-                  .  '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.$filter->filter_title.'">'
+                  .  '<label title="'.$filter->filter_title.'" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.$filter->filter_title.'">'
                   .  '<input type="text" id="edit-'.$filter->filter_name.'" name="'.$filter->id.'" value="'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?$_SESSION['pivot']['filters'][$page_id][$filter->id]:'').'">'
                   .'</div>';
       }
       return $output;
     default:
       $output .= '<div class="form-item form-item-'.$filter->filter_name.'">'
-                .  '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.$filter->filter_title.'">'
-                .  '<input type="text" id="edit-'.$filter->filter_name.'" name="'.$filter->id.'" value="'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?$_SESSION['pivot']['filters'][$page_id][$filter->id]:'').'">'
+                .  '<label title="'.$filter->filter_title.'" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.$filter->filter_title.'">'
+                .  '<input placeholder="'.$filter->filter_title.'" type="text" id="edit-'.$filter->filter_name.'" name="'.$filter->id.'" value="'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?$_SESSION['pivot']['filters'][$page_id][$filter->id]:'').'">'
                 .'</div>';
       return $output;
   }
