@@ -2,21 +2,21 @@
 <?php /* Template Name: pivot-lodging-list-template */ ?>
 
 
-<script
+<!--<script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
-<!--<script defer src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>-->
+<script defer src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">-->
 <title><?php print $_SESSION['pivot']['page_title'] ?> - CGT</title>
 <!--Include header-->
 <?php get_header(); ?>
-<script>
+<!--<script>
 $(document).ready(function() {
     $('#tourist-guide').DataTable();
 } );
-</script>
+</script>-->
 <!--Include sidebar-->
 <?php if(is_active_sidebar('et_pb_widget_area_12')): ?>
   <aside id="secondary" class="widget-area" role="complementary">
