@@ -192,14 +192,17 @@ add_action('init', 'pivot_add_rewrite_rules');
  */
 function pivot_get_current_page(){
   // Check position of "paged=" in current uri
-  if(($pos = strpos($_SERVER['REQUEST_URI'], "paged=")) !== FALSE){ 
+  print $_SERVER['REQUEST_URI'];
+  if(($pos = strpos($_SERVER['REQUEST_URI'], "paged=")) !== FALSE){
+    print '<br>je passe<br>';
     // Get number after paged= (position of first letter + length of "paged="
     //$current_page = substr($_SERVER['REQUEST_URI'], $pos+strlen("paged=")); 
     $current_page = (int) filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_NUMBER_INT);
+    print $current_page;
   }else{
     $current_page = 0;
   }
-  print $current_page;
+
   return $current_page;
 }
 
