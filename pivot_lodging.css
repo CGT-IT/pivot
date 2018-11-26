@@ -156,5 +156,5 @@ aside.pivot-contacts.col-md-4{
 }
 
 #quadmenu .quadmenu-navbar-nav li.quadmenu-item>a {
-    height: inherit;
+    height: inherit !important;
 }
