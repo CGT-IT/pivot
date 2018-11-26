@@ -138,8 +138,8 @@ function _get_ranking_picto($offre, $urn){
  * @param array $field_params with urn name
  * @return int Number of offer(s)
  */
-function _get_number_of_offers($field_params){   
-  $xml_query = _xml_query_construction($_SESSION['pivot']['query'], $field_params);
+function _get_number_of_offers($field_params, $page_id){   
+  $xml_query = _xml_query_construction($_SESSION['pivot'][$page_id]['query'], $field_params);
 
   $params['type'] = 'query';
   // Define number of offers per page
@@ -326,16 +326,16 @@ function _get_commune_from_pivot($type, $value){
   return $output;
 }
 
-function _add_meta_data($offre){
+function _add_meta_data($offre, $path){
   if(strpos(get_bloginfo('wpurl'), 'localhost') !== false) {
   }else{
     $bitly_params = array();
     $bitly_params['access_token'] = get_option('pivot_bitly');
     $bitly_params['domain'] = 'bit.ly';
-    $bitly_params['longUrl'] = get_bloginfo('wpurl').'/'.$_SESSION['pivot']['path'].'/'.$offre->attributes()->codeCgt->__toString(); 
+    $bitly_params['longUrl'] = get_bloginfo('wpurl').'/'.$path.'/'.$offre->attributes()->codeCgt->__toString(); 
     $bitly_url = bitly_get('shorten', $bitly_params);
   }
-  if(isset($offre) && s_object($offre)){
+  if(isset($offre) && is_object($offre)){
     echo  '<title>'.$offre->nom->__toString().' - CGT</title>'
          .'<meta property="og:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:'').'">'
          .'<meta property="og:type" content="article">'
@@ -423,6 +423,7 @@ function _add_pagination($nb_offres){
   if($total > 1)  {
     // Get the current page
     $current_page = max(1, abs(get_query_var('paged')));
+    print $current_page;
     // Set format
     $format = '/&paged=%#%';
     $pagination = paginate_links(array(
@@ -487,4 +488,31 @@ function _show_admin_notice($text, $severity = 'error'){
           . '</div>';
   
   return $output;
+}
+
+function _get_path(){
+  $path = $_SERVER['REQUEST_URI'];
+  if((strpos($path, "paged=")) !== FALSE){
+    if (preg_match('/\/(.*?)\/&paged=/', $path, $match) == 1) {
+      $path = substr($match[1], strrpos($match[1], '/' )+1);
+    }
+  }else{
+    $path = substr(rtrim($path,'/'), strrpos(rtrim($path,'/'), '/' )+1);
+  }
+  
+  return $path;
+}
+
+function _get_offer_details(){
+  $path = $_SERVER['REQUEST_URI'];
+  if((strpos($path, "&type=")) !== FALSE){
+    if (preg_match('/\/(.*?)&type=/', $path, $match) == 1) {
+      $params['offer_code'] = substr($match[1], strrpos($match[1], '/' )+1);
+      $params['type'] = 'offer';
+      $xml_object = _pivot_request('offer-details', 3, $params);
+      $offre = $xml_object->offre;
+    }
+  }
+  
+  return $offre;
 }

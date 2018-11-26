@@ -45,7 +45,7 @@ function add_admin_script() {
 // register jquery and style on initialization
 add_action('init', 'pivot_register_script');
 function pivot_register_script() {
-  wp_register_style('lodging_style', plugins_url('/pivot_lodging.css', __FILE__), array(), '1.2.3', false);
+  wp_register_style('lodging_style', plugins_url('/pivot_lodging.css', __FILE__), array(), false, false);
   wp_register_style('event_style', plugins_url('/pivot_event.css', __FILE__), array(), '1.2.9', false);
   wp_register_style('fontawesome', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css', array(), '1.0.0', false);
   wp_register_style('bootstrapexternal', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css', array(), '1.0.0', false);
@@ -193,11 +193,9 @@ add_action('init', 'pivot_add_rewrite_rules');
 function pivot_get_current_page(){
   // Check position of "paged=" in current uri
   if(($pos = strpos($_SERVER['REQUEST_URI'], "paged=")) !== FALSE){
-    print '<br>je passe<br>';
     // Get number after paged= (position of first letter + length of "paged="
     $current_page = substr($_SERVER['REQUEST_URI'], $pos+strlen("paged=")); 
     //$current_page = (int) filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_NUMBER_INT);
-    print $current_page;
   }else{
     $current_page = 0;
   }
@@ -314,16 +312,16 @@ function pivot_template_include($template) {
   }
 
   if(isset($page->map)){
-    $_SESSION['pivot']['map'] = $page->map;
+    $_SESSION['pivot'][$page->id]['map'] = $page->map;
   }
   if(isset($page->path)){
-    $_SESSION['pivot']['path'] = $page->path;
+    $_SESSION['pivot'][$page->id]['path'] = $page->path;
   }
   if(isset($page->query)){
-    $_SESSION['pivot']['query'] = $page->query;
+    $_SESSION['pivot'][$page->id]['query'] = $page->query;
   }
   if(isset($page->title)){
-    $_SESSION['pivot']['page_title'] = $page->title;
+    $_SESSION['pivot'][$page->id]['page_title'] = $page->title;
   }
 
   if ($new_template != '') {
@@ -551,7 +549,7 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL){
   }
   switch($filter->type){
     case 'Boolean':
-      $number_of_offers = _get_number_of_offers($field_params);
+      $number_of_offers = _get_number_of_offers($field_params, $page_id);
       if($number_of_offers > 0){
         $output .= '<div class="form-item form-item-'.$filter->filter_name.'">'
                   .  '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.$filter->filter_title.'">'
@@ -670,15 +668,15 @@ function pivot_lodging_page($page_id) {
 //  print '<pre>'; print_r($field_params['filters']); print '</pre>';
   
   // Get current page details
-  $page = pivot_get_page_path($_SESSION['pivot']['path']);
+  $page = pivot_get_page_path($_SESSION['pivot'][$page_id]['path']);
   // Check if there if a sort is defined
   if(isset($page->sortMode) && $page->sortMode != NULL && $page->sortMode != ''){
     $field_params['sortField'] = $page->sortField;
     $field_params['sortMode'] = $page->sortMode;
   }
-  $xml_query = _xml_query_construction($_SESSION['pivot']['query'], $field_params);
+  $xml_query = _xml_query_construction($_SESSION['pivot'][$page_id]['query'], $field_params);
 
-  $output = _construct_output('offer-search', $offers_per_page, $xml_query);
+  $output = _construct_output('offer-search', $offers_per_page, $xml_query, $page_id);
 
   return $output;
 }
@@ -690,7 +688,7 @@ function pivot_lodging_page($page_id) {
  * @param Object $xml_query XML file with request to Pivot (filter on specific fields)
  * @return string part of HTML to display
  */
-function _construct_output($case, $offers_per_page, $xml_query = NULL){
+function _construct_output($case, $offers_per_page, $xml_query = NULL, $page_id = NULL){
   // Get current page number (start with 0)
   if(($pos = strpos($_SERVER['REQUEST_URI'], "paged=")) !== FALSE){ 
     $page_number = substr($_SERVER['REQUEST_URI'], $pos+6); 
@@ -712,16 +710,15 @@ function _construct_output($case, $offers_per_page, $xml_query = NULL){
     
     // Get offers
     $xml_object = _pivot_request($case, 2, $params, $xml_query);
-
     // Store number of offers
-    $_SESSION['pivot']['nb_offres'] = str_replace(',', '', $xml_object->attributes()->count->__toString());
+    $_SESSION['pivot'][$page_id]['nb_offres'] = str_replace(',', '', $xml_object->attributes()->count->__toString());
     // Store the token to get next x items
-    $_SESSION['pivot']['token'] = $xml_object->attributes()->token->__toString();
+    $_SESSION['pivot'][$page_id]['token'] = $xml_object->attributes()->token->__toString();
 
     $offres = $xml_object->offre;
   }else{
     // Get token + current page (set +1 to current page as it start with 0 but with 1 in Pivot)
-    $params['token'] = '/'.$_SESSION['pivot']['token'].'/'.++$current_page;
+    $params['token'] = '/'.$_SESSION['pivot'][$page_id]['token'].'/'.++$current_page;
 
     // Get offers
     $xml_object = _pivot_request('offer-pager', 2, $params);

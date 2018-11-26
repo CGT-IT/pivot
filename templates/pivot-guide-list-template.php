@@ -1,22 +1,18 @@
 
 <?php /* Template Name: pivot-lodging-list-template */ ?>
 
-
 <!--<script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
 <script defer src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">-->
-<title><?php print $_SESSION['pivot']['page_title'] ?> - CGT</title>
+<?php $page = pivot_get_page_path(_get_path()); ?>
+<title><?php print $_SESSION['pivot'][$page->id]['page_title'] ?> - CGT</title>
 <!--Include header-->
 <?php get_header(); ?>
-<!--<script>
-$(document).ready(function() {
-    $('#tourist-guide').DataTable();
-} );
-</script>-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css">
+
 <!--Include sidebar-->
 <?php if(is_active_sidebar('et_pb_widget_area_12')): ?>
   <aside id="secondary" class="widget-area" role="complementary">
@@ -24,12 +20,8 @@ $(document).ready(function() {
   </aside><!-- #primary-sidebar -->
 <?php endif; ?>
 
-<?php global $base_url; ?>
-
 <!--Get offers-->
-<?php 
-$page=pivot_get_page_path($_SESSION['pivot']['path']);
-$offres = pivot_lodging_page($page->id); ?>
+<?php $offres = pivot_lodging_page($page->id); ?>
 <div class="container-fluid custom-margin-top">
   <?php // add_filters(); ?>
   <div class="row">

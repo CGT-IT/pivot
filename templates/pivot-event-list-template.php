@@ -1,144 +1,55 @@
-
 <?php /* Template Name: pivot-lodging-list-template */ ?>
 
+<?php $page = pivot_get_page_path(_get_path()); ?>
+<title><?php print $_SESSION['pivot'][$page->id]['page_title'] ?> - CGT</title>
 <!--Include header-->
 <?php get_header(); ?>
 <!--Include sidebar-->
-<?php get_sidebar(); ?>
+<?php // get_sidebar(); ?>
 <?php global $base_url; ?>
 
 <!--Get offers-->
-<?php 
-$page=pivot_get_page_path($_SESSION['pivot']['path']);
-$offres = pivot_lodging_page($page->id); ?>
-
-<!--Check if we want to show a map-->
-<?php if($_SESSION['pivot']['map'] == 1): ?>
-  <!--Include leaflet css for map-->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css"
-    integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
-    crossorigin=""/>
-  <!--Include leaflet js for map-->
-  <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"
-    integrity="sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q=="
-    crossorigin=""></script>
-
-  <!--Create Map element-->  
-  <div id="mapid"></div>
-  <!--Include map custom js-->
-  <script src="<?php echo plugins_url('/map.js', __FILE__) ?>"></script>
-<?php endif; ?>
-
-<div class="container pivot-list">
-  <p><?php echo esc_html('There are', 'pivot') .' '. $_SESSION['pivot']['nb_offres'] .' '.  esc_html('offers', 'pivot'); ?></p>
-  <div class="row row-eq-height event-list">
-    <?php foreach($offres as $offre): ?>
-      <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-xs-12">
-        <article class="pivot-offer">
-
-          <div class="container-img">
-            <img class="pivot-img zoom pivot-img-list" src="https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/<?php print $offre->attributes()->codeCgt->__toString() ;?>;w=400;h=400"/>
-            <div class="top-left-corner">
-              <span class="item-services">
-                <?php foreach($offre->spec as $specification): ?>
-                  <?php if($specification->attributes()->urn->__toString() == 'urn:obj:date'): ?>
-                    <?php foreach($specification->spec as $dateObj): ?>
-                  
-                      <?php if($dateObj->attributes()->urn->__toString() == 'urn:fld:date:datedeb'): ?>
-                        <?php $dateStart = date("Y-m-d", strtotime(str_replace('/', '-', $dateObj->value->__toString()))); ?>
-                        <?php // if(date('Y', strtotime($dateStart)) == 2018): ?>
-                          <div class="time time-start">
-                              <div datetime="<?php echo date("Y-M-D h:m", strtotime($dateStart)); ?>">
-                              <div class="day"><?php echo date('d', strtotime($dateStart));?></div>
-                              <div class="month"><?php echo date('M', strtotime($dateStart));?></div>
-                            </div>
-                          </div>
-                          <?php print $dateStart; ?>
-                        <?php // endif; ?>
-                      <?php endif; ?>
-                  
-                      <?php if($dateObj->attributes()->urn->__toString() == 'urn:fld:date:datefin'): ?>
-                        <?php $dateEnd = date("Y-m-d", strtotime(str_replace('/', '-', $dateObj->value->__toString()))); ?>
-                          <?php if($dateEnd != $dateStart): ?>
-                            <div class="time time-end">
-                              <div datetime="<?php echo date("Y-M-D h:m", strtotime($dateEnd)); ?>">
-                                <div class="day"><?php echo date('d', strtotime($dateEnd));?></div>
-                                <i class="arrow-right"></i>  
-                                <div class="month"><?php echo date('M', strtotime($dateEnd));?></div>
-                              </div>
-                            </div>
-                        <?php endif; ?>
-                      <?php endif; ?>
-                  
-                    <?php endforeach; ?>
-                  <?php endif; ?>
-                <?php endforeach; ?>
-              </span>
-            </div>
-            <?php if(isset($offre->adresse1->commune)): ?>
-              <div class="top-right-corner">
-                <span class="locality"><?php print $offre->adresse1->commune->value->__toString(); ?></span>
-              </div>
-            <?php endif; ?>
-            <div class="bottom">
-              <div class="container-fluid">
-                <div class="row">
-                  <div class="col-10">
-                    <span class="item-services">
-                      <?php $url_offer_details = get_bloginfo('wpurl').'/'.$_SESSION['pivot']['path'].'/'.$offre->attributes()->codeCgt->__toString().'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString(); ?>
-                      <h4 class="pivot-title"><a title="Link to <?php print $offre->nom->__toString(); ?>" href="<?php print $url_offer_details; ?>"><?php print $offre->nom->__toString(); ?></a></h4>
-                    </span>
-                  </div>
-                  <div class="col-1">
-                    <div class="social">
-                      </div><span class="facebook"><a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $url_offer_details; ?>"><span class="fa fa-facebook"></span></a></span>
-                   <div class="col-1">   <span class="twitter"><a href="https://twitter.com/intent/tweet?url=<?php echo $url_offer_details; ?>"><span class="fa fa-twitter"></span></a></span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-            
-            
-            
-
-         
-          
-          <div class="info">
-            
-
-            <?php // $address = _get_address_one_line($offre); ?>
-
-           
-
-            <!-- Add offer Object to query var as it is available in the address template -->
-            <?php // set_query_var('offre', $offre); ?>
-            <!-- Include address shared template -->
-            <?php // include("pivot-address-template.php"); ?>
-            <?php // echo _get_address_html($offre); ?>
-
-            <p class="pivot-code-cgt d-none item"><?php print $offre->attributes()->codeCgt->__toString(); ?></p>
-          </div>
-          <div class="row justify-content-between d-none">
-            <!-- Link to add event to external calendar -->
-            <div class="add-to-calendar col-10">
-              <span><a href="https://calendar.google.com/calendar/r/eventedit?text=<?php echo $offre->nom->__toString(); ?>&dates=<?php echo date("Ymd", strtotime($dateStart)); ?>/<?php echo date("Ymd", strtotime($dateEnd)); ?>&details=Pour+plus+de+détails:<?php print $url_offer_details; ?>&location=<?php echo $address; ?>">Google</a></span>
-              <span><a href="https://outlook.live.com/owa/?path=/calendar/action/compose&rru=addevent&startdt=<?php echo $dateStart; ?>&enddt=<?php echo $dateEnd; ?>&subject=<?php echo $offre->nom->__toString(); ?>&body=Pour+plus+de+détails:+">Outlook</a></span>
-              <span><a href="https://calendar.yahoo.com/?v=60&view=d&type=20&title=<?php echo $offre->nom->__toString(); ?>&st=<?php echo date("Ymd", strtotime($dateStart)); ?>&et=<?php echo date("Ymd", strtotime($dateEnd)); ?>&desc=Pour+plus+de+détails:<?php print $url_offer_details; ?>&in_loc=<?php echo $address; ?>&uid=">Yahoo</a></span>
-            </div>
-            <!-- Link to share event on social media -->
-            <div class="social col-2">
-                <span class="facebook"><a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $url_offer_details; ?>"><span class="fa fa-facebook"></span></a></span>
-                <span class="twitter"><a href="https://twitter.com/intent/tweet?url=<?php echo $url_offer_details; ?>"><span class="fa fa-twitter"></span></a></span>
-            </div>
-          </div>
-        </article>
+<?php $offres = pivot_lodging_page($page->id); ?>
+  
+<div class="container-fluid pivot-list">
+  <p><?php echo esc_html('There are', 'pivot') .' '. $_SESSION['pivot'][$page->id]['nb_offres'] .' '.  esc_html('offers', 'pivot'); ?></p>
+  <div class="row row-eq-height pivot-row">
+    <?php if($_SESSION['pivot'][$page->id]['map'] == 1): ?>
+      <div class="col-12 col-lg-6 py-5 order-lg-1 order-2 left-sidebar z-index-99">
+    <?php else: ?>
+      <div class="col-12 col-lg-12 py-5 order-lg-1 order-2 left-sidebar z-index-99">
+    <?php endif; ?>
+      <?php add_filters(); ?>
+      <div class="row">  
+        <?php foreach($offres as $offre): ?>
+          <?php $name = 'pivot-event-details-part-template'; ?>
+          <?php $offre->path = $_SESSION['pivot'][$page->id]['path']; ?>
+          <?php $offre->map = $_SESSION['pivot'][$page->id]['map']; ?>
+          <?php print _template($name, $offre); ?>
+        <?php endforeach; ?>
       </div>
-    <?php endforeach; ?>  
+      <?php echo _add_pagination($_SESSION['pivot'][$page->id]['nb_offres']); ?>
+    </div>
+    <!--Check if we want to show a map-->
+    <?php if($_SESSION['pivot'][$page->id]['map'] == 1): ?>
+      <div class="col-12 col-lg-6 order-lg-2 order-1 px-0">
+        <!--Include leaflet css for map-->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css"
+          integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+          crossorigin=""/>
+        <!--Include leaflet js for map-->
+        <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"
+          integrity="sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q=="
+          crossorigin=""></script>
+
+        <!--Create Map element-->  
+        <div id="mapid"></div>
+        <!--Include map custom js-->
+        <script src="<?php echo plugins_url('/map.js', __FILE__) ?>"></script>
+      </div>
+    <?php endif; ?>
   </div>
 </div>
 
-<?php echo _add_pagination($_SESSION['pivot']['nb_offres']); ?>
-
+<!--Include footer-->
 <?php get_footer();
