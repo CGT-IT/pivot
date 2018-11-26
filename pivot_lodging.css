@@ -154,3 +154,7 @@ aside.pivot-contacts.col-md-4{
 #secondary{
     float: left;
 }
+
+#quadmenu .quadmenu-navbar-nav li.quadmenu-item>a {
+    height: inherit;
+}
