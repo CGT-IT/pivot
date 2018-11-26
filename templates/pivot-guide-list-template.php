@@ -111,6 +111,6 @@
   </div>
 </div>
 
-<?php echo _add_pagination($_SESSION['pivot']['nb_offres']); ?>
+<?php echo _add_pagination($_SESSION['pivot'][$page->id]['nb_offres']); ?>
 
 <?php get_footer();
