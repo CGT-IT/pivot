@@ -495,14 +495,11 @@ function _get_path(){
   if((strpos($path, "paged=")) !== FALSE){
     if (preg_match('/\/(.*?)\/&paged=/', $path, $match) == 1) {
       $path = substr($match[1], strrpos($match[1], '/' ));
-      print "<br>cas 1: ".$path;
     }
   }else{
     $path = substr(rtrim($path,'/'), strrpos(rtrim($path,'/'), '/' )+1);
-    print "<br>cas 2: ".$path;
   }
   $path = str_replace('/', '', $path);
-  print "<br>cas 3: ".$path;
   
   return $path;
 }
