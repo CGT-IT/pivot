@@ -501,7 +501,7 @@ function _get_path(){
     $path = substr(rtrim($path,'/'), strrpos(rtrim($path,'/'), '/' )+1);
     print "<br>cas 2: ".$path;
   }
-  $path = substr(rtrim($path,'/'), strrpos(rtrim($path,'/'), '/' )+1);
+  $path = str_replace('/', '', $path);
   print "<br>cas 3: ".$path;
   
   return $path;
