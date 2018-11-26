@@ -30,11 +30,10 @@
         <thead>
           <tr>
             <th>Nom</th>
-            <th>Province</th>
             <th>Contact</th>
             <th>Adresse</th>
-            <th>Langues</th>
-            <th>Thématiques</th>
+            <th>Langue(s)</th>
+            <th>Thématique(s)</th>
           </tr>
         </thead>
         <tbody>
@@ -43,7 +42,6 @@
               <td>
                 <?php print $offre->nom->__toString(); ?>
               </td>
-              <td><?php print $offre->adresse1->commune->value->__toString(); ?></td>
               <td>
                 <?php foreach($offre->spec as $specification): ?>
                   <?php if($specification->urnCat->__toString() == 'urn:cat:moycom'): ?>
