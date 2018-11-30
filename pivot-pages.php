@@ -163,7 +163,7 @@ function pivot_action(){
       $text = esc_html('This path already exists', 'pivot').': <a href="'.get_permalink( $page->ID ).'">'.get_permalink( $page->ID ).'</a>';
       print _show_admin_notice($text);
     }
-    
+    flush_rewrite_rules();
   }else{
     if(isset($_POST['pivot_add_page']) && (!isset($_POST['query']) || $_POST['query'] == '')){
       $text = esc_html('Query is required', 'pivot');

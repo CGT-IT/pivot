@@ -1,10 +1,14 @@
 #mapid {
-    position: relative; 
     overflow: hidden;
     position: fixed !important;
     top: 0;
     height: 100%!important;
     width: 100%!important;
+}
+@media screen and (max-width: 960px){
+    #mapid{
+        display: none;   
+    }
 }
 
 .pivot-row article{

@@ -173,7 +173,7 @@ function pivot_manage_offer_type(){
   <h2><?php esc_html_e('Pivot Offer Types', 'pivot') ?></h2>
   <form method="post" action="?page=pivot-offer-types" id="pivot_form_action">
     <p>
-      <input type="button" class="button-secondary" value="<?php esc_attr_e('Add a new page', 'pivot')?>" onclick="window.location='?page=pivot-offer-types&amp;edit=true'" />
+      <input type="button" class="button-secondary" value="<?php esc_attr_e('Add type', 'pivot')?>" onclick="window.location='?page=pivot-offer-types&amp;edit=true'" />
     </p>
     <table class="widefat page fixed" cellpadding="0">
       <thead>

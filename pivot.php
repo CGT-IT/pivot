@@ -58,7 +58,7 @@ function pivot_install() {
   $sql = "CREATE TABLE ".$table_name." (
             id int(11) NOT NULL,
             type varchar(200) NOT NULL,
-            parent varchar(200) NOT NULL
+            parent varchar(200) NOT NULL,
             PRIMARY KEY (id)
           ) $charset_collate;";
   // Execute the sql statement to create the custom table
@@ -73,6 +73,10 @@ function pivot_uninstall() {
     $wpdb->query($sql);
 
     $table_name = $wpdb->prefix . "pivot_pages";
+    $sql = "DROP TABLE IF EXISTS $table_name;";
+    $wpdb->query($sql);
+    
+    $table_name = $wpdb->prefix . "pivot_offer_type";
     $sql = "DROP TABLE IF EXISTS $table_name;";
     $wpdb->query($sql);
     

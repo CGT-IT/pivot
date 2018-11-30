@@ -278,11 +278,11 @@ function _get_offer_types($edit_page){
 function _add_meta_data($offre, $path){
   if(strpos(get_bloginfo('wpurl'), 'localhost') !== false) {
   }else{
-    $bitly_params = array();
-    $bitly_params['access_token'] = get_option('pivot_bitly');
-    $bitly_params['domain'] = 'bit.ly';
-    $bitly_params['longUrl'] = get_bloginfo('wpurl').'/'.$path.'/'.$offre->attributes()->codeCgt->__toString(); 
-    $bitly_url = bitly_get('shorten', $bitly_params);
+//    $bitly_params = array();
+//    $bitly_params['access_token'] = get_option('pivot_bitly');
+//    $bitly_params['domain'] = 'bit.ly';
+//    $bitly_params['longUrl'] = get_bloginfo('wpurl').'/'.$path.'/'.$offre->attributes()->codeCgt->__toString(); 
+//    $bitly_url = bitly_get('shorten', $bitly_params);
   }
   if(isset($offre) && is_object($offre)){
     echo  '<title>'.$offre->nom->__toString().' - CGT</title>'
@@ -313,7 +313,7 @@ function _add_meta_data($offre, $path){
 function _construct_media_copyright($copyright, $date){
   $date_explode = explode('/', $date);
   if((strpos($copyright, '©') !== false) || (strpos($copyright, '(c)') !== false)){
-    return str_replace('copyright','',$copyright) . ' ' . $date_explode[2];
+    return str_replace('copyright','',$copyright) . ' ' . (isset($date_explode[2])?$date_explode[2]:'');
   }else{
     return '© '.str_replace('copyright','',$copyright) . ' ' . $date_explode[2];
   }

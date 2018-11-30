@@ -69,7 +69,7 @@ function pivot_enqueue_admin_script() {
  * Register Scripts
  */
 function pivot_register_script() {
-  wp_register_style('lodging_style', plugins_url('/pivot_lodging.css', __FILE__), array(), false, false);
+  wp_register_style('lodging_style', plugins_url('/pivot_lodging.css', __FILE__), array(), '3.0', false);
   wp_register_style('event_style', plugins_url('/pivot_event.css', __FILE__), array(), '1.2.9', false);
   wp_register_style('fontawesome', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css', array(), '1.0.0', false);
   wp_register_style('bootstrapexternal', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css', array(), '1.0.0', false);
