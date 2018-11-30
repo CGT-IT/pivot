@@ -1,11 +1,9 @@
 
-<?php /* Template Name: pivot-lodging-list-template */ ?>
-
 <?php $offre = _get_offer_details(); ?>
 <?php _add_meta_data($offre, 'details'); ?>
 <?php get_header(); ?>
 
-<article class="pivot-offer row">
+<article class="pivot-offer row m-3">
   <div class="col-xs-12 col-md-8">
     <div class="row">
       <div class="col-12">

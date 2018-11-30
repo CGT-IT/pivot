@@ -63,7 +63,7 @@ function _get_urn_documentation($urn_name){
 function _get_urn_documentation_full_spec($urn_name){
   $params['urn_name'] = $urn_name;
   $xml_object = _pivot_request('thesaurus', 0, $params);
-  
+
   return $xml_object;
 }
 
@@ -78,7 +78,7 @@ function _search_specific_urn_img($offre, $urn, $height, $color, $original = FAL
       $title_attribute = 'title="'._get_urn_documentation($urn).'"';
       // prepare img alt attribute
       $alt_attribute = 'alt="image '._get_urn_documentation($urn).'"';
-      
+
       // Construct <img/> tag
       $img = '<img '.$title_attribute.' '.$alt_attribute.' class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$urn.';h='.$height;
       if($color){
@@ -88,9 +88,9 @@ function _search_specific_urn_img($offre, $urn, $height, $color, $original = FAL
         $img .= ';modifier=orig';
       }
       $img .= '"/>';
-      
+
       $output .= $img.'</span>';
-      
+
       return $output;
     }
   }
@@ -102,7 +102,7 @@ function _search_specific_urn($offre, $urn){
     // Check if it's the one we are looking for
     if($specification->attributes()->urn->__toString() == $urn){
       $output = $specification->value->__toString();
-      
+
       return $output;
     }
   }
@@ -124,9 +124,9 @@ function _get_ranking_picto($offre, $urn){
       // Construct <img/> tag
       $img = '<img '.$title_attribute.' '.$alt_attribute.' class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$urn.';h='.$height;
       $img .= '"/>';
-      
+
       $output .= $img.'</span>';
-      
+
       return $output;
     }
   }
@@ -155,11 +155,9 @@ function _get_number_of_offers($field_params, $page_id){
 
     return $number_of_offers;
   }
-  
+
   return 0;
 }
-
-
 
 function _get_address_one_line($offre){
   $address = '';
@@ -178,19 +176,19 @@ function _get_address_one_line($offre){
   if(isset($offre->adresse1->pays)){
    $address .=', '.$offre->adresse1->pays->__toString();
   }
-  
+
   return $address;
 }
 
 function _get_list_mdt(){
   $uri = 'https://pivotweb.tourismewallonie.be:8443/PivotWeb-3.1/thesaurus/tmdts;pretty=true;fmt=xml';
-  
+
   $ssl_options=array(
     "ssl"=>array(
       "verify_peer"=>false,
       "verify_peer_name"=>false,
     ),
-  );  
+  );
 
   $xml_response = file_get_contents($uri, false, stream_context_create($ssl_options));
   $mdts = simplexml_load_string($xml_response);
@@ -202,100 +200,33 @@ function _get_list_mdt(){
     }else{
       $mdt_list .= '<option value="'.$mdt->attributes()['idMdt'].'">'.$mdt->value.'</option>';
     }
-    
   }
   return $mdt_list;
 }
 
 function _get_list_typeofr($selected_id = NULL){
   $uri = 'https://pivotweb.tourismewallonie.be:8443/PivotWeb-3.1/thesaurus/typeofr;fmt=xml';
-  
+
   $ssl_options=array(
     "ssl"=>array(
       "verify_peer"=>false,
       "verify_peer_name"=>false,
     ),
-  );  
+  );
 
   $xml_response = file_get_contents($uri, false, stream_context_create($ssl_options));
   $typeofr = simplexml_load_string($xml_response);
   $typeofr_list = '';
 
   foreach($typeofr as $type){
-//    if(!in_array($type->attributes()['order'],$typeofr_list)){
-      if($selected_id == $type->attributes()['order']){
-        $typeofr_list .= '<option selected="selected" value="'.$type->attributes()['order'].'">'.$type->label->value.'</option>';
-      }else{
-        $typeofr_list .= '<option value="'.$type->label->value.'">'.$type->label->value.'</option>';
-      }
-//    }
-    
+    if($selected_id == $type->attributes()['order']){
+      $typeofr_list .= '<option selected="selected" value="'.$type->attributes()['order'].'">'.$type->label->value.'</option>';
+    }else{
+      $typeofr_list .= '<option value="'.$type->attributes()['order'].'">'.$type->label->value.'</option>';
+    }
   }
   return $typeofr_list;
 }
-/*
-function _get_choice_options($type, $urn= NULL){
-  // Construction of request uri
-  $uri = 'https://pivotweb.tourismewallonie.be:8443/PivotWeb-3.1/thesaurus/typeofr/'.$type.';fmt=xml';
-
-  $ssl_options=array(
-    "ssl"=>array(
-      "verify_peer"=>false,
-      "verify_peer_name"=>false,
-    ),
-  );  
-$context = [
-"ssl"=>[
-        "verify_peer"=>false,
-        "verify_peer_name"=>false,
-    ]
-];
-libxml_set_streams_context(stream_context_create($context));
-
-  $xml = file_get_contents($uri ,false, stream_context_create($ssl_options));;
-
-$dom = new DOMDocument;
-$dom->loadXML($xml);
-
-foreach ($dom->getElementsByTagName('spec') as $element)
-{
-if ($element->getAttribute('urn') == "urn:fld:typeheb")
-{
- print'<pre>';print_r($element->nodeValue);print'</pre>';
-}
-}
-//$xpath = new DomXpath($dom);
-//
-//// traverse all results
-//foreach ($xpath->query('//spec[@urn="urn:fld:class"]') as $rowNode) {
-//    print '<pre>';print_r($rowNode);print '</pre>';
-//}
-
-$matches = $dom->getElementsByTagName('spec@urn=urn:fld:class');
-foreach ($matches as $book) {
-//    print '<pre>';print_r($book);print '</pre>';
-}
-
-//  $xml_response = file_get_contents($uri, false, stream_context_create($ssl_options));
-//  $options = simplexml_load_string($xml_response);
-//  $matches = $xml->xpath('//spec[@urn=urn:cat:classlab]');
-//  print_r($matches);
-//  $options = simplexml_load_string($xml_response);
-  
-  // Init vars
-  $commune_list = array();
-  $output = '<option selected disabled hidden><Select></option>';
-  //$output = '';
-  
-  
-//  foreach($options as $option){
-//    if(!in_array(_get_translated_value($option->commune), $commune_list)){
-//      $commune_list[] = _get_translated_value($option->commune);
-//      $output .= '<option value="'._get_translated_value($option->commune).'">'._get_translated_value($option->commune).'</option>';
-//    }
-//  }
-  return $output;
-}*/
 
 function _get_commune_from_pivot($type, $value){
   // Construction of request uri
@@ -306,21 +237,39 @@ function _get_commune_from_pivot($type, $value){
       "verify_peer"=>false,
       "verify_peer_name"=>false,
     ),
-  );  
+  );
 
   $xml_response = file_get_contents($uri, false, stream_context_create($ssl_options));
   $communes = simplexml_load_string($xml_response);
-  
+
   // Init vars
   $commune_list = array();
   $output = '<option selected disabled hidden>Choisir une commune</option>';
-  //$output = '';
-  
-  
+
   foreach($communes as $commune){
     if(!in_array(_get_translated_value($commune->commune), $commune_list)){
       $commune_list[] = _get_translated_value($commune->commune);
       $output .= '<option value="'._get_translated_value($commune->commune).'">'._get_translated_value($commune->commune).'</option>';
+    }
+  }
+  return $output;
+}
+
+function _get_offer_types($edit_page){
+  $types = pivot_get_offer_type();
+
+  // Init vars
+  $types_list = array();
+  $output = '<option selected disabled hidden>'.esc_html('Choose a type', 'pivot').'</option>';
+
+  foreach($types as $type){
+    if(!in_array($type->parent, $types_list)){
+      $types_list[] = $type->parent;
+      $output .= '<option ';
+      if(isset($edit_page) && $edit_page->type == $type->parent){
+         $output .='selected="selected" ';
+      }
+      $output .= 'value="'.$type->parent.'">'.$type->parent.'</option>';
     }
   }
   return $output;
@@ -406,7 +355,7 @@ function _template($name, $args){
   // buffer the output (including the file is "output")
   ob_start();
   include $file;
-  
+
   return ob_get_clean();
 }
 
@@ -423,7 +372,7 @@ function _add_pagination($nb_offres){
   if($total > 1)  {
     // Get the current page
     $current_page = max(1, abs(get_query_var('paged')));
-    print $current_page;
+
     // Set format
     $format = '/&paged=%#%';
     $pagination = paginate_links(array(
@@ -456,7 +405,7 @@ function _display_pagination($pagination){
   }
   $output .= '</ul>';
   $output .= '</nav>';
-      
+
   return $output;
 }
 
@@ -472,7 +421,7 @@ function _show_warning($text, $severity = 'warning'){
           .     '<span aria-hidden="true">&times;</span>'
           .   '</button>'
           . '</div>';
-  
+
   return $output;
 }
 
@@ -486,7 +435,7 @@ function _show_admin_notice($text, $severity = 'error'){
   $output = '<div class="'.$severity.' notice">'
           .   '<p>'.$text.'</p>'
           . '</div>';
-  
+
   return $output;
 }
 
@@ -500,7 +449,7 @@ function _get_path(){
     $path = substr(rtrim($path,'/'), strrpos(rtrim($path,'/'), '/' )+1);
   }
   $path = str_replace('/', '', $path);
-  
+
   return $path;
 }
 
@@ -514,6 +463,6 @@ function _get_offer_details(){
       $offre = $xml_object->offre;
     }
   }
-  
+
   return $offre;
 }

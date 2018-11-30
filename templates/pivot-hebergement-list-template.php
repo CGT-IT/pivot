@@ -1,4 +1,3 @@
-<?php /* Template Name: pivot-lodging-list-template */ ?>
 
 <?php $page = pivot_get_page_path(_get_path()); ?>
 <title><?php print $_SESSION['pivot'][$page->id]['page_title'] ?> - CGT</title>
@@ -22,7 +21,7 @@
       <?php add_filters(); ?>
       <div class="row">  
         <?php foreach($offres as $offre): ?>
-          <?php $name = 'pivot-event-details-part-template'; ?>
+          <?php $name = 'pivot-'.$page->type.'-details-part-template'; ?>
           <?php $offre->path = $_SESSION['pivot'][$page->id]['path']; ?>
           <?php $offre->map = $_SESSION['pivot'][$page->id]['map']; ?>
           <?php print _template($name, $offre); ?>

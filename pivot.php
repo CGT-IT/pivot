@@ -1,11 +1,18 @@
 <?php
 /*
-Plugin Name: Pivot
-Description: Un plugin pour l'affichage et la recherche (via webservice) des offres disponibles dans la DB Pivot
-Version: 0.1
-Author: Maxime Degembe
-License: GPL2
-*/
+ * Plugin Name: Pivot
+ * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres disponibles dans la DB Pivot
+ * Version: 0.1
+ * Author: Maxime Degembe
+ * License: GPL2
+ * Text Domain: pivot
+ * Domain Path: /lang
+ */
+
+add_action('plugins_loaded', 'pivot_load_textdomain');
+function pivot_load_textdomain() {
+	load_plugin_textdomain('pivot', false, dirname(plugin_basename(__FILE__)) . '/lang/' );
+}
 
 function pivot_install() {
   // Create an instance of the database class
@@ -45,6 +52,17 @@ function pivot_install() {
           ) $charset_collate;";
   // Execute the sql statement to create the custom table
   dbDelta($sql);
+  
+  // Set the custom table name with the wp prefix "pivot"
+  $table_name = $wpdb->prefix . "pivot_offer_type";
+  $sql = "CREATE TABLE ".$table_name." (
+            id int(11) NOT NULL,
+            type varchar(200) NOT NULL,
+            parent varchar(200) NOT NULL
+            PRIMARY KEY (id)
+          ) $charset_collate;";
+  // Execute the sql statement to create the custom table
+  dbDelta($sql);
 }
 
 // Delete table when deactivate
@@ -62,29 +80,9 @@ function pivot_uninstall() {
     flush_rewrite_rules();
 }
 
-// Define global variable
-$pivot_offer_type = array(
-  array('id' => 1,
-        'type' => 'Hôtel',
-        'parent' => 'hebergement'
-  ),
-  array('id' => 2,
-        'type' => '	Gîte',
-        'parent' => 'hebergement'
-  ),
-  array('id' => 3,
-        'type' => '	Chambre d\'hôtes',
-        'parent' => 'hebergement'
-  ),
-  array('id' => 9,
-        'type' => 'Evénement',
-        'parent' => 'activite'
-  ),
-);
-
 require_once(plugin_dir_path( __FILE__ ). '/pivot-filters.php');
 require_once(plugin_dir_path( __FILE__ ). '/pivot-pages.php');
-//require_once(plugin_dir_path( __FILE__ ). '/pivot-offer-type.php');
+require_once(plugin_dir_path( __FILE__ ). '/pivot-offer-type.php');
 //require_once(plugin_dir_path( __FILE__ ). '/bitly.php');
 
 //$bitly_params = array();
@@ -101,7 +99,7 @@ add_action('admin_init', 'pivot_settings');
 function pivot_menu() {
   add_menu_page('Pivot administration', 'Pivot', 'manage_options', 'pivot-admin', 'pivot_options');
   add_submenu_page('pivot-admin', 'Pivot administration', 'Pivot', 'manage_options', 'pivot-admin');
-//  add_submenu_page('pivot-admin', 'Offer types', 'Manage offer type', 'manage_options', 'pivot-offer-types', 'pivot_offer_type_settings');
+  add_submenu_page('pivot-admin', 'Offer types', 'Manage offer type', 'manage_options', 'pivot-offer-types', 'pivot_offer_type_settings');
   add_submenu_page('pivot-admin', 'Pages', 'Manage pages', 'manage_options', 'pivot-pages', 'pivot_pages_settings');
   add_submenu_page('pivot-admin', 'Filters', 'Manage filters', 'manage_options', 'pivot-filters', 'pivot_filters_settings');
 }
@@ -315,9 +313,21 @@ function _xml_query_construction($query_id, $field_params = NULL){
     }
   }
 
+  if(isset($field_params['filters_object_date'])){
+    // Creation of a <CriteriaObjectDate>
+    $criteriaObjectDateElement = $domDocument->createElement('CriteriaObjectDate');
+    // <dateDeb>24/10/2017</dateDeb>
+    $criteriadateDebElement = $domDocument->createElement('dateDeb', $field_params['filters_object_date']['startDate']);
+    $criteriaObjectDateElement->appendChild($criteriadateDebElement);
+    // <dateFin>25/11/2017</dateFin>
+    $criteriadateFinElement = $domDocument->createElement('dateFin', $field_params['filters_object_date']['endDate']);
+    $criteriaObjectDateElement->appendChild($criteriadateFinElement);
+    $criteriaGroupElement->appendChild($criteriaObjectDateElement);
+  }
+
   $queryElement->appendChild($criteriaGroupElement);
   $domDocument->appendChild($queryElement);
-  $domDocument->save('/var/www/html/wordpress/test/test1.xml');
+  $domDocument->save('/var/www/html/wordpress/test/test'.rand(10, 30).'.xml');
 
   return $domDocument->saveXML();
 }
@@ -350,18 +360,4 @@ function _create_dom_criteria_field_element($domDocument, $filter) {
   }
 
   return $criteriaFieldElement;
-}
-
-/**
- * 
- * @param string $offre_id Offer ID
- * @return array
- */
-function pivot_lodging_detail_page($offre_id){
-  $params['offer_code'] = $offre_id;
-  $params['type'] = 'offer';
-  $xml_object = _pivot_request('offer-details', 3, $params);
-  $offre = $xml_object->offre;
-
-  return theme('pivot_lodging_detail_page',array('offre' => $offre));
 }

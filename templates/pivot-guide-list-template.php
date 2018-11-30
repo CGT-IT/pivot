@@ -1,12 +1,4 @@
 
-<?php /* Template Name: pivot-lodging-list-template */ ?>
-
-<!--<script
-  src="https://code.jquery.com/jquery-3.3.1.min.js"
-  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous"></script>
-<script defer src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">-->
 <?php $page = pivot_get_page_path(_get_path()); ?>
 <title><?php print $_SESSION['pivot'][$page->id]['page_title'] ?> - CGT</title>
 <!--Include header-->

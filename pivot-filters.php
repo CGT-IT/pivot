@@ -144,10 +144,6 @@ function pivot_filters_action(){
       case 'Value':
         $operator = 'in';
         break;
-      /*case 'Choice':
-        $typeofr = $_POST['typeofr'];
-        $operator = $_POST['operator'];
-        break;*/
       default:
         $operator = $_POST['operator'];
         break;

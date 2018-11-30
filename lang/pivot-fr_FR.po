@@ -1,0 +1,48 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: pivot\n"
+"POT-Creation-Date: 2018-11-29 14:46+0100\n"
+"PO-Revision-Date: 2018-11-29 15:09+0100\n"
+"Language-Team: pivot\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-Flags-xgettext: --add-comments=__\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: ;_e;__\n"
+"Last-Translator: \n"
+"Language: fr\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: pivot-filters.php:180
+msgid "Pivot filter"
+msgstr "Filtre Pivot"
+
+#: pivot.php:120
+msgid "You do not have sufficient permissions to access this page."
+msgstr "Vous n'avez pas assez de droits pour accéder à cette page."
+
+#: pivot.php:140
+msgid "cocuou"
+msgstr "grosse merde"
+
+#: pivot.php:149
+msgid ""
+"Personnal Key to access Pivot webservices, take contact with <a href="
+"\"http://pivot.tourismewallonie.be/index.php/2015-05-05-10-23-26/flux-de-"
+"donnees-3-1\" target=\"_blank\">Pivot</a>"
+msgstr ""
+"Clé personnelle pour accéder aux Web services de Pivot. Prenez contact "
+"avec <a href=\"http://pivot.tourismewallonie.be/index."
+"php/2015-05-05-10-23-26/flux-de-donnees-3-1\" target=\"_blank\">Pivot</a>"
+
+#: pivot_lodging_widget.php:125
+msgid "The <strong>query</strong> argument is missing"
+msgstr "Le paramètre <strong>query</strong> est manquant"
+
+#: pivot_lodging_widget.php:146
+msgid "The <strong>type</strong> argument for the query is wrong or missing "
+msgstr "L'argument <strong>type</strong> est mauvais ou manquant "

@@ -1,4 +1,3 @@
-<?php /* Template Name: pivot-address-template */ ?>
 
 <?php $offre = $args; ?>
 <tr>

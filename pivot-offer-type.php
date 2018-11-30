@@ -33,6 +33,18 @@ function pivot_get_offer_type($id = NULL, $type = NULL) {
   return $offer_type;
 }
 
+function pivot_get_offer_type_categories() {
+  global $wpdb;
+
+  $categories = $wpdb->get_results("SELECT DISTINCT parent FROM " .$wpdb->prefix ."pivot_offer_type");
+
+  if(!empty($categories[0])) {
+    return $categories;
+  }
+
+  return;
+}
+
 function pivot_offer_type_meta_box() {
     global $edit_type;
 ?>
@@ -45,19 +57,19 @@ function pivot_offer_type_meta_box() {
   </div>
   <div class="form-item form-type-textfield form-item-pivot-type-id">
     <label for="edit-pivot-type-id"><?php esc_html_e('ID', 'pivot') ?></label>
-    <input type="text" disabled id="edit-pivot-type-id" name="id" value="<?php if(isset($edit_type)) echo $edit_type->id;?>" size="60" maxlength="128" class="form-text">
+    <input type="text" readonly="readonly" id="edit-pivot-type-id" name="id" value="<?php if(isset($edit_type)) echo $edit_type->id;?>" size="60" maxlength="128" class="form-text">
     <p class="description"><?php esc_html_e('Pivot ID of the offer type', 'pivot') ?></p>
   </div>
   <div class="form-item form-type-textfield form-item-pivot-type">
     <label for="edit-pivot-type"><?php esc_html_e('Type', 'pivot') ?> </label>
-    <input type="text" disabled id="edit-pivot-type" name="type" value="<?php if(isset($edit_type)) echo $edit_type->type;?>" size="60" maxlength="128" class="form-text">
+    <input type="text" readonly="readonly" id="edit-pivot-type" name="type" value="<?php if(isset($edit_type)) echo $edit_type->type;?>" size="60" maxlength="128" class="form-text">
     <p class="description"><?php esc_html_e('Pivot Name of the offer type', 'pivot') ?></p>
   </div>
   <div class="form-item form-type-textfield form-item-pivot-parent">
     <label for="edit-pivot-parent"><?php esc_html_e('Parent category', 'pivot') ?> </label>
     <input type="text" id="edit-pivot-parent" name="parent" value="<?php if(isset($edit_type)) echo $edit_type->parent;?>" size="60" maxlength="128" class="form-text">
     <p class="description">
-      <?php $categories = pivot_get_offer_type(); ?>
+      <?php $categories = pivot_get_offer_type_categories(); ?>
       <?php esc_html_e('Existing categories: ', 'pivot')?>
       <?php foreach($categories as $key => $category): ?>
         <?php end($categories); ?>
@@ -99,30 +111,27 @@ function pivot_offer_type_action(){
   if(isset($_GET['delete'])) {
       $_GET['delete'] = absint($_GET['delete']);
       // First delete dependencies (filters linked to this page)
-      $wpdb->query("DELETE FROM " .$wpdb->prefix ."pivot_filter WHERE page_id='" .$_GET['delete']."'");
-      // Delete the page
-      $wpdb->query("DELETE FROM " .$wpdb->prefix ."pivot WHERE id='" .$_GET['delete']."'");
+      $wpdb->query("DELETE FROM " .$wpdb->prefix ."pivot_offer_type WHERE id='" .$_GET['delete']."'");
   }
-
   // Process the changes in the custom table
-  if(isset($_POST['pivot_add_page']) && isset($_POST['type']) && isset($_POST['query']) && isset($_POST['path'])) {
+  if(isset($_POST['pivot_add_type']) && $_POST['pivot_typeofr'] != '' && $_POST['parent'] != '') {
     // Add new row in the custom table
-    $type = $_POST['type'];
-    $query = $_POST['query'];
-    $path = $_POST['path'];
-    $map = isset($_POST['map'])?1:0;
-    $sortMode = $_POST['sortMode'];
-    $sortField = $_POST['sortField'];
-
     if(empty($_POST['type_id'])) {
-      $wpdb->query("INSERT INTO " .$wpdb->prefix ."pivot(type,query,path,map,sortMode,sortField) VALUES('" .$type ."','" .$query."','" .$path."','" .$map."','" .$sortMode."','" .$sortField."');");
-
+      if(empty(pivot_get_offer_type($_POST['id']))){
+        $wpdb->query("INSERT INTO " .$wpdb->prefix ."pivot_offer_type(id,type,parent) VALUES('" .$_POST['id'] ."','" .$_POST['type']."','" .$_POST['parent']."');");
+      }else{
+        print _show_admin_notice('This type has already been set', 'error');
+      }
     } else {
       // Update the data
-      $type_id = $_POST['type_id'];
-      $wpdb->query("UPDATE " .$wpdb->prefix. "pivot SET type='" .$type ."', query='" .$query ."', path='" .$path ."', map='" .$map ."', sortMode='" .$sortMode ."', sortField='" .$sortField ."' WHERE id='" .$page_id ."'");
+      $wpdb->query("UPDATE " .$wpdb->prefix. "pivot_offer_type SET parent='" .$_POST['parent']."' WHERE id='" .$_POST['type_id'] ."'");
     }
-  }  
+  }else{
+    if(isset($_POST['pivot_add_type']) && $_POST['parent'] == '') {
+      $text = esc_html('Category is required', 'pivot');
+      print _show_admin_notice($text);
+    }
+  }
 }
 
 /**

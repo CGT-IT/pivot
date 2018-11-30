@@ -1,6 +1,4 @@
 
-<?php /* Template Name: pivot-lodging-list-template */ ?>
-
 <?php $offre = _get_offer_details(); ?>
 <?php _add_meta_data($offre, 'details'); ?>
 <?php get_header(); ?>

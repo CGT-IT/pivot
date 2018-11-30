@@ -58,12 +58,13 @@ function pivot_meta_box() {
   <div class="form-item form-type-textfield form-item-pivot-type">
     <label for="edit-pivot-type"><?php esc_html_e('Type', 'pivot') ?> </label>
     <select id="edit-pivot-type" name="type">
-      <option selected disabled hidden><?php esc_html_e('Choose a type', 'pivot') ?></option>
-      <option <?php if(isset($edit_page) && $edit_page->type == 'hebergement') echo 'selected="selected"';?>value="hebergement"><?php esc_html_e('Hébergements', 'pivot') ?></option>
-      <option <?php if(isset($edit_page) && $edit_page->type == 'activite') echo 'selected="selected"';?>value="activite"><?php esc_html_e('Activités / événementiel', 'pivot') ?></option>
-      <option <?php if(isset($edit_page) && $edit_page->type == 'loisir') echo 'selected="selected"';?>value="loisir"><?php esc_html_e('Loisirs / découvertes', 'pivot') ?></option>
-      <option <?php if(isset($edit_page) && $edit_page->type == 'terroir') echo 'selected="selected"';?>value="terroir"><?php esc_html_e('Terroir', 'pivot') ?></option>
-      <option <?php if(isset($edit_page) && $edit_page->type == 'guide') echo 'selected="selected"';?>value="guide"><?php esc_html_e('Guide touristique', 'pivot') ?></option>
+    <?php print _get_offer_types($edit_page); ?>
+      <!--<option selected disabled hidden><?php // esc_html_e('Choose a type', 'pivot') ?></option>-->
+<!--      <option <?php // if(isset($edit_page) && $edit_page->type == 'hebergement') echo 'selected="selected"';?>value="hebergement"><?php // esc_html_e('Hébergements', 'pivot') ?></option>
+      <option <?php // if(isset($edit_page) && $edit_page->type == 'activite') echo 'selected="selected"';?>value="activite"><?php // esc_html_e('Activités / événementiel', 'pivot') ?></option>
+      <option <?php // if(isset($edit_page) && $edit_page->type == 'loisir') echo 'selected="selected"';?>value="loisir"><?php // esc_html_e('Loisirs / découvertes', 'pivot') ?></option>
+      <option <?php // if(isset($edit_page) && $edit_page->type == 'terroir') echo 'selected="selected"';?>value="terroir"><?php // esc_html_e('Terroir', 'pivot') ?></option>
+      <option <?php // if(isset($edit_page) && $edit_page->type == 'guide') echo 'selected="selected"';?>value="guide"><?php // esc_html_e('Guide touristique', 'pivot') ?></option>-->
     </select>
     <p class="description"><?php esc_html_e('Type of query', 'pivot') ?></p>
   </div>
