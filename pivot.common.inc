@@ -275,6 +275,12 @@ function _get_offer_types($edit_page){
   return $output;
 }
 
+/**
+ * Override page title with offer name + site name
+ * Add metadata for twitter and og (facebook, google, ...)
+ * @param Object $offre Complete Offer object
+ * @param String $path path to join the offer
+ */
 function _add_meta_data($offre, $path){
   if(strpos(get_bloginfo('wpurl'), 'localhost') !== false) {
   }else{
@@ -285,7 +291,7 @@ function _add_meta_data($offre, $path){
 //    $bitly_url = bitly_get('shorten', $bitly_params);
   }
   if(isset($offre) && is_object($offre)){
-    echo  '<title>'.$offre->nom->__toString().' - CGT</title>'
+    echo  '<title>'.$offre->nom->__toString().' - '. get_bloginfo('name').'</title>'
          .'<meta property="og:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:'').'">'
          .'<meta property="og:type" content="article">'
          .'<meta property="og:title" content="'.$offre->nom->__toString().'">'
@@ -345,16 +351,25 @@ function _get_event_date($offre, $wanted_date){
  * @return string - Output of the template file. Likely HTML.
  */
 function _template($name, $args){
-  $file = __DIR__ . '/templates/' . $name . '.php';
+  // Search template file in theme folder.
+	$template = locate_template($name.'.php');
+	// Get plugins template file.
+	if(!$template){
+    $template = __DIR__ . '/templates/' . $name . '.php';
+  }
 
-  // ensure the file exists
-  if(!file_exists($file)){
+  // Ensure the file exists
+  if(!file_exists($template)){
+    $text = __('The required template', 'pivot' );
+    $text .= ' '.$name.' ';
+    $text .= __('was not found!', 'pivot');
+    print _show_warning($text, 'warning');
     return '';
   }
 
   // buffer the output (including the file is "output")
   ob_start();
-  include $file;
+  include $template;
 
   return ob_get_clean();
 }

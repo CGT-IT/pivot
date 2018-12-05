@@ -9,7 +9,7 @@
  * Domain Path: /lang
  */
 
-add_action('plugins_loaded', 'pivot_load_textdomain');
+add_action('init', 'pivot_load_textdomain');
 function pivot_load_textdomain() {
 	load_plugin_textdomain('pivot', false, dirname(plugin_basename(__FILE__)) . '/lang/' );
 }
@@ -63,6 +63,18 @@ function pivot_install() {
           ) $charset_collate;";
   // Execute the sql statement to create the custom table
   dbDelta($sql);
+  
+  // Set default offer types
+  $data_set[0]= array("id" => 1, "type" => "Hôtel", "parent" => "hebergement");
+  $data_set[1]= array("id" => 2, "type" => "Gîte", "parent" => "hebergement");
+  $data_set[2]= array("id" => 3, "type" => "Chambre d'hôtes", "parent" => "hebergement");
+  $data_set[3]= array("id" => 4, "type" => "Meublé", "parent" => "hebergement");
+  $data_set[4]= array("id" => 5, "type" => "Camping", "parent" => "hebergement");
+  $data_set[5]= array("id" => 6, "type" => "Budget Holiday", "parent" => "hebergement");
+  $data_set[6]= array("id" => 7, "type" => "Village de vacances", "parent" => "hebergement");
+  $data_set[7]= array("id" => 9, "type" => "Evénement", "parent" => "activite");
+  // Execute the sql statement to insert datas
+  wp_insert_rows($data_set,$table_name);
 }
 
 // Delete table when deactivate
@@ -87,6 +99,7 @@ function pivot_uninstall() {
 require_once(plugin_dir_path( __FILE__ ). '/pivot-filters.php');
 require_once(plugin_dir_path( __FILE__ ). '/pivot-pages.php');
 require_once(plugin_dir_path( __FILE__ ). '/pivot-offer-type.php');
+require_once(plugin_dir_path( __FILE__ ). '/wp_insert_rows.php');
 //require_once(plugin_dir_path( __FILE__ ). '/bitly.php');
 
 //$bitly_params = array();
@@ -256,12 +269,13 @@ function _pivot_request($type, $detail, $params = NULL, $postfields = NULL){
 
       return $xml_object;
     }else{
-      echo 'Error:' . curl_error($request);
-      print_r($response);
-      /*global $wp_query;
+      print _show_warning($response, 'warning');
+
+      global $wp_query;
       $wp_query->set_404();
       status_header( 404 );
-      get_template_part( 404 ); exit();*/
+      get_template_part( 404 );
+      exit();
     }
   }
 }

@@ -102,7 +102,7 @@
           <div class="card-body p-4">
             <ul id="pivot-extra-infos" class="list-unstyled lis-line-height-2 mb-0 ">
               <?php foreach($offre->spec as $specification): ?>
-                <?php if($specification->urnCat->__toString() == 'urn:cat:accueil' && $specification->urnSubCat->__toString() != 'urn:cat:accueil:langpar'): ?>
+                <?php if($specification->urnCat->__toString() == 'urn:cat:accueil' && $specification->urnSubCat->__toString() != 'urn:cat:accueil:langpar' && $specification->attributes()->urn->__toString() != 'urn:fld:attestincend'): ?>
                   <li class="list-group-item list-group-item-action pivot-details <?php print str_replace(":", "-", $specification->attributes()->urn->__toString()); ?>">
                     <span>
                       <?php print _get_urn_documentation($specification->attributes()->urn->__toString()); ?>
@@ -195,7 +195,7 @@
       <?php foreach($offre->spec as $specification): ?>
         <?php if($specification->urnCat->__toString() == 'urn:cat:classlab' && !empty(_get_urn_documentation($specification->attributes()->urn->__toString()))): ?>
           <li class="p-1 <?php print str_replace(":", "-", $specification->attributes()->urn->__toString()); ?>">
-            <span class="ranking-label"><?php print _get_urn_documentation($specification->attributes()->urn->__toString()); ?>: </span>
+            <span class="ranking-label"><?php print _get_urn_documentation($specification->attributes()->urn->__toString()); ?>  </span>
             <?php if(strpos($specification->value->__toString(),'urn:') !== FALSE): ?>
               <span class="ranking-value"><?php print _get_urn_documentation($specification->value->__toString()); ?></span>
             <?php endif; ?>

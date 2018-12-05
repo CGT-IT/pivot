@@ -1,7 +1,6 @@
 (function($) {
 
   $().ready(function(){
-    
     // Init map
     var pivotMap = L.map('mapid');
     // Init array of point (usefull to center the map)
@@ -25,24 +24,26 @@
       var latitude = parseFloat($(this).find('.pivot-latitude').text()).toFixed(2);
       var longitude = parseFloat($(this).find('.pivot-longitude').text()).toFixed(2);
 
-      // Construction of a point
-      var point = [latitude,longitude];
-      // Get offer details
-      var contentString = $(this).html();
+      if(latitude && longitude && latitude != 0 && longitude != 0) {
+        // Construction of a point
+        var point = [latitude,longitude];
+        // Get offer details
+        var contentString = $(this).html();
       
-      // Add the point to an array
-      arrayOfLatLngs.push(point);
+        // Add the point to an array
+        arrayOfLatLngs.push(point);
       
-      // Get point icon from Pivot
-      var image = 'https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/urn:typ:'+$(this).find('.pivot-id-type-offre').text()+';modifier=pin;modifier=ori;w=30';
-      var pointIcon = L.icon({
-        iconUrl: image,
-      });
-      // Set marker
-      var marker = L.marker(point, {icon: pointIcon}).addTo(pivotMap);
-      // Set popup on marker with offer's details in it
-      marker.bindPopup(contentString);
-    });  
+        // Get point icon from Pivot
+        var image = 'https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/urn:typ:'+$(this).find('.pivot-id-type-offre').text()+';modifier=pin;modifier=ori;w=30';
+        var pointIcon = L.icon({
+          iconUrl: image,
+        });
+        // Set marker
+        var marker = L.marker(point, {icon: pointIcon}).addTo(pivotMap);
+        // Set popup on marker with offer's details in it
+        marker.bindPopup(contentString);
+      }
+    });
     
     var bounds = new L.LatLngBounds(arrayOfLatLngs);
     // Auto center and zoom based on all markers

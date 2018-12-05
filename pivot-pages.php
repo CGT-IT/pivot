@@ -22,9 +22,9 @@ function pivot_get_pages() {
 function pivot_get_page_path($path) {
   global $wpdb;
   
-  $page = $wpdb->get_results("SELECT * FROM " .$wpdb->prefix ."pivot_pages WHERE path='".$path."'");
-  if(!empty($page[0])) {
-    return $page[0];
+  $pivot_page = $wpdb->get_results("SELECT * FROM " .$wpdb->prefix ."pivot_pages WHERE path='".$path."'");
+  if(!empty($pivot_page[0])) {
+    return $pivot_page[0];
   }
 
   return;
@@ -39,9 +39,9 @@ function pivot_get_page_path($path) {
 function pivot_get_page($id) {
   global $wpdb;
 
-  $page = $wpdb->get_results("SELECT * FROM " .$wpdb->prefix ."pivot_pages WHERE id='".$id."'");
-  if(!empty($page[0])) {
-    return $page[0];
+  $pivot_page = $wpdb->get_results("SELECT * FROM " .$wpdb->prefix ."pivot_pages WHERE id='".$id."'");
+  if(!empty($pivot_page[0])) {
+    return $pivot_page[0];
   }
 
   return;
@@ -143,7 +143,8 @@ function pivot_action(){
   if(isset($_POST['pivot_add_page']) && $_POST['type'] != '' && $_POST['query'] != '' && $_POST['path'] != '' && $_POST['title'] != '') {
     // Add new row in the custom table
     $type = $_POST['type'];
-    $query = $_POST['query'];
+    $query = preg_replace('/[^A-Za-z0-9\-]/', '', $_POST['query']);
+    //$query = $_POST['query'];
     $path = $_POST['path'];
     $title = $_POST['title'];
     $map = isset($_POST['map'])?1:0;
@@ -151,7 +152,7 @@ function pivot_action(){
     $sortField = $_POST['sortField'];
     
     // Check if path already exist in wordpress or not (to avoid duplicate and conflict)
-    if(!$page = get_page_by_path($path)){
+    if(!$pivot_page = get_page_by_path($path)){
       if(empty($_POST['page_id'])){
         $wpdb->query("INSERT INTO " .$wpdb->prefix ."pivot_pages(type,query,path,title,map,sortMode,sortField) VALUES('" .$type ."','" .$query."','" .$path."','" .$title."','" .$map."','" .$sortMode."','" .$sortField."');");
       }else{
@@ -160,7 +161,7 @@ function pivot_action(){
         $wpdb->query("UPDATE " .$wpdb->prefix. "pivot_pages SET type='" .$type ."', query='" .$query ."', path='" .$path ."', title='" .$title ."', map='" .$map ."', sortMode='" .$sortMode ."', sortField='" .$sortField ."' WHERE id='" .$page_id ."'");
       }
     }else{
-      $text = esc_html('This path already exists', 'pivot').': <a href="'.get_permalink( $page->ID ).'">'.get_permalink( $page->ID ).'</a>';
+      $text = esc_html('This path already exists', 'pivot').': <a href="'.get_permalink( $pivot_page->ID ).'">'.get_permalink( $pivot_page->ID ).'</a>';
       print _show_admin_notice($text);
     }
     flush_rewrite_rules();
@@ -247,29 +248,29 @@ function pivot_manage_page(){
           $table = pivot_get_pages();
           if($table){
            $i=0;
-           foreach($table as $page) { 
+           foreach($table as $pivot_page) { 
                $i++;
         ?>
       <tr class="<?php echo (ceil($i/2) == ($i/2)) ? "" : "alternate"; ?>">
         <th class="check-column" scope="row">
-          <input type="hidden" value="<?php echo $page->id?>" name="page_id[]" />
+          <input type="hidden" value="<?php echo $pivot_page->id?>" name="page_id[]" />
         </th>
           <td>
-            <strong><?php echo $page->query?></strong>
+            <strong><?php echo $pivot_page->query?></strong>
             <div class="row-actions-visible">
-              <span class="edit"><a href="?page=pivot-pages&amp;id=<?php echo $page->id?>&amp;edit=true"><?php esc_html_e('Edit')?></a> | </span>
-              <span class="delete"><a href="?page=pivot-pages&amp;delete=<?php echo $page->id?>" onclick="return confirm('Are you sure you want to delete this page?');"><?php esc_html_e('Delete')?></a></span>
+              <span class="edit"><a href="?page=pivot-pages&amp;id=<?php echo $pivot_page->id?>&amp;edit=true"><?php esc_html_e('Edit')?></a> | </span>
+              <span class="delete"><a href="?page=pivot-pages&amp;delete=<?php echo $pivot_page->id?>" onclick="return confirm('Are you sure you want to delete this page?');"><?php esc_html_e('Delete')?></a></span>
             </div>
           </td>
-          <td><?php echo $page->type?></td>
-          <td><?php echo '<a href="'.get_bloginfo('wpurl').'/'.$page->path.'">'.$page->path.'</a>';?></td>
-          <td><?php echo $page->title?></td>
-          <td><?php echo ($page->map == 1)?'&#10004;':'&#10008;';?></td>
+          <td><?php echo $pivot_page->type?></td>
+          <td><?php echo '<a href="'.get_bloginfo('wpurl').'/'.$pivot_page->path.'">'.$pivot_page->path.'</a>';?></td>
+          <td><?php echo $pivot_page->title?></td>
+          <td><?php echo ($pivot_page->map == 1)?'&#10004;':'&#10008;';?></td>
           <td>
-            <?php if($page->sortMode != ''){
-                    echo $page->sortMode;
-                    if($page->sortField != ''){
-                      echo ' on '.$page->sortField;
+            <?php if($pivot_page->sortMode != ''){
+                    echo $pivot_page->sortMode;
+                    if($pivot_page->sortField != ''){
+                      echo ' on '.$pivot_page->sortField;
                     }
                   }else{
                     echo 'none';
@@ -277,8 +278,8 @@ function pivot_manage_page(){
             ?>
           </td>
           <td class="manage-column">
-            <input type="button" class="button-secondary" value="<?php esc_html_e('View filter(s)', 'pivot')?>" onclick="window.location='?page=pivot-filters&amp;page_id=<?php echo $page->id; ?>'" />
-            <input type="button" class="button-secondary" value="<?php esc_html_e('Add a filter', 'pivot')?>" onclick="window.location='?page=pivot-filters&amp;page_id=<?php echo $page->id; ?>&amp;edit=true'" />
+            <input type="button" class="button-secondary" value="<?php esc_html_e('View filter(s)', 'pivot')?>" onclick="window.location='?page=pivot-filters&amp;page_id=<?php echo $pivot_page->id; ?>'" />
+            <input type="button" class="button-secondary" value="<?php esc_html_e('Add a filter', 'pivot')?>" onclick="window.location='?page=pivot-filters&amp;page_id=<?php echo $pivot_page->id; ?>&amp;edit=true'" />
           </td>
         </tr>
         <?php

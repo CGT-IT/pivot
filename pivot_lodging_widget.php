@@ -69,7 +69,7 @@ function pivot_enqueue_admin_script() {
  * Register Scripts
  */
 function pivot_register_script() {
-  wp_register_style('lodging_style', plugins_url('/pivot_lodging.css', __FILE__), array(), '3.0', false);
+  wp_register_style('lodging_style', plugins_url('/pivot_lodging.css', __FILE__), array(), '3.1', false);
   wp_register_style('event_style', plugins_url('/pivot_event.css', __FILE__), array(), '1.2.9', false);
   wp_register_style('fontawesome', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css', array(), '1.0.0', false);
   wp_register_style('bootstrapexternal', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css', array(), '1.0.0', false);
@@ -202,12 +202,12 @@ function pivot_add_rewrite_rules() {
   $pages = pivot_get_pages();
   $pages[] = (object) array('path' => 'details');
 
-  foreach($pages as $page){
-    add_rewrite_tag('%'.$page->path.'%', '([^&]+)');
+  foreach($pages as $pivot_page){
+    add_rewrite_tag('%'.$pivot_page->path.'%', '([^&]+)');
 
     add_rewrite_rule(
-      '^'.$page->path.'/([^/]*)/?',
-      'index.php?'.$page->path.'=$matches[1]',
+      '^'.$pivot_page->path.'/([^/]*)/?',
+      'index.php?'.$pivot_page->path.'=$matches[1]',
       'top'
     );
   }
@@ -242,7 +242,7 @@ function pivot_template_include($template) {
   global $wp_query;
   // Init var to nothing as we can check if it's empty or not
   $new_template = '';
-  
+
   if(isset($wp_query->query['pagename'])){
     $query_page = $wp_query->query['pagename'];
   }else{
@@ -252,15 +252,15 @@ function pivot_template_include($template) {
   }
   
   if(isset($query_page)){
-    $page = pivot_get_page_path($query_page);
+    $pivot_page = pivot_get_page_path($query_page);
 
     /*
      * Basic case
      * = we are listing offers
      */
-    if($query_page == $page->path){
+    if(isset($pivot_page->path) && $query_page == $pivot_page->path){
       // Search template file in plugins folder depending on query type
-      $new_template = pivot_locate_template('pivot-'.$page->type.'-list-template.php');
+      $new_template = pivot_locate_template('pivot-'.$pivot_page->type.'-list-template.php');
     }
   }
   
@@ -274,23 +274,23 @@ function pivot_template_include($template) {
 
     if($path == 'details'){
       if(($pos = strpos($_SERVER['REQUEST_URI'], "&type=")) !== FALSE){ 
-        $page = new stdClass();
+        $pivot_page = new stdClass();
         // Get number after paged= (position of first letter + length of "paged="
         $type_id = substr($_SERVER['REQUEST_URI'], $pos+strlen("&type="));
         $type = pivot_get_offer_type($type_id);
-        $page->type = $type->parent;
-        $page->path = 'details';
+        $pivot_page->type = $type->parent;
+        $pivot_page->path = 'details';
       }
     }else{
-      $page = pivot_get_page_path($path);
+      $pivot_page = pivot_get_page_path($path);
     }
   }
   if($new_template == ''){
-    if(isset($page->path) && strpos($wp_query->query[$page->path], 'paged') !== false){
+    if(isset($pivot_page->path) && strpos($wp_query->query[$pivot_page->path], 'paged') !== false){
       $current_page = pivot_get_current_page();
       $wp_query->set('paged', $current_page);
       // Search template file in plugins folder depending on query type
-      $new_template = pivot_locate_template('pivot-'.$page->type.'-list-template.php');
+      $new_template = pivot_locate_template('pivot-'.$pivot_page->type.'-list-template.php');
     }
   }
   
@@ -299,22 +299,22 @@ function pivot_template_include($template) {
    * = we want to show an entire offer in its single page
    */
   if($new_template == ''){
-    if(isset($page->type)){
-      $new_template = pivot_locate_template('pivot-'.$page->type.'-details-template.php');
+    if(isset($pivot_page->type)){
+      $new_template = pivot_locate_template('pivot-'.$pivot_page->type.'-details-template.php');
     }
   }
 
-  if(isset($page->map)){
-    $_SESSION['pivot'][$page->id]['map'] = $page->map;
+  if(isset($pivot_page->map)){
+    $_SESSION['pivot'][$pivot_page->id]['map'] = $pivot_page->map;
   }
-  if(isset($page->path) && $page->path != 'details'){
-    $_SESSION['pivot'][$page->id]['path'] = $page->path;
+  if(isset($pivot_page->path) && $pivot_page->path != 'details'){
+    $_SESSION['pivot'][$pivot_page->id]['path'] = $pivot_page->path;
   }
-  if(isset($page->query)){
-    $_SESSION['pivot'][$page->id]['query'] = $page->query;
+  if(isset($pivot_page->query)){
+    $_SESSION['pivot'][$pivot_page->id]['query'] = $pivot_page->query;
   }
-  if(isset($page->title)){
-    $_SESSION['pivot'][$page->id]['page_title'] = $page->title;
+  if(isset($pivot_page->title)){
+    $_SESSION['pivot'][$pivot_page->id]['page_title'] = $pivot_page->title;
   }
 
   if ($new_template != '') {
@@ -346,7 +346,7 @@ function pivot_locate_template($template_name, $template_path = '', $default_pat
 	// Search template file in theme folder.
 	$template = locate_template(array($template_path.$template_name, $template_name));
 	// Get plugins template file.
-	if(!$template ){
+	if(!$template){
 		$template = $default_path.$template_name;
   }
 	return apply_filters('pivot_locate_template', $template, $template_name, $template_path, $default_path);
@@ -421,30 +421,30 @@ function add_filters(){
   }
 
   if(isset($query_page)){
-    $page = pivot_get_page_path($query_page);
+    $pivot_page = pivot_get_page_path($query_page);
   }else{
-    $page = pivot_get_page_path(key($wp_query->query));
+    $pivot_page = pivot_get_page_path(key($wp_query->query));
   }
 
-  if(isset($page->id) && $page->id != null){
-    pivot_reset_filters($page->id);
+  if(isset($pivot_page->id) && $pivot_page->id != null){
+    pivot_reset_filters($pivot_page->id);
     // Get filters attach to current page
-    $filters = pivot_get_filters($page->id);
+    $filters = pivot_get_filters($pivot_page->id);
     if(empty($filters)){
       return;
     }
 
     // Print head section and HTML Form
     echo '<section id="block-pivot-lodging-pivot-lodging-filter" class="block block-pivot-lodging clearfix">'
-         . '<form action="'.get_bloginfo('wpurl').'/'.$page->path.'" method="post" id="pivot-lodging-form" accept-charset="UTF-8">'
+         . '<form action="'.get_bloginfo('wpurl').'/'.substr(get_locale(), 0, 2 ).'/'.$pivot_page->path.'" method="post" id="pivot-lodging-form" accept-charset="UTF-8">'
          .   '<div  id="edit-equipment-body">';
 
     foreach($filters as $filter){
       // if not first iteration and filter is member of a group already inserted, we do not recreate this group
       if(isset($last_filter_group) && $last_filter_group == $filter->filter_group){
-        echo pivot_add_filter_to_form($page->id, $filter);
+        echo pivot_add_filter_to_form($pivot_page->id, $filter);
       }else{
-        echo pivot_add_filter_to_form($page->id, $filter, $filter->filter_group);
+        echo pivot_add_filter_to_form($pivot_page->id, $filter, $filter->filter_group);
       }
       // to remember filter_group of this iteration
       $last_filter_group = $filter->filter_group; 
@@ -489,7 +489,7 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL){
   $output = '';
   $field_params['filters'][$filter->filter_name]['name'] = $filter->urn;
   $field_params['filters'][$filter->filter_name]['operator'] = $filter->operator;
-  
+
   if(isset($group)){
     $output .= '<h2>'.$group.'</h2>';
   }
@@ -562,6 +562,7 @@ function pivot_lodging_page($page_id) {
   $field_params = array();
   // Define how many offers per page
   $offers_per_page = 12;
+//  print '<pre>'; print_r($_SESSION['pivot']['filters']); print '</pre>';
 
   // Check if there is at least ONE active filter
   if(isset($_SESSION['pivot']['filters'][$page_id]) && count($_SESSION['pivot']['filters'][$page_id]) > 0){
@@ -610,11 +611,11 @@ function pivot_lodging_page($page_id) {
   }
 
   // Get current page details
-  $page = pivot_get_page_path($_SESSION['pivot'][$page_id]['path']);
+  $pivot_page = pivot_get_page_path($_SESSION['pivot'][$page_id]['path']);
   // Check if there if a sort is defined
-  if(isset($page->sortMode) && $page->sortMode != NULL && $page->sortMode != ''){
-    $field_params['sortField'] = $page->sortField;
-    $field_params['sortMode'] = $page->sortMode;
+  if(isset($pivot_page->sortMode) && $pivot_page->sortMode != NULL && $pivot_page->sortMode != ''){
+    $field_params['sortField'] = $pivot_page->sortField;
+    $field_params['sortMode'] = $pivot_page->sortMode;
   }
   $xml_query = _xml_query_construction($_SESSION['pivot'][$page_id]['query'], $field_params);
 
