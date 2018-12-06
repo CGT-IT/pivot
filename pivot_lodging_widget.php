@@ -114,7 +114,9 @@ function pivot_custom_shortcode($atts) {
       'query' => '',
       'type' => '',
       'nboffers' => '3',
-      'webfilter' => '',
+      'filterurn' => '',
+      'operator' => '',
+      'filtervalue' => '',
       'sort' => '',
 		),
 		$atts,
@@ -124,7 +126,7 @@ function pivot_custom_shortcode($atts) {
   // Check if attribute "query" is not empty
   if(empty($atts['query'])){
     $text = __('The <strong>query</strong> argument is missing', 'pivot');
-    print _show_warning($text);
+    print _show_warning($text, 'danger');
   }else{
     $types = pivot_get_offer_type_categories();
     foreach($types as $type){
@@ -134,20 +136,75 @@ function pivot_custom_shortcode($atts) {
     }
       
     if($find_type == true){
-      if(!empty($atts['webfilter'])){
-        $field_params['filters'][0]['name'] = $atts['webfilter'];
-        $field_params['filters'][0]['operator'] = 'exist';
+      if(!empty($atts['filterurn'])){
+        $urn = $atts['filterurn'];
+        $urnDoc= _get_urn_documentation_full_spec($urn);
+        $type_urn = $urnDoc->spec->type->__toString();
+        
+        $filter = new stdClass();
+        $filter->urn = $urn;
+        $filter->type = $type_urn;
+        $filter->operator = '';
+        $filter->filter_name = '';
+
+        switch($type_urn){
+          case 'Choice':
+          case 'MultiChoice':
+          case 'Object':
+          case 'Panel':
+          case 'Type de champ':
+          case 'HMultiChoice':
+            $text = __("It's not possible to add this type of filter: ".$type_urn, 'pivot');
+            print _show_warning($text, 'danger');
+            break;
+          case 'Boolean':
+            $filter->operator = 'exist';
+            break;
+          case 'Type':
+          case 'Value':
+            $filter->operator = 'in';
+            $filter->filter_name = substr(strrchr($urn, ":"), 1);
+            break;
+          default:
+
+            if(empty($atts['operator'])){
+              $text = __('The attribute "operator" is required for this kind of filter', 'pivot');
+              print _show_warning($text, 'danger');
+            }else{
+              $valid_operator = array("equal", "notequal", "like", "notlike", "lesser", "lesserequal", "greater", "greaterequal");
+              if(in_array($atts['operator'], $valid_operator)){
+                $filter->operator = $atts['operator'];
+              }else{
+                $operator_list = '<ul>';
+                foreach($valid_operator as $operator){
+                  $operator_list .= '<li>'.$operator.'</li>';
+                }
+                $operator_list .= '</ul>';
+                $text = __('The attribute "operator" is not valid, it should be one of these: '.$operator_list, 'pivot');
+                
+                print _show_warning($text, 'danger');
+              }
+            }
+            if(empty($atts['filtervalue'])){
+              $text = __('The attribute "filtervalue" is required for this kind of filter', 'pivot');
+              print _show_warning($text, 'danger');
+            }else{
+              $filter->filter_name = $atts['filtervalue'];
+            }
+            break;
+        }
+        _construct_filters_array($field_params,$filter);
       }
       if(!empty($atts['sort']) && $atts['sort'] == 'shuffle'){
         $field_params['sortMode'] = 'shuffle';
         $field_params['sortField'] = 'urn:fld:codecgt';
       }
       $xml_query = _xml_query_construction($atts['query'], $field_params);
-
+      
       // Get template name depending of query type
       $template_name = 'pivot-'.$atts['type'].'-details-part-template';
 
-      $offres = _construct_output('offer-init-list', $atts['nboffers'], $xml_query);
+      $offres = _construct_output('offer-search', $atts['nboffers'], $xml_query);
       if($atts['type'] == 'guide'){
         $output = '<div class="container">
                     <div class="row">
@@ -182,7 +239,7 @@ function pivot_custom_shortcode($atts) {
 
     }else{
       $text = __('The <strong>type</strong> argument for the query is wrong or missing ', 'pivot');
-      print _show_warning($text);      
+      print _show_warning($text, 'danger');      
     }
   }
   return $output;
@@ -487,8 +544,11 @@ function pivot_reset_filters($page_id){
 function pivot_add_filter_to_form($page_id, $filter, $group = NULL){
   $field_params = array();
   $output = '';
-  $field_params['filters'][$filter->filter_name]['name'] = $filter->urn;
-  $field_params['filters'][$filter->filter_name]['operator'] = $filter->operator;
+  if($filter->operator == 'exist'){
+    $field_params['filters'][$filter->filter_name]['name'] = $filter->urn;
+    $field_params['filters'][$filter->filter_name]['operator'] = 'equal';
+    $field_params['filters'][$filter->filter_name]['searched_value'][] = 'true';
+  }
 
   if(isset($group)){
     $output .= '<h2>'.$group.'</h2>';
@@ -569,42 +629,9 @@ function pivot_lodging_page($page_id) {
     foreach($_SESSION['pivot']['filters'][$page_id] as $key => $value){
       // Get details of filter based on his ID
       $filter = pivot_get_filter($key);
-
-      switch($filter->type){
-        case 'Type':
-          $field_params['filters']['urn:fld:typeofr']['name'] = 'urn:fld:typeofr';
-          $field_params['filters']['urn:fld:typeofr']['operator'] = $filter->operator;
-          $field_params['filters']['urn:fld:typeofr']['searched_value'][] = $filter->filter_name;
-          break;
-        case 'Value':
-          $parent_urn = preg_replace("'\:.*?:'" ,':fld:',substr($filter->urn, 0, strripos($filter->urn, ':')));
-          $field_params['filters'][$parent_urn]['name'] = $parent_urn;
-          $field_params['filters'][$parent_urn]['operator'] = $filter->operator;
-          $field_params['filters'][$parent_urn]['searched_value'][] = $filter->urn;
-          break;
-        case 'Date':
-          
-          break;
-        default:
-          $field_params['filters'][$key]['name'] = $filter->urn;
-          $field_params['filters'][$key]['operator'] = $filter->operator;
-          break;
-      }
-
-      // If operator is no "exist", we need the field comparison
-      if($filter->operator != 'exist' && (!isset($parent_urn) || $parent_urn == '') && !isset($field_params['filters']['urn:fld:typeofr'])){
-        // Set value by default
-        $value = $_SESSION['pivot']['filters'][$page_id][$key];
-        // If the filter is a Date
-        if($filter->type === 'Date'){
-          // Override value with the requested date format
-          $value = date("d/m/Y", strtotime($value));
-          $field_params['filters_object_date']['startDate'] = '24/10/2018';
-          $field_params['filters_object_date']['endDate'] = '31/12/2018';
-        }else{
-          $field_params['filters'][$key]['searched_value'][] = $value;
-        }
-      }
+      
+      _construct_filters_array($field_params, $filter, $key, $page_id);
+      
       // Reset var
       $parent_urn = '';
     }

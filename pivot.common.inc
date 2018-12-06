@@ -481,3 +481,56 @@ function _get_offer_details(){
 
   return $offre;
 }
+
+/**
+ * This function will construct the filter array
+ * @param array $field_params
+ * @param Object $filter
+ * @param String $key
+ * @param int $page_id
+ */
+function _construct_filters_array(&$field_params,$filter, $key = 'shortcode', $page_id = NULL){
+  switch($filter->type){
+    case 'Type':
+      $field_params['filters']['urn:fld:typeofr']['name'] = 'urn:fld:typeofr';
+      $field_params['filters']['urn:fld:typeofr']['operator'] = $filter->operator;
+      $field_params['filters']['urn:fld:typeofr']['searched_value'][] = $filter->filter_name;
+      break;
+    case 'Value':
+      $parent_urn = preg_replace("'\:.*?:'" ,':fld:',substr($filter->urn, 0, strripos($filter->urn, ':')));
+      $field_params['filters'][$parent_urn]['name'] = $parent_urn;
+      $field_params['filters'][$parent_urn]['operator'] = $filter->operator;
+      $field_params['filters'][$parent_urn]['searched_value'][] = $filter->urn;
+      break;
+    case 'Date':
+
+      break;
+    default:
+      $field_params['filters'][$key]['name'] = $filter->urn;
+      $field_params['filters'][$key]['operator'] = $filter->operator;
+      break;
+  }
+
+  // If operator is no "exist", we need the field comparison
+  if($filter->operator != 'exist' && (!isset($parent_urn) || $parent_urn == '') && !isset($field_params['filters']['urn:fld:typeofr'])){
+    // Set value by default
+    if(!empty($_SESSION['pivot']['filters'][$page_id])){
+      $value = $_SESSION['pivot']['filters'][$page_id][$key];
+    }else{
+      $value = $filter->filter_name;
+    }
+    // If the filter is a Date
+    if($filter->type === 'Date'){
+      // Override value with the requested date format
+      $value = date("d/m/Y", strtotime($value));
+      $field_params['filters_object_date']['startDate'] = '24/10/2018';
+      $field_params['filters_object_date']['endDate'] = '31/12/2018';
+    }else{
+      $field_params['filters'][$key]['searched_value'][] = $value;
+    }
+  }
+  if($filter->operator == 'exist'){
+    $field_params['filters'][$key]['operator'] = 'equal';
+    $field_params['filters'][$key]['searched_value'][] = 'true';
+  }
+}
