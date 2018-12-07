@@ -493,7 +493,7 @@ function add_filters(){
 
     // Print head section and HTML Form
     echo '<section id="block-pivot-lodging-pivot-lodging-filter" class="block block-pivot-lodging clearfix">'
-         . '<form action="'.get_bloginfo('wpurl').'/'.substr(get_locale(), 0, 2 ).'/'.$pivot_page->path.'" method="post" id="pivot-lodging-form" accept-charset="UTF-8">'
+         . '<form action="'.$pivot_page->path.'" method="post" id="pivot-lodging-form" accept-charset="UTF-8">'
          .   '<div  id="edit-equipment-body">';
 
     foreach($filters as $filter){
@@ -517,9 +517,13 @@ function add_filters(){
 }
 
 function pivot_reset_filters($page_id){
+  // If filter form is well submited
   if(isset($_POST['filter-submit'])){
+    // Unset everything on filters
     unset($_SESSION['pivot']['filters']);
+    // Loop on each parameters
     foreach($_POST as $key => $value){
+      // Except 'op' and 'filter-submit' parameters
       if($key != 'op' && $key != 'filter-submit'){
         if(!empty($value)){
           if($value != 'on'){
@@ -622,7 +626,6 @@ function pivot_lodging_page($page_id) {
   $field_params = array();
   // Define how many offers per page
   $offers_per_page = 12;
-//  print '<pre>'; print_r($_SESSION['pivot']['filters']); print '</pre>';
 
   // Check if there is at least ONE active filter
   if(isset($_SESSION['pivot']['filters'][$page_id]) && count($_SESSION['pivot']['filters'][$page_id]) > 0){

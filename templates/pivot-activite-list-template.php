@@ -7,6 +7,8 @@
 <?php // get_sidebar(); ?>
 <?php global $base_url; ?>
 
+<?php add_filters(); ?>
+
 <!--Get offers-->
 <?php $offres = pivot_lodging_page($pivot_page->id); ?>
   
@@ -18,7 +20,6 @@
     <?php else: ?>
       <div class="col-12 col-lg-12 py-5 order-lg-1 order-2 left-sidebar z-index-99">
     <?php endif; ?>
-      <?php add_filters(); ?>
       <div class="row">  
         <?php foreach($offres as $offre): ?>
           <?php $name = 'pivot-'.$pivot_page->type.'-details-part-template'; ?>
