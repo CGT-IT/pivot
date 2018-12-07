@@ -17,30 +17,35 @@ Il ne faut pas modifier l'original. Si vous souhaitez modifier le template par d
 
 Il en faut 3 par catégorie structurés de la façon suivante:
 1.​pivot-NOMDELACATEGORIE-list-template.php
+
 > va servir à afficher sous forme de liste les résultats d'une QUERY.
+
 2.​pivot-NOMDELACATEGORIE-details-template.php
+
 > va servir à afficher le page de détails d'une offre spécifique.
+
 3.​pivot-NOMDELACATEGORIE-details-part-template.php
+
 > il représente la vignette d'une offre.
 > ce template est inclus dans le template n°1 et sera également appelé dans les shortcodes
 
 ## To do list:
 
-[x] Pages de configuration du plugin
-[x] Affichage liste des offres;
-[x] Pagination de la liste;
-[x] Affichage des détails d’une offre;
-[x] Critères de recherche sur les offres;
-[x] Placement des offres sur une carte;
-[x] Affichage possible en plusieurs langues
-    [x]	traductions venant également de Pivot
-    [x] EN (= langue de base)
-    [x] FR
-    [ ] NL
-    [ ] DE 
-[x] Template (affichage) par défaut pour liste et détails
-[ ] Affichage des offres liées
-[ ] Affichage des offres 'liées' dans les x km à la ronde
-[ ] Recherche sur base de la localisation si smartphone
+- [x] Pages de configuration du plugin
+- [x] Affichage liste des offres;
+- [x] Pagination de la liste;
+- [x] Affichage des détails d’une offre;
+- [x] Critères de recherche sur les offres;
+- [x] Placement des offres sur une carte;
+- [x] Affichage possible en plusieurs langues
+    - [x] traductions venant également de Pivot
+    - [x] EN (= langue de base)
+    - [x] FR
+    - [ ] NL
+    - [ ] DE 
+- [x] Template (affichage) par défaut pour liste et détails
+- [ ] Affichage des offres liées
+- [ ] Affichage des offres 'liées' dans les x km à la ronde
+- [ ] Recherche sur base de la localisation si smartphone
 
 
