@@ -16,13 +16,13 @@ Il ne faut pas modifier l'original. Si vous souhaitez modifier le template par d
 \> Cloner l'existant à la racine de votre thème
 
 Il en faut 3 par catégorie structurés de la façon suivante:
-1.​pivot-NOMDELACATEGORIE-list-template.php
-\> va servir à afficher sous forme de liste les résultats d'une QUERY.
-2.​pivot-NOMDELACATEGORIE-details-template.php
-\> va servir à afficher le page de détails d'une offre spécifique.
-3.​pivot-NOMDELACATEGORIE-details-part-template.php
-\> il représente la vignette d'une offre.
-> ce template est inclus dans le template n°1 et sera également appelé dans les shortcodes
+1. pivot-**nomdelacategorie**-list-template.php
+    -\> va servir à afficher sous forme de liste les résultats d'une QUERY.
+2. pivot-**nomdelacategorie**-details-template.php
+    -\> va servir à afficher le page de détails d'une offre spécifique.
+3. pivot-**nomdelacategorie**-details-part-template.php
+    -\> il représente la vignette d'une offre.
+    -> ce template est inclus dans le template n°1 et sera également appelé dans les shortcodes
 
 ## To do list:
 
