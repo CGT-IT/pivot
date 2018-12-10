@@ -22,6 +22,7 @@ Il en faut 3 par catégorie structurés de la façon suivante:
     - > va servir à afficher le page de détails d'une offre spécifique.
 3. pivot-**nomdelacategorie**-details-part-template.php
     - > il représente la vignette d'une offre.
+      
       > ce template est inclus dans le template n°1 et sera également appelé dans les shortcodes
 
 ## To do list:
