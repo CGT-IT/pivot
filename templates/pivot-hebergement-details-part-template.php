@@ -47,17 +47,17 @@
     </section>
       
     <div class="row text-center pl-3 pr-3">
-      <div class="col-4 pt-3 pb-3 border-top border-right"><i class="fa fa-bed"></i> <?php print _search_specific_urn($offre, 'urn:fld:capbase'); ?></div>
-      <?php if(_search_specific_urn($offre, 'urn:fld:label:bvvelo') != ''): ?>
+      <div class="col-4 pt-3 pb-3 border-top border-right"><i class="fa fa-bed"></i> <?php print _get_urn_value($offre, 'urn:fld:capbase'); ?></div>
+      <?php if(_get_urn_value($offre, 'urn:fld:label:bvvelo') != ''): ?>
         <div class="col-6 pt-3 pb-3 border-top">
-          <?php print $offre->typeOffre->label->value->__toString().'  '._get_ranking_picto($offre, 'urn:fld:class'); ?>
+          <?php print $offre->typeOffre->label->value->__toString().'  '._get_ranking_picto($offre); ?>
         </div>
         <div class="col-2 pt-2 border-top border-left item-services">
           <?php print _search_specific_urn_img($offre, 'urn:fld:label:bvvelo', 40, null, true); ?>
         </div>
       <?php else: ?>
         <div class="col-8 pt-3 pb-3 border-top">
-          <?php print $offre->typeOffre->label->value->__toString().'  '._get_ranking_picto($offre, 'urn:fld:class'); ?>
+          <?php print $offre->typeOffre->label->value->__toString().'  '._get_ranking_picto($offre); ?>
         </div>
       <?php endif; ?>
     </div>

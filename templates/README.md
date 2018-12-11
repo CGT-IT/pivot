@@ -1,4 +1,5 @@
 
+
 # Les templates:
 
 Il ne faut pas modifier l'original. Si vous souhaitez modifier le template par défaut, 
@@ -49,3 +50,28 @@ Following lines should be included in ***.list-template.php**
 ```
 
 $offre is an object with all details. You'll have to var_dump it to see what it contains. It depends of each type of offers.
+
+Following lines should be included in ***.details-part-template.php**
+
+```php
+// To get $offre object
+<?php $offre = $args; ?>
+```
+Following lines should be included in ***.details-template.php**
+
+```php
+// To get $offre object
+<?php $offre = _get_offer_details(); ?>
+// Add metadata to HTML page (for FB, twitter, google)
+<?php _add_meta_data($offre, 'details'); ?>
+// Add default header to the page
+<?php get_header(); ?>
+```
+Just browse default template to see how it's build.
+
+There are some usefull functions like to help to build the template:
+* _search_specific_urn_img($offre, $urn, $height, $color, $original = FALSE);
+* _get_urn_value($offre, $urn);
+* _get_ranking_picto($offre);
+* _get_urn_documentation($urn);
+* _get_urn_documentation_full_spec($urn);

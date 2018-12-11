@@ -42,11 +42,11 @@ function _get_translated_value($field){
 /**
  * Call the "thesaurus" web service to get the translated documentation of specific URN
  * 
- * @param string $urn_name Name of the URN
+ * @param string $urn Name of the URN = field ID
  * @return string urn documentation translated
  */
-function _get_urn_documentation($urn_name){
-  $params['urn_name'] = $urn_name;
+function _get_urn_documentation($urn){
+  $params['urn_name'] = $urn;
   $xml_object = _pivot_request('thesaurus', 0, $params);
 
   foreach ($xml_object->spec as $item){
@@ -57,17 +57,30 @@ function _get_urn_documentation($urn_name){
 /**
  * Call the "thesaurus" web service to get the documentation Object of a specific URN
  * 
- * @param string $urn_name Name of the URN
+ * @param string $urn Name of the URN = field ID
  * @return Object documentation of the urn
  */
-function _get_urn_documentation_full_spec($urn_name){
-  $params['urn_name'] = $urn_name;
+function _get_urn_documentation_full_spec($urn){
+  $params['urn_name'] = $urn;
   $xml_object = _pivot_request('thesaurus', 0, $params);
 
   return $xml_object;
 }
 
-function _search_specific_urn_img($offre, $urn, $height, $color, $original = FALSE){
+/**
+ * Will return a span with an image inside with all parameters you have set
+ * 
+ * Go there to see which URN has a picto 
+ * http://pivot.tourismewallonie.be/index.php/9-pivot-gest-pc/218-liste-des-pictogrammes
+ * 
+ * @param Object $offre the complete offer Object
+ * @param string $urn Name of the URN = field ID
+ * @param int $height set height in px like (20)
+ * @param string $color has to be RGB hexa color code like FFFFFF for black (can be '')
+ * @param boolean $original set to true if you want to original color of the picto
+ * @return string
+ */
+function _search_specific_urn_img($offre, $urn, $height, $color = '', $original = FALSE){
   // Loop on each specific field
   foreach($offre->spec as $specification){
     // Check if it's the one we are looking for
@@ -81,7 +94,7 @@ function _search_specific_urn_img($offre, $urn, $height, $color, $original = FAL
 
       // Construct <img/> tag
       $img = '<img '.$title_attribute.' '.$alt_attribute.' class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$urn.';h='.$height;
-      if($color){
+      if(!empty($color) && $color != ''){
         $img .= ';c='.$color;
       }
       if($original == TRUE){
@@ -96,19 +109,33 @@ function _search_specific_urn_img($offre, $urn, $height, $color, $original = FAL
   }
 }
 
+/**
+ * Will return the urn Label
+ * 
+ * @param Object $offre the complete offer Object
+ * @param string $urn Name of the URN = field ID
+ * @return string
+ */
 function _search_specific_urn($offre, $urn){
   // Loop on each specific field
-  foreach($offre->spec as $specification){
+  foreach($offre->spec as $spec){
     // Check if it's the one we are looking for
-    if($specification->attributes()->urn->__toString() == $urn){
-      $output = $specification->value->__toString();
+    if($spec->attributes()->urn->__toString() == $urn){
+      $output = $spec->value->__toString();
 
       return $output;
     }
   }
 }
 
-function _get_ranking_picto($offre, $urn){
+/**
+ * Will return a span with image of the ranking picto inside.
+ * 
+ * @param Object $offre the complete offer Object
+ * @return string
+ */
+function _get_ranking_picto($offre){
+  $urn = 'urn:fld:class';
   // Loop on each specific field
   foreach($offre->spec as $specification){
     // Check if it's the one we are looking for
