@@ -8,8 +8,8 @@ Il est également possible d'ajouter des filtres
 
 * à part les données de configuration du plugin, on ne conserve aucune offre venant de PIVOT dans la DB Wordpress.
 * les pages (de listing et de détails) sont générées "à la volée".
-* j'ai rassemblé les types d'offres dans des catégories (herbegement / activite / ...). Ces offres sont censées avoir un maximum de champs en commun.
-* deux templates sont à créer ou à customiser par catégorie (le listing et le détail)
+* les types d'offres sont rassemblée sdans des catégories (herbegement / activite / ...). Ces offres sont censées avoir un maximum de champs en commun.
+* 3 templates sont à créer ou à customiser par catégorie (le listing + vignette et le détail)
 * les templates par défaut sont basés sur Bootstrap 4
 
 ## Les templates:
