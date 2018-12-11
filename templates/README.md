@@ -17,22 +17,35 @@ Il en faut 3 par catégorie structurés de la façon suivante:
 
 Following lines should be included in ***.list-template.php**
 
-```
-<!--This is mandatory, you need this to know on which page you are-->
+```php
+// To know on which page you are
 <?php $pivot_page = pivot_get_page_path(_get_path()); ?>
-<!--Should be mandatory, will override "404" title with real title (coming from 'manage page')-->
+// Should be mandatory, will override "404" title with real title (coming from 'manage page')
 <title><?php print $_SESSION['pivot'][$pivot_page->id]['page_title'] .' - '. get_bloginfo('name');?></title>
 
-<!--Include default header-->
+// Include default header
 <?php get_header(); ?>
-<!--Include sidebar or other ...-->
+// Include sidebar or other ...
 <?php get_sidebar(); ?>
 
-<!--If you want to include filters directly in the template (must be include in the beginning)-->
+// If you want to include filters directly in the template (must be include in the beginning)
 <?php pivot_add_filters(); ?>
 
-<!--Get offers-->
+// Get offers
 <?php $offres = pivot_lodging_page($pivot_page->id); ?>
+// Loop on offers
+<?php foreach($offres as $offre): ?>
+  // Construct file name for the template "details part"
+  <?php $name = 'pivot-'.$pivot_page->type.'-details-part-template'; ?>
+  // Add Path and map to $offre object
+  <?php $offre->path = $_SESSION['pivot'][$pivot_page->id]['path']; ?>
+  <?php $offre->map = $_SESSION['pivot'][$pivot_page->id]['map']; ?>
+  // Print "vignette" of the offer detail
+  <?php print pivot_template($name, $offre); ?>
+<?php endforeach; ?>
+
+// Add pagination
+<?php echo _add_pagination($_SESSION['pivot'][$pivot_page->id]['nb_offres']); ?>
 ```
 
-$offres is an object with all offers. You'll have to loop on it (var_dump to see what it contains). It depends of each type of offers.
+$offre is an object with all details. You'll have to var_dump it to see what it contains. It depends of each type of offers.
