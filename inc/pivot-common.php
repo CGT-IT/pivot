@@ -344,37 +344,6 @@ function _get_event_date($offre, $wanted_date){
 }
 
 /**
- * Simple Templating function
- *
- * @param $name   - Name of the template file.
- * @param $args   - Associative array of variables to pass to the template file.
- * @return string - Output of the template file. Likely HTML.
- */
-function _template($name, $args){
-  // Search template file in theme folder.
-	$template = locate_template($name.'.php');
-	// Get plugins template file.
-	if(!$template){
-    $template = __DIR__ . '/templates/' . $name . '.php';
-  }
-
-  // Ensure the file exists
-  if(!file_exists($template)){
-    $text = __('The required template', 'pivot' );
-    $text .= ' '.$name.' ';
-    $text .= __('was not found!', 'pivot');
-    print _show_warning($text, 'warning');
-    return '';
-  }
-
-  // buffer the output (including the file is "output")
-  ob_start();
-  include $template;
-
-  return ob_get_clean();
-}
-
-/**
  * 
  * @param int $nb_offres
  * @return string HTML containing pagination

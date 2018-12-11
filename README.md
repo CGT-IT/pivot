@@ -1,5 +1,7 @@
 # PIVOT
-Plugin Wordpress qui fait une connexion à la DB PIVOT du CGT et qui permet un affichage facile de listing et du détails des différentes offres touristiques disponibles
+Plugin Wordpress qui fait une connexion à la DB PIVOT du CGT et qui permet un affichage sous forme de listing 
+et de détails des différentes offres touristiques disponibles.
+Il est également possible d'ajouter des filtres 
 
 
 ## à savoir:
@@ -18,11 +20,11 @@ Il ne faut pas modifier l'original. Si vous souhaitez modifier le template par d
 Il en faut 3 par catégorie structurés de la façon suivante:
 1. pivot-**nomdelacategorie**-list-template.php
     ```
-    va servir à afficher sous forme de liste les résultats d'une QUERY.
+    Va servir à afficher sous forme de liste les résultats d'une QUERY.
     ```
 2. pivot-**nomdelacategorie**-details-template.php
     ```
-    va servir à afficher le page de détails d'une offre spécifique.
+    Va servir à afficher le page de détails d'une offre spécifique.
     ```
 3. pivot-**nomdelacategorie**-details-part-template.php
     ```

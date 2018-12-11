@@ -7,7 +7,7 @@
 <?php // get_sidebar(); ?>
 <?php global $base_url; ?>
 
-<?php add_filters(); ?>
+<?php pivot_add_filters(); ?>
 
 <!--Get offers-->
 <?php $offres = pivot_lodging_page($pivot_page->id); ?>
@@ -25,7 +25,7 @@
           <?php $name = 'pivot-'.$pivot_page->type.'-details-part-template'; ?>
           <?php $offre->path = $_SESSION['pivot'][$pivot_page->id]['path']; ?>
           <?php $offre->map = $_SESSION['pivot'][$pivot_page->id]['map']; ?>
-          <?php print _template($name, $offre); ?>
+          <?php print pivot_template($name, $offre); ?>
         <?php endforeach; ?>
       </div>
       <?php echo _add_pagination($_SESSION['pivot'][$pivot_page->id]['nb_offres']); ?>

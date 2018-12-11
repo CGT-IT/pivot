@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: Pivot
- * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres disponibles dans la DB Pivot
+ * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
  * Version: 0.1
  * Author: Maxime Degembe
  * License: GPL2
@@ -9,9 +9,30 @@
  * Domain Path: /lang
  */
 
+define('MY_PLUGIN_PATH', plugin_dir_path(__FILE__));
+define('MY_PLUGIN_URL', plugin_dir_url(__FILE__));
+
+// Include all files
+foreach (glob(MY_PLUGIN_PATH. "inc/*.php" ) as $file) {
+  require_once $file;
+}
+
+require_once(MY_PLUGIN_PATH. 'pivot-filter-widget.php');
+require_once(MY_PLUGIN_PATH. 'pivot-shortcode.php');
+
+$bitly_params = array();
+$bitly_params['access_token'] = get_option('pivot_bitly');
+$bitly_params['domain'] = 'bit.ly';
+
+register_activation_hook(__FILE__, 'pivot_install');
+register_deactivation_hook(__FILE__, 'pivot_uninstall');
+
+add_action('init', 'init');
+add_action('admin_menu', 'pivot_menu');
+add_action('admin_init', 'pivot_settings');
 add_action('init', 'pivot_load_textdomain');
 function pivot_load_textdomain() {
-	load_plugin_textdomain('pivot', false, dirname(plugin_basename(__FILE__)) . '/lang/' );
+	load_plugin_textdomain('pivot', false, MY_PLUGIN_PATH . 'lang/');
 }
 
 function pivot_install() {
@@ -96,23 +117,6 @@ function pivot_uninstall() {
     flush_rewrite_rules();
 }
 
-require_once(plugin_dir_path( __FILE__ ). '/pivot-filters.php');
-require_once(plugin_dir_path( __FILE__ ). '/pivot-pages.php');
-require_once(plugin_dir_path( __FILE__ ). '/pivot-offer-type.php');
-require_once(plugin_dir_path( __FILE__ ). '/wp_insert_rows.php');
-//require_once(plugin_dir_path( __FILE__ ). '/bitly.php');
-
-//$bitly_params = array();
-//$bitly_params['access_token'] = get_option('pivot_bitly');
-//$bitly_params['domain'] = 'bit.ly';
-
-register_activation_hook(__FILE__, 'pivot_install');
-register_deactivation_hook(__FILE__, 'pivot_uninstall');
-
-add_action('init', 'init');
-add_action('admin_menu', 'pivot_menu');
-add_action('admin_init', 'pivot_settings');
-
 function pivot_menu() {
   add_menu_page('Pivot administration', 'Pivot', 'manage_options', 'pivot-admin', 'pivot_options');
   add_submenu_page('pivot-admin', 'Pivot administration', 'Pivot', 'manage_options', 'pivot-admin');
@@ -129,7 +133,7 @@ function pivot_settings(){
   register_setting('pivot_settings', 'pivot_key');
   register_setting('pivot_settings', 'pivot_mdt');
   register_setting('pivot_settings', 'pivot_bootstrap');
-//  register_setting('pivot_settings', 'pivot_bitly');
+  register_setting('pivot_settings', 'pivot_bitly');
 }
 
 function pivot_options() {
@@ -181,11 +185,11 @@ function pivot_options() {
         <label for="edit-pivot-bootsrap"><?php esc_html_e('Include Bootstrap', 'pivot') ?> </label>
         <p class="description"><a href="https://getbootstrap.com/">Bootstrap </a>(<?php esc_html_e('required for default templates', 'pivot');?>)</p>
       </div>
-<!--      <div class="form-item form-type-textfield form-item-pivot-bitly">
+      <div class="form-item form-type-textfield form-item-pivot-bitly">
         <label for="edit-pivot-bitly">Bitly access token <span class="form-required" title="<?php // esc_html_e('This field is required')?>">*</span></label>
         <input type="text" id="edit-pivot-bitly" name="pivot_bitly" value="<?php // echo get_option('pivot_bitly')?>" size="60" maxlength="128" class="form-text required">
-        <p class="description"><?php // _e('Personnal Key to access bitly webservices, signin <a href="https://bitly.com/" target="_blank">bitly.com</a> and get you access token', 'pivot')?></p>
-      </div>  -->
+        <p class="description"><?php _e('Personnal Key to access bitly webservices, signin <a href="https://bitly.com/" target="_blank">bitly.com</a> and get you access token', 'pivot')?></p>
+      </div>  
       <?php submit_button(); ?>
     </div>
   </form>
@@ -378,4 +382,86 @@ function _create_dom_criteria_field_element($domDocument, $filter) {
   }
 
   return $criteriaFieldElement;
+}
+
+/**
+ * Implementation of hook_page()
+ */
+function pivot_lodging_page($page_id) {
+  $field_params = array();
+  // Define how many offers per page
+  $offers_per_page = 12;
+
+  // Check if there is at least ONE active filter
+  if(isset($_SESSION['pivot']['filters'][$page_id]) && count($_SESSION['pivot']['filters'][$page_id]) > 0){
+    foreach($_SESSION['pivot']['filters'][$page_id] as $key => $value){
+      // Get details of filter based on his ID
+      $filter = pivot_get_filter($key);
+      
+      _construct_filters_array($field_params, $filter, $key, $page_id);
+      
+      // Reset var
+      $parent_urn = '';
+    }
+  }
+
+  // Get current page details
+  $pivot_page = pivot_get_page_path($_SESSION['pivot'][$page_id]['path']);
+  // Check if there if a sort is defined
+  if(isset($pivot_page->sortMode) && $pivot_page->sortMode != NULL && $pivot_page->sortMode != ''){
+    $field_params['sortField'] = $pivot_page->sortField;
+    $field_params['sortMode'] = $pivot_page->sortMode;
+  }
+  $xml_query = _xml_query_construction($_SESSION['pivot'][$page_id]['query'], $field_params);
+
+  $output = pivot_construct_output('offer-search', $offers_per_page, $xml_query, $page_id);
+
+  return $output;
+}
+
+/**
+ * 
+ * @param string $case Define request case
+ * @param int $offers_per_page Number of offers per page to display
+ * @param Object $xml_query XML file with request to Pivot (filter on specific fields)
+ * @return string part of HTML to display
+ */
+function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $page_id = NULL){
+  // Get current page number (start with 0)
+  if(($pos = strpos($_SERVER['REQUEST_URI'], "paged=")) !== FALSE){ 
+    $page_number = substr($_SERVER['REQUEST_URI'], $pos+6); 
+    $current_page =  (int) filter_var($page_number, FILTER_SANITIZE_NUMBER_INT);
+  }else{
+    $current_page = 0;
+  }
+  // Define query type
+  $params['type'] = 'query';
+//  $params['shuffle'] = TRUE;
+  
+  // Check current page.
+  // If 0 we need to define params to get all offers (depending on filters)
+  if($current_page == 0){
+    // Define number of offers per page
+    $params['items_per_page'] = $offers_per_page;
+    // Define content details we want to receive from Pivot
+    $params['content_details'] = ';content=2';
+    
+    // Get offers
+    $xml_object = _pivot_request($case, 2, $params, $xml_query);
+    // Store number of offers
+    $_SESSION['pivot'][$page_id]['nb_offres'] = str_replace(',', '', $xml_object->attributes()->count->__toString());
+    // Store the token to get next x items
+    $_SESSION['pivot'][$page_id]['token'] = $xml_object->attributes()->token->__toString();
+
+    $offres = $xml_object->offre;
+  }else{
+    // Get token + current page (set +1 to current page as it start with 0 but with 1 in Pivot)
+    $params['token'] = '/'.$_SESSION['pivot'][$page_id]['token'].'/'.++$current_page;
+
+    // Get offers
+    $xml_object = _pivot_request('offer-pager', 2, $params);
+    $offres = $xml_object->offre;
+  }
+  
+  return $offres;
 }
