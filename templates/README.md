@@ -67,7 +67,7 @@ Following lines should be included in ***.details-template.php**
 // Add default header to the page
 <?php get_header(); ?>
 ```
-Just browse default template to see how it's build.
+**Just browse default template to see how it's build.**
 
 There are some usefull functions like to help to build the template:
 * _search_specific_urn_img($offre, $urn, $height, $color, $original = FALSE);
