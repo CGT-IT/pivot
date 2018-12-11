@@ -61,11 +61,11 @@ Following lines should be included in ***.details-template.php**
 
 ```php
 // To get $offre object
-$offre = _get_offer_details();
+<?php $offre = _get_offer_details();
 // Add metadata to HTML page (for FB, twitter, google)
 _add_meta_data($offre, 'details');
 // Add default header to the page
-get_header();
+get_header(); ?>
 ```
 Just browse default template to see how it's build.
 
