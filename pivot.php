@@ -186,8 +186,8 @@ function pivot_options() {
         <p class="description"><a href="https://getbootstrap.com/">Bootstrap </a>(<?php esc_html_e('required for default templates', 'pivot');?>)</p>
       </div>
       <div class="form-item form-type-textfield form-item-pivot-bitly">
-        <label for="edit-pivot-bitly">Bitly access token <span class="form-required" title="<?php // esc_html_e('This field is required')?>">*</span></label>
-        <input type="text" id="edit-pivot-bitly" name="pivot_bitly" value="<?php // echo get_option('pivot_bitly')?>" size="60" maxlength="128" class="form-text required">
+        <label for="edit-pivot-bitly">Bitly access token <span class="form-required" title="<?php esc_html_e('This field is required')?>">*</span></label>
+        <input type="text" id="edit-pivot-bitly" name="pivot_bitly" value="<?php echo get_option('pivot_bitly')?>" size="60" maxlength="128" class="form-text required">
         <p class="description"><?php _e('Personnal Key to access bitly webservices, signin <a href="https://bitly.com/" target="_blank">bitly.com</a> and get you access token', 'pivot')?></p>
       </div>  
       <?php submit_button(); ?>
