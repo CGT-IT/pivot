@@ -19,8 +19,9 @@ Il en faut 3 par catégorie structurés de la façon suivante:
     ```
 
 
-Following lines should be included in ** *.list-template.php**
-    ```
+Following lines should be included in ***.list-template.php**
+
+```
 <!--This is mandatory, you need this to know on which page you are-->
 <?php $pivot_page = pivot_get_page_path(_get_path()); ?>
 <!--Should be mandatory, will override "404" title with real title (coming from 'manage page')-->
@@ -36,6 +37,6 @@ Following lines should be included in ** *.list-template.php**
 
 <!--Get offers-->
 <?php $offres = pivot_lodging_page($pivot_page->id); ?>
-    ```
+```
 
 $offres is an object with all offers. You'll have to loop on it (var_dump to see what it contains). It depends of each type of offers.
