@@ -5,7 +5,6 @@
 <?php get_header(); ?>
 <!--Include sidebar-->
 <?php // get_sidebar(); ?>
-<?php global $base_url; ?>
 
 <?php pivot_add_filters(); ?>
 
