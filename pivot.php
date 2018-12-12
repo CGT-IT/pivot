@@ -13,7 +13,11 @@ define('MY_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('MY_PLUGIN_URL', plugin_dir_url(__FILE__));
 
 // Include all files
-foreach (glob(MY_PLUGIN_PATH. "inc/*.php" ) as $file) {
+foreach (glob(MY_PLUGIN_PATH. "inc/*.php") as $file) {
+  require_once $file;
+}
+// Include all external files
+foreach (glob(MY_PLUGIN_PATH. "inc/external/*.php") as $file) {
   require_once $file;
 }
 
@@ -25,6 +29,7 @@ $bitly_params['access_token'] = get_option('pivot_bitly');
 $bitly_params['domain'] = 'bit.ly';
 
 register_activation_hook(__FILE__, 'pivot_install');
+register_activation_hook(__FILE__, 'pivot_install_data');
 register_deactivation_hook(__FILE__, 'pivot_uninstall');
 
 add_action('init', 'init');
@@ -35,6 +40,10 @@ function pivot_load_textdomain() {
 	load_plugin_textdomain('pivot', false, MY_PLUGIN_PATH . 'lang/');
 }
 
+/**
+ * Creation of Pivot Tables to store configuration settings
+ * @global Object $wpdb
+ */
 function pivot_install() {
   // Create an instance of the database class
   global $wpdb;
@@ -84,7 +93,15 @@ function pivot_install() {
           ) $charset_collate;";
   // Execute the sql statement to create the custom table
   dbDelta($sql);
-  
+}
+
+/**
+ * Insert default datas in table pivot_offer_type
+ * @global Object $wpdb
+ */
+function pivot_install_data() {
+  global $wpdb;
+  $table_name = $wpdb->prefix . "pivot_offer_type";
   // Set default offer types
   $data_set[0]= array("id" => 1, "type" => "Hôtel", "parent" => "hebergement");
   $data_set[1]= array("id" => 2, "type" => "Gîte", "parent" => "hebergement");
@@ -98,7 +115,10 @@ function pivot_install() {
   wp_insert_rows($data_set,$table_name);
 }
 
-// Delete table when deactivate
+/**
+ * Drop Pivot tables on plugin uninstall
+ * @global Object $wpdb
+ */
 function pivot_uninstall() {
     global $wpdb;
     $table_name = $wpdb->prefix . "pivot_filter";
@@ -117,6 +137,9 @@ function pivot_uninstall() {
     flush_rewrite_rules();
 }
 
+/**
+ * Add Pivot Menu and submenu
+ */
 function pivot_menu() {
   add_menu_page('Pivot administration', 'Pivot', 'manage_options', 'pivot-admin', 'pivot_options');
   add_submenu_page('pivot-admin', 'Pivot administration', 'Pivot', 'manage_options', 'pivot-admin');
@@ -128,6 +151,9 @@ function pivot_menu() {
 function init() {
 }
 
+/**
+ * Define main pivot settings
+ */
 function pivot_settings(){
   register_setting('pivot_settings', 'pivot_uri');
   register_setting('pivot_settings', 'pivot_key');
@@ -284,6 +310,12 @@ function _pivot_request($type, $detail, $params = NULL, $postfields = NULL){
   }
 }
 
+/**
+ * Construction of the xml query with query id and filters
+ * @param string $query_id
+ * @param array $field_params
+ * @return xml file
+ */
 function _xml_query_construction($query_id, $field_params = NULL){
   // Init XML document
   $domDocument = new DOMDocument('1.0', "UTF-8");
@@ -385,7 +417,9 @@ function _create_dom_criteria_field_element($domDocument, $filter) {
 }
 
 /**
- * Implementation of hook_page()
+ * Return offers resulting of the XML query
+ * @param int $page_id
+ * @return Object all offers resulting of the XML query
  */
 function pivot_lodging_page($page_id) {
   $field_params = array();
@@ -414,9 +448,9 @@ function pivot_lodging_page($page_id) {
   }
   $xml_query = _xml_query_construction($_SESSION['pivot'][$page_id]['query'], $field_params);
 
-  $output = pivot_construct_output('offer-search', $offers_per_page, $xml_query, $page_id);
+  $offers = pivot_construct_output('offer-search', $offers_per_page, $xml_query, $page_id);
 
-  return $output;
+  return $offers;
 }
 
 /**
