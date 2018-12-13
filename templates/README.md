@@ -2,8 +2,11 @@
 
 # Les templates:
 
-Il ne faut pas modifier l'original. Si vous souhaitez modifier le template par défaut, 
-\> Cloner l'existant à la racine de votre thème
+**Il ne faut pas modifier l'original.** 
+
+Si vous souhaitez modifier le(s) template(s) par défaut, 
+ > Cloner l'existant à la racine de votre thème
+Si vous créez de nouvelles catégories, même chose ajoutez ces nouveaux templates à la racine de votre thème.
 
 Il en faut 3 par catégorie structurés de la façon suivante:
 1. pivot-**nomdelacategorie**-list-template.php
