@@ -11,6 +11,7 @@ Il est également possible d'ajouter des filtres
 * les types d'offres sont rassemblées dans des catégories (herbegement / activite / ...). Ces offres sont censées avoir un maximum de champs en commun.
 * 3 templates sont à créer ou à customiser par catégorie (le listing + vignette et le détail)
 * les templates par défaut sont basés sur Bootstrap 4
+* ce plugin n'a pas de dépendance à d'autre(s) plugin(s)
 
 ## Les templates:
 
