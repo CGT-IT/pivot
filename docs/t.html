@@ -1,0 +1,86 @@
+<div class="markdown-body">
+          <p>Ajouter des filtres à une page pour permettre au visiteur de faire une recherche.</p>
+<p>Par exemple sur les services et/ou les équipements proposé par un hébergement.</p>
+<p>Pour ajouter un filtre, ça se fait au niveau de la gestion des pages via le bouton <strong>Add filter</strong>.</p>
+<p>L'ajout est assez simple, il suffit de fournir l'identifiant du champ (<strong>URN</strong>) sur lequel on veut pouvoir filtrer et de cliquer sur le bouton <code>Load URN Infos</code>. Ces <strong>URN</strong> on les trouvent dans <a href="http://pivot.tourismewallonie.be/index.php/9-pivot-gest-pc/142-types-de-fiches-pivot" rel="nofollow">la documentation de Pivot</a>. Chaque fiche ayant des URN communs ou d'autres bien spécifiques.</p>
+<p>D'où entre autre le faite de rassembler ces fiches dans une même catégorie.</p>
+<blockquote>
+<p>Ex: <em>Gîte</em> et <em>Chambre d'hôtes</em> sous <strong>hebergement</strong></p>
+</blockquote>
+<p>Ensuite le titre du filtre est chargé avec sa valeur par défaut (Label du champ dans Pivot) avec la possibilité de le modifier.
+Le champ suivant est <code>Operator</code> qui est l'opérateur de comparaison</p>
+<p>En fonction du <code>type</code> de l'<strong>URN</strong>, ce champ <code>Operator</code> aura un comportement différent:</p>
+<ol>
+<li>soit il n'est pas possible de les ajouter en tant que filtre;
+<pre><code>Il y aura un message d'erreur.
+</code></pre>
+</li>
+<li>soit l'opérateur est déduit par défaut;
+<pre><code>Le champ operator sera grisé et non modifiable
+</code></pre>
+</li>
+<li>soit c'est à l'utilisateur de décider de l'opérateur de comparaison.</li>
+</ol>
+<h3>
+<a id="user-content-liste-des-type-durn-possible-ou-non" class="anchor" href="#liste-des-type-durn-possible-ou-non" aria-hidden="true"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Liste des <code>type</code> d'<strong>URN</strong> possible ou non:</h3>
+<table>
+<thead>
+<tr>
+<th>Cas 1 (refus)</th>
+<th>Cas 2 (déduction)</th>
+<th>Cas 3 (choix par l'utilisateur)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Choice</td>
+<td>Boolean</td>
+<td>Il faut choisir un des opérateurs de comparaison: <em>equal</em>, <em>notequal</em>, <em>like</em>, <em>notlike</em>, <em>lesser</em>, <em>lesserequal</em>, <em>greater</em>, <em>greaterequal</em>
+</td>
+</tr>
+<tr>
+<td>MultiChoice</td>
+<td>Type</td>
+<td></td>
+</tr>
+<tr>
+<td>Object</td>
+<td>Value</td>
+<td></td>
+</tr>
+<tr>
+<td>Panel</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Type de champ</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>HMultiChoice</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Subcategory</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3>
+<a id="user-content-exemples-de-filtre" class="anchor" href="#exemples-de-filtre" aria-hidden="true"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Exemples de filtre</h3>
+<ul>
+<li>Tout ce qui est Équipements/Services seront de <code>type</code> "Boolean". Ce qui veut dire qu'on test que ça existe oui ou non. En fournissant l'URN le système peut donc déduire le reste. Pour afficher ajouter un filtre permettant de savoir si le <strong>Wi-Fi</strong> est disponible il faudra ajouter l'URN <strong>urn:fld:eqpsrv:accwebwifi</strong>
+</li>
+<li>Pour avoir la possibilité de filtrer une page pour afficher les <strong>Gîtes</strong> &amp; les <strong>Chambres d'hôtes</strong>, il faudra ajouter 2 URN: <strong>urn:typ:2</strong> et <strong>urn:typ:3</strong>
+</li>
+<li>Pour filtrer sur la liste des <strong>communes</strong> attachées à l'organisme touristique, il faudra ajouter l'URN <strong>urn:fld:adrcom</strong>
+</li>
+<li>Pour laisser le visiteur filtrer sur les hébergements d'une <strong>capacité</strong> <strong>plus grande ou égale</strong> à X personnes, il faudra ajouter l'URN <strong>urn:fld:capbase</strong> et mettre l'<code>operateur</code> à <em>greaterequal</em>.</li>
+</ul>
+
+        </div>
