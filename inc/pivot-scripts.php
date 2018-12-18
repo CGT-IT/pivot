@@ -33,7 +33,6 @@ function pivot_enqueue_admin_script() {
   // Add script only in this case
   // page is "pivot-filters" and "edit" is set to true
   if(isset($_GET['page']) && $_GET['page'] === "pivot-filters" && isset($_GET['edit']) && $_GET['edit'] === 'true'){
-    print MY_PLUGIN_PATH . 'js/pivot-filters.js';
     wp_enqueue_script('pivot_filters_script', MY_PLUGIN_URL.'js/'.'filters.js',array('jquery'), '3.0', true);
   }
   if(isset($_GET['page']) && $_GET['page'] === "pivot-pages" && isset($_GET['edit']) && $_GET['edit'] === 'true'){

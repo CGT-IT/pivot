@@ -119,7 +119,6 @@ function pivot_offer_type_action(){
     if(empty($_POST['type_id'])) {
       if(empty(pivot_get_offer_type($_POST['id']))){
         $sql = "INSERT INTO " .$wpdb->prefix ."pivot_offer_type(id,type,parent) VALUES('" .$_POST['id'] ."','" .$_POST['type']."','" .$_POST['parent']."');";
-        print $sql;
         $wpdb->query($sql);
       }else{
         print _show_admin_notice('This type has already been set', 'error');
