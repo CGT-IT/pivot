@@ -111,6 +111,10 @@ function pivot_install_data() {
   $data_set[5]= array("id" => 6, "type" => "Budget Holiday", "parent" => "hebergement");
   $data_set[6]= array("id" => 7, "type" => "Village de vacances", "parent" => "hebergement");
   $data_set[7]= array("id" => 9, "type" => "Evénement", "parent" => "activite");
+  $data_set[8]= array("id" => 11, "type" => "Découverte et Divertissement", "parent" => "default");
+  $data_set[9]= array("id" => 258, "type" => "Producteur", "parent" => "default");
+  $data_set[10]= array("id" => 259, "type" => "Artisan", "parent" => "default");
+  $data_set[11]= array("id" => 269, "type" => "Point d'intérêt", "parent" => "default");
   // Execute the sql statement to insert datas
   wp_insert_rows($data_set,$table_name);
 }

@@ -2,7 +2,7 @@
 <?php $offre = $args; ?>
 <tr>
   <td>
-    <?php print $offre->nom->__toString(); ?>
+    <?php print _get_urn_value($offre, 'urn:fld:nomofr'); ?>
   </td>
   <td><?php print (isset($offre->adresse1->commune->value)?$offre->adresse1->commune->value->__toString():''); ?></td>
   <td>

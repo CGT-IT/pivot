@@ -32,7 +32,7 @@
           <?php foreach($offres as $offre): ?>  
             <tr>
               <td>
-                <?php print $offre->nom->__toString(); ?>
+                <?php print _get_urn_value($offre, 'urn:fld:nomofr'); ?>
               </td>
               <td>
                 <?php foreach($offre->spec as $specification): ?>

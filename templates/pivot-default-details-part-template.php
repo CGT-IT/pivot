@@ -12,10 +12,6 @@
       <a class="text-dark" title="<?php echo esc_attr('Link to', 'pivot') .' '. _get_urn_value($offre, 'urn:fld:nomofr'); ?>" href="<?php print $url; ?>">
         <div class="container-img">
           <img class="pivot-img zoom pivot-img-list" src="https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/<?php print $offre->attributes()->codeCgt->__toString() ;?>;w=428;h=284"/>
-          <div class="top-right-corner p-1">
-            <span class="item-services">
-            </span>
-          </div>
         </div>
         <h4 class="pivot-title pt-2 pl-3 pr-3">
           <?php print _get_urn_value($offre, 'urn:fld:nomofr'); ?>
@@ -44,44 +40,6 @@
         <br>
       <?php endif; ?>
     </section>
-      
-    <div class="row text-center pl-3 pr-3">
-      <div class="col-12 pt-3 pb-3 border-top">
-        <?php foreach($offre->spec as $specification): ?>
-          <?php if($specification->attributes()->urn->__toString() == 'urn:obj:date'): ?>
-            <?php foreach($specification->spec as $dateObj): ?>
-
-              <?php if($dateObj->attributes()->urn->__toString() == 'urn:fld:date:datedeb'): ?>
-                <?php $dateStart = date("Y-m-d", strtotime(str_replace('/', '-', $dateObj->value->__toString()))); ?>
-                <?php if(date('Y', strtotime($dateStart)) == 2018): ?>
-                  <div class="time time-start">
-                      <div datetime="<?php echo date("Y-M-D h:m", strtotime($dateStart)); ?>">
-                      Start: <span class="day"><?php echo date('d', strtotime($dateStart));?></span>
-                      <span class="month"><?php echo date('M', strtotime($dateStart));?></span>
-                      <span class="year"><?php echo date('Y', strtotime($dateStart));?></span>
-                    </div>
-                  </div>
-                <?php endif; ?>
-              <?php endif; ?>
-
-              <?php if($dateObj->attributes()->urn->__toString() == 'urn:fld:date:datefin'): ?>
-                <?php $dateEnd = date("Y-m-d", strtotime(str_replace('/', '-', $dateObj->value->__toString()))); ?>
-                  <?php if($dateEnd != $dateStart): ?>
-                    <div class="time time-end">
-                      <div datetime="<?php echo date("Y-M-D h:m", strtotime($dateEnd)); ?>">
-                        End: <span class="day"><?php echo date('d', strtotime($dateEnd));?></span>
-                        <span class="month"><?php echo date('M', strtotime($dateEnd));?></span>
-                        <span class="year"><?php echo date('Y', strtotime($dateEnd));?></span>
-                      </div>
-                    </div>
-                <?php endif; ?>
-              <?php endif; ?>
-
-            <?php endforeach; ?>
-          <?php endif; ?>
-        <?php endforeach; ?>
-      </div>
-    </div>
 
   </article>
 </div>

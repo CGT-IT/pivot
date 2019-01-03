@@ -3,6 +3,7 @@
 <?php _add_meta_data($offre, 'details'); ?>
 <?php get_header(); ?>
 
+
 <article class="pivot-offer row m-3">
   <div class="col-xs-12 col-md-8">
     <div class="row">
@@ -75,61 +76,23 @@
                 <p class="pivot-desc item mb-0"><?php print _get_urn_value($offre, 'urn:fld:descmarket') ;?></p>
             </div>
         </section>
-
-        <h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-thumb-tack"></i><?php esc_html_e('Equipments', 'pivot')?></h5>
-        <section class="card lis-brd-light mb-4">
-          <div class="card-body p-4">
-            <div class="row">
-              <div class="col-12">
-                <ul id="pivot-equipments" class="list-unstyled lis-line-height-2 mb-0">
-                  <?php foreach($offre->spec as $specification): ?>
-                    <?php if($specification->urnCat->__toString() == 'urn:cat:eqpsrv'): ?>
-                      <?php $urn_value = _get_urn_documentation($specification->attributes()->urn->__toString()); ?>
-                      <li class="pivot-service <?php print str_replace(":", "-", $specification->attributes()->urn->__toString()); ?>">
-                          <i class="pr-2"><img alt="<?php print $urn_value; ?>" title="<?php print $urn_value; ?>" class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $specification->attributes()->urn->__toString(); ?>;h=16"/></i>
-                        <?php print $urn_value; ?>
-                      </li>
-                    <?php endif ?>
-                  <?php endforeach ?>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-info"></i><?php esc_html_e('Extra infos', 'pivot')?></h5>
-        <section class="card lis-brd-light mb-4">
-          <div class="card-body p-4">
-            <ul id="pivot-extra-infos" class="list-unstyled lis-line-height-2 mb-0 ">
-              <?php foreach($offre->spec as $specification): ?>
-                <?php if($specification->urnCat->__toString() == 'urn:cat:accueil' && $specification->urnSubCat->__toString() != 'urn:cat:accueil:langpar' && $specification->attributes()->urn->__toString() != 'urn:fld:attestincend'): ?>
-                  <li class="list-group-item list-group-item-action pivot-details <?php print str_replace(":", "-", $specification->attributes()->urn->__toString()); ?>">
-                    <span>
-                      <?php print _get_urn_documentation($specification->attributes()->urn->__toString()); ?>
-                      <?php if($specification->type->__toString() == 'Boolean'): ?>
-                        <img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $specification->attributes()->urn->__toString(); ?>;h=16"/>
-                      <?php else: ?>
-                        : <span class="pivot-desc item"><?php print _get_urn_value($offre, $specification->attributes()->urn->__toString()) ;?></span>
-                      <?php endif ?>
-                    </span>
-                  </li>
-                <?php endif ?>
-              <?php endforeach ?>
-            </ul>
-          </div>
-        </section>
+        
+        <?php print _add_section($offre,'urn:cat:accueil', 'Extra infos', 'fa-info'); ?>
 
       </div>
     </div>
   </div>
 
   <aside class="col-xs-12 col-md-3">
-
+      
     <?php print _add_section_contact($offre); ?>
     
-    <?php print _add_section($offre, 'urn:cat:accueil:langpar', 'Language(s)', 'fa-language', 1); ?>
-    <?php print _add_section($offre, 'urn:cat:classlab', 'Themes', 'fa-list-alt'); ?>
-    
+    <?php print _add_section($offre,'urn:cat:accueil:langpar', 'Language(s)', 'fa-language', 1); ?>
+    <?php print _add_section($offre,'urn:cat:prod', 'Product(s)', 'fa-shopping-basket'); ?>
+    <?php print _add_section($offre,'urn:cat:tarif', 'Price(s)', 'fa-eur'); ?>
+    <?php print _add_section($offre,'urn:cat:visite', 'Visit', 'fa-map-signs'); ?>
+    <?php print _add_section($offre,'urn:cat:eqpsrv', 'Equipments & services', 'fa-thumb-tack'); ?>
+    <?php print _add_section($offre,'urn:cat:classlab', 'Themes', 'fa-list-alt'); ?>
     <?php print _add_section_share($offre); ?>
 
   </aside>
