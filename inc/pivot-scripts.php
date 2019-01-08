@@ -35,6 +35,10 @@ function pivot_enqueue_admin_script() {
   if(isset($_GET['page']) && $_GET['page'] === "pivot-filters" && isset($_GET['edit']) && $_GET['edit'] === 'true'){
     wp_enqueue_script('pivot_filters_script', MY_PLUGIN_URL.'js/'.'filters.js',array('jquery'), '3.0', true);
   }
+  if(isset($_GET['action']) && $_GET['action'] === 'edit'){
+    wp_enqueue_script('clipboard_script', MY_PLUGIN_URL.'js/'.'clipboard.min.js',array('jquery'), '1.0', true);
+    wp_enqueue_script('pivot_shortcode_script', MY_PLUGIN_URL.'js/'.'shortcode.js',array('jquery'), '1.8', true);
+  }
   if(isset($_GET['page']) && $_GET['page'] === "pivot-pages" && isset($_GET['edit']) && $_GET['edit'] === 'true'){
     wp_enqueue_script('pivot_pages_script', MY_PLUGIN_URL.'js/'.'pages.js',array('jquery'), '3.0', true);
   }
