@@ -52,7 +52,7 @@ function pivot_filters_meta_box() {
   <div class="form-item form-type-textfield form-item-pivot-urn">
     <label for="edit-pivot-urn"><?php esc_html_e('URN', 'pivot')?> </label>
     <input type="text" id="edit-pivot-urn" name="urn" value="<?php if(isset($edit_page)) echo $edit_page->urn;?>" maxlength="128" class="form-text">
-    <span><button id="load-urn-info" type="button"><?php esc_html_e('Load URN Infos', 'pivot')?> </button></span>
+    <span><input id="load-urn-info" class="button" type="button" value="<?php esc_html_e('Load URN Infos', 'pivot')?>"> </button></span>
     <p class="description"><?php esc_html_e('URN or ID of the field you want to filter', 'pivot')?></p>
   </div>
 
@@ -65,7 +65,7 @@ function pivot_filters_meta_box() {
     <div class="form-item form-type-textfield form-item-pivot-operator">
       <label for="edit-pivot-operator"><?php esc_html_e('Operator', 'pivot')?> </label>
       <select id="edit-pivot-operator" name="operator">
-        <option selected disabled hidden><?php esc_html_e('Choisir un opérateur', 'pivot')?></option>
+        <option selected disabled hidden><?php esc_html_e('Choose an operator', 'pivot')?></option>
         <option <?php if(isset($edit_page) && $edit_page->operator == 'exist') echo 'selected="selected"';?>value="exist"><?php esc_html_e('Exist', 'pivot')?></option>
         <option <?php if(isset($edit_page) && $edit_page->operator == 'equal') echo 'selected="selected"';?>value="equal"><?php esc_html_e('Equal', 'pivot')?></option>
         <option <?php if(isset($edit_page) && $edit_page->operator == 'like') echo 'selected="selected"';?>value="like"><?php esc_html_e('Like', 'pivot')?></option>

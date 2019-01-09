@@ -199,7 +199,7 @@ function pivot_options() {
         <p class="description"><?php _e('Personnal Key to access Pivot webservices, take contact with <a href="http://pivot.tourismewallonie.be/index.php/2015-05-05-10-23-26/flux-de-donnees-3-1" target="_blank">Pivot</a>', 'pivot')?></p>
       </div>
 
-      <span><button id="check-pivot-config" type="button"><?php esc_html_e('Check Pivot config', 'pivot')?> </button></span>
+      <span><input id="check-pivot-config" class="button" type="button" value="<?php esc_html_e('Check Pivot config', 'pivot')?>"> </button></span>
 
       <div id="pivot-response"></div>
 

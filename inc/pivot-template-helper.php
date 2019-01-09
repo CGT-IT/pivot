@@ -27,25 +27,28 @@ function _add_section($offre, $urnCat, $title, $faIcon='', $urnSubCat=0){
            .'<ul class="list-unstyled lis-line-height-2 mb-0">';
   foreach($offre->spec as $specification){
     // If iteration is on an URN of the cat or subcat we are looking for
-    if($specification->$cat_or_subcat->__toString() == $urnCat && !empty(_get_urn_documentation($specification->attributes()->urn->__toString()))
-       && ($lang == 'fr' && 'urn' == substr($specification->attributes()->urn->__toString(), 0, 3))){
-      $content .= '<li class="p-1 '. str_replace(":", "-", $specification->attributes()->urn->__toString()) .'">'
-              .    '<span class="'.$cat.'-label">'. _get_urn_documentation($specification->attributes()->urn->__toString()) .'</span>'
-              .    '<span class="'.$cat.'-value"> '
-              .      _get_urnValue_translated($offre, $specification)
-              .    '</span> '
-              .    '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'. $specification->attributes()->urn->__toString() .';h=16"/>'
-              .  '</li>';
-    }else{
-      if($specification->$cat_or_subcat->__toString() == $urnCat && !empty(_get_urn_documentation($specification->attributes()->urn->__toString())) && $lang != 'fr'){
-      $content .= '<li class="p-1 '. str_replace(":", "-", $specification->attributes()->urn->__toString()) .'">'
-              .    '<span class="'.$cat.'-label">'. _get_urn_documentation($specification->attributes()->urn->__toString()) .'</span>'
-              .    '<span class="'.$cat.'-value"> '
-              .      _get_urnValue_translated($offre, $specification)
-              .    '</span> '
-              .    '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'. $specification->attributes()->urn->__toString() .';h=16"/>'
-              .  '</li>';
-       }
+    if($specification->$cat_or_subcat->__toString() == $urnCat && !empty(_get_urn_documentation($specification->attributes()->urn->__toString()))){
+      // Case FR
+      if($lang == 'fr' && 'urn' == substr($specification->attributes()->urn->__toString(), 0, 3)){
+        $content .= '<li class="p-1 '. str_replace(":", "-", $specification->attributes()->urn->__toString()) .'">'
+                .    '<span class="'.$cat.'-label">'. _get_urn_documentation($specification->attributes()->urn->__toString()) .'</span>'
+                .    '<span class="'.$cat.'-value"> '
+                .      _get_urnValue_translated($offre, $specification)
+                .    '</span> '
+                .    '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'. $specification->attributes()->urn->__toString() .';h=16"/>'
+                .  '</li>';
+      }else{
+        // Case other language than french
+        if($lang != 'fr'){
+        $content .= '<li class="p-1 '. str_replace(":", "-", $specification->attributes()->urn->__toString()) .'">'
+                .    '<span class="'.$cat.'-label">'. _get_urn_documentation($specification->attributes()->urn->__toString()) .'</span>'
+                .    '<span class="'.$cat.'-value"> '
+                .      _get_urnValue_translated($offre, $specification)
+                .    '</span> '
+                .    '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'. $specification->attributes()->urn->__toString() .';h=16"/>'
+                .  '</li>';
+         }
+      }
     }
   }
   $close_balise = '</ul></div></section>';

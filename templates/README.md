@@ -79,3 +79,4 @@ There are some usefull functions like to help to build the template:
 * _get_ranking_picto($offre);
 * _get_urn_documentation($urn);
 * _get_urn_documentation_full_spec($urn);
+* All functions in inc\pivot-template-helper.php
