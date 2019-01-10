@@ -49,7 +49,7 @@ Il en faut 3 par catégorie structurés de la façon suivante:
     - [ ] NL
     - [ ] DE 
 - [x] Template (affichage) par défaut pour liste et détails
-- [ ] Aide à la création des shortcodes
+- [x] Aide à la création des shortcodes
 - [ ] Affichage des offres liées
 - [ ] Affichage des offres 'liées' dans les x km à la ronde
 - [ ] Recherche sur base de la localisation si smartphone
