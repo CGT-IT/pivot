@@ -34,17 +34,16 @@ function pivot_custom_shortcode($atts) {
     $text = __('The <strong>query</strong> argument is missing', 'pivot');
     print _show_warning($text, 'danger');
   }else{
-    $types = pivot_get_offer_type_categories();
-    foreach($types as $type){
-      if($atts['type'] == $type->parent){
-        $find_type = true;
-      }
-    }
-      
-    if($find_type == true){
+    // Check if type is valid
+    $type = pivot_get_offer_type_categories($atts['type']);
+    // If type is valid (and query is set), the minimum is set to build the shortcode
+    if($type){
+      // Construct filter if set
       if(!empty($atts['filterurn'])){
         $urn = $atts['filterurn'];
+        // Get specification of the filtered URN
         $urnDoc= _get_urn_documentation_full_spec($urn);
+        // Get type of the filtered URN
         $type_urn = $urnDoc->spec->type->__toString();
         
         $filter = new stdClass();
@@ -53,6 +52,7 @@ function pivot_custom_shortcode($atts) {
         $filter->operator = '';
         $filter->filter_name = '';
 
+        // Check the type of the filter URN and do some tricks depending the case
         switch($type_urn){
           case 'Choice':
           case 'MultiChoice':
@@ -60,27 +60,32 @@ function pivot_custom_shortcode($atts) {
           case 'Panel':
           case 'Type de champ':
           case 'HMultiChoice':
+            // Can't handle those URN types
             $text = __("It's not possible to add this type of filter: ".$type_urn, 'pivot');
             print _show_warning($text, 'danger');
             break;
           case 'Boolean':
+            // By default for boolean operator is "exist"
             $filter->operator = 'exist';
             break;
           case 'Type':
           case 'Value':
+            // Operator and filtered value can be guess for thoses types
             $filter->operator = 'in';
             $filter->filter_name = substr(strrchr($urn, ":"), 1);
             break;
           default:
-
+            // Default case, operator is required so check if it is well set
             if(empty($atts['operator'])){
               $text = __('The attribute "operator" is required for this kind of filter', 'pivot');
               print _show_warning($text, 'danger');
             }else{
               $valid_operator = array("equal", "notequal", "like", "notlike", "lesser", "lesserequal", "greater", "greaterequal");
+              // Check if operator is valid
               if(in_array($atts['operator'], $valid_operator)){
                 $filter->operator = $atts['operator'];
               }else{
+                // If operator not valid, construction of error message
                 $operator_list = '<ul>';
                 foreach($valid_operator as $operator){
                   $operator_list .= '<li>'.$operator.'</li>';
@@ -91,7 +96,9 @@ function pivot_custom_shortcode($atts) {
                 print _show_warning($text, 'danger');
               }
             }
+            // Check if filtered value is well set
             if(empty($atts['filtervalue'])){
+              // If filtered value is not set, construction of error message
               $text = __('The attribute "filtervalue" is required for this kind of filter', 'pivot');
               print _show_warning($text, 'danger');
             }else{
@@ -110,7 +117,10 @@ function pivot_custom_shortcode($atts) {
       // Get template name depending of query type
       $template_name = 'pivot-'.$atts['type'].'-details-part-template';
 
+      // Get offers
       $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query);
+      
+      // Start and open HTML balise in output
       if($atts['type'] == 'guide'){
         $output = '<div class="container">
                     <div class="row">
@@ -132,11 +142,13 @@ function pivot_custom_shortcode($atts) {
                  .'<div class="row row-eq-height pivot-row">';
       }
 
+      // Add main HTML content in output
       foreach($offres as $offre){
         $offre->path = 'details';
         $output.= pivot_template($template_name, $offre);
       }
 
+      // Close HTML balise in output
       if($atts['type'] == 'guide'){
         $output .= '</tbody></table></div></div></div>';
       }else{
@@ -144,7 +156,7 @@ function pivot_custom_shortcode($atts) {
       }
 
     }else{
-      $text = __('The <strong>type</strong> argument for the query is wrong or missing ', 'pivot');
+      $text = __('The <strong>type</strong> attributes for the query is wrong or missing ', 'pivot');
       print _show_warning($text, 'danger');      
     }
   }
@@ -152,7 +164,8 @@ function pivot_custom_shortcode($atts) {
 }
 
 /**
- * 
+ * Add custom meta box on all post / page types
+ * This box will help to build pivot shortcode
  */
 function pivot_build_shortcode_box(){
   $screens = get_post_types();
@@ -167,10 +180,9 @@ function pivot_build_shortcode_box(){
 }
 
 /**
- * 
- * @param type $post
+ * HTML content for the custom meta box
  */
-function pivot_build_shortcode_box_html($post){
+function pivot_build_shortcode_box_html(){
   ?>
   <div class="form-item form-type-textfield form-item-pivot-query">
     <label for="edit-pivot-query"><?php esc_html_e('Query', 'pivot') ?></label>

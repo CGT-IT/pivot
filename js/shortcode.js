@@ -2,12 +2,13 @@
 
   $().ready(function(){
     
+    // Init copy/paste (clipboard) button
     new ClipboardJS('#clipboard-btn');
     
     // When URN is empty (In creation case)
     // It will be loaded when URN is known
     if($('#edit-pivot-urn').val().length === 0){
-      // we hide "filter title" and "operator")
+      // we hide "filter value" and "operator")
       $('#filter-urn-infos').hide();
     }
     
@@ -25,19 +26,30 @@
       pivot_ajax_call();
     });
     
+    // Build shortcode when click on button
     $('#build-shortcode').click(function(){
+      // Init vars
       var query = $('#edit-pivot-query');
       var type = $('#edit-pivot-type');
       var nbOffers = $('#edit-pivot-nb-offers');
       var urn = $('#edit-pivot-urn');
       var operator = $('#edit-pivot-operator');
       var value = $('#edit-pivot-filter-value');
+      
+      // Init shortcode string
       var shortcode = "[pivot_shortcode ";
+      
+      // If query is not empty
       if(query.val() != ''){
+        // Set border to default
         query.css({"border": "1px solid #ddd"});
+        // add query attribute to shortcode
         shortcode += "query='"+query.val()+"' ";
+        // If query is set
         if(type.val() != null){
+          // Set border to default
           type.css({"border": "1px solid #ddd"});
+          // add type attribute to shortcode
           shortcode += "type='"+type.val()+"' ";
           if(nbOffers.val() != ''){
             shortcode += "nboffers='"+nbOffers.val()+"' ";
@@ -54,9 +66,11 @@
           shortcode += "]";
           $('#pivot-shortcode-insertion').val(shortcode);
         }else{
+          // Set border of type field to red as it is not set
           type.css({"border": "1px solid red"});
         }
       }else{
+        // Set border of query field to red as it is empty
         query.css({"border": "1px solid red"});
       }
       
