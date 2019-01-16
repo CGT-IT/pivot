@@ -134,3 +134,64 @@ function _add_section_contact($offre){
   
   return $output;
 }
+
+function _add_section_linked_offers($offre){
+  $output = '<h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-paperclip"></i>'.__('Linked offers', 'pivot').'</h5>'
+          .  '<div class="carousel slide" data-ride="carousel" id="quote-carousel">'
+                // Carousel Slides
+          .     '<div class="carousel-inner">';
+  $i= 0;
+  foreach($offre->relOffre as $relation){
+    // The linked offer shouldn't be a contact or a media
+    if(!(in_array($relation->offre->typeOffre->attributes()->idTypeOffre->__toString(), array('268', '23')))){
+      // The linked offer type should exist in "pivot offer type" otherwise no template will be used
+      if(pivot_get_offer_type($relation->offre->typeOffre->attributes()->idTypeOffre->__toString())){
+        $url = get_bloginfo('wpurl').'/details/'.$relation->offre->attributes()->codeCgt->__toString().'&type='.$relation->offre->typeOffre->attributes()->idTypeOffre->__toString();
+        $output .= '<div class="carousel-item ';
+        if($i++ == 0)
+          $output .= 'active';
+        $output .= '"><blockquote>'
+                .      '<a class="text-dark" title="'.esc_attr('Link to', 'pivot').' '._get_urn_value($relation->offre, 'urn:fld:nomofr').'" href="'.$url.'">'
+                .        '<div class="row">'
+                .          '<div class="col-sm-3 text-center">'
+                .            '<img class="pivot-img zoom pivot-img-list" src="https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/'.$relation->offre->attributes()->codeCgt->__toString().';w=256;h=170"/>'
+                .          '</div>'
+                .          '<div class="col-sm-9">'
+                .            '<p>'._get_urn_value($relation->offre, 'urn:fld:descmarket').'</p>'
+                .            '<small>'._get_urn_value($relation->offre, 'urn:fld:nomofr').'</small>'
+                .          '</div>'
+                .        '</div>'
+                .      '</a>'
+                .    '</blockquote>'
+                .  '</div>';
+      }
+    }
+  }
+
+  // Bottom Carousel Indicators
+  $output .= '<ol class="carousel-indicators">';
+  for($x = 0; $x <= $i; $x++){
+    $output .= '<li data-target="#quote-carousel" data-slide-to="'.$x.'" ';
+    if($x == 0)
+      $output .= 'class="active"';
+    $output .= '></li>';
+  }
+  $output .= '</ol></div>';
+
+  // Carousel Buttons Next/Prev
+  $output .= '<a class="carousel-control-prev" href="#quote-carousel" role="button" data-slide="prev">'
+            . '<span class="carousel-control-prev-icon" aria-hidden="true"></span>'
+            . '<span class="sr-only">Previous</span>'
+            .'</a>'
+            .'<a class="carousel-control-next" href="#quote-carousel" role="button" data-slide="next">'
+            . '<span class="carousel-control-next-icon" aria-hidden="true"></span>'
+            . '<span class="sr-only">Next</span>'
+            .'</a></div>';
+  
+  // There is minimum one offer
+  if($i > 0){
+    return $output;
+  }
+  
+  return '';
+}

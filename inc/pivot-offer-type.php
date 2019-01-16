@@ -25,8 +25,7 @@ function pivot_get_offer_type($id = NULL, $type = NULL) {
   $sql_request .= " ORDER BY id ASC";
   
   $offer_type = $wpdb->get_results($sql_request);
-  
-  if(!isset($offer_type[1])){
+  if(!isset($offer_type[1]) && isset($offer_type[0])){
     return $offer_type[0];
   }
 
