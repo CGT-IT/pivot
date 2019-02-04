@@ -30,7 +30,8 @@ $bitly_params['domain'] = 'bit.ly';
 
 register_activation_hook(__FILE__, 'pivot_install');
 register_activation_hook(__FILE__, 'pivot_install_data');
-register_deactivation_hook(__FILE__, 'pivot_uninstall');
+register_deactivation_hook(__FILE__, 'pivot_deactivation');
+register_uninstall_hook(__FILE__, 'pivot_uninstall');
 
 add_action('init', 'init');
 add_action('admin_menu', 'pivot_menu');
@@ -119,6 +120,11 @@ function pivot_install_data() {
   wp_insert_rows($data_set,$table_name);
 }
 
+function pivot_deactivation(){
+  flush_rewrite_rules();
+  wp_cache_flush();
+}
+
 /**
  * Drop Pivot tables on plugin uninstall
  * @global Object $wpdb
@@ -137,7 +143,12 @@ function pivot_uninstall() {
     $sql = "DROP TABLE IF EXISTS $table_name;";
     $wpdb->query($sql);
     
-    delete_option("my_plugin_db_version");
+    delete_option('pivot_uri');
+    delete_option('pivot_key');
+    delete_option('pivot_mdt');
+    delete_option('pivot_bootstrap');
+    delete_option('pivot_bitly');
+	
     flush_rewrite_rules();
 }
 
@@ -385,7 +396,9 @@ function _xml_query_construction($query_id, $field_params = NULL){
 
   $queryElement->appendChild($criteriaGroupElement);
   $domDocument->appendChild($queryElement);
-  $domDocument->save('/var/www/html/wordpress/test/test'.rand(10, 30).'.xml');
+	
+  // Debug function
+  //$domDocument->save('/var/www/html/wordpress/test/test'.rand(10, 30).'.xml');
 
   return $domDocument->saveXML();
 }
