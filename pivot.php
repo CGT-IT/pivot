@@ -206,7 +206,7 @@ function pivot_options() {
       </div>
       <div class="form-item form-type-textfield form-item-pivot-key">
         <label for="edit-pivot-key">WS_KEY <span class="form-required" title="<?php esc_html_e('This field is required')?>">*</span></label>
-        <input type="password" id="edit-pivot-key" name="pivot_key" value="<?php echo get_option('pivot_key')?>" size="60" maxlength="128" class="form-text required">
+        <input type="password" id="edit-pivot-key" name="pivot_key" size="60" maxlength="128" class="form-text required">
         <p class="description"><?php _e('Personnal Key to access Pivot webservices, take contact with <a href="http://pivot.tourismewallonie.be/index.php/2015-05-05-10-23-26/flux-de-donnees-3-1" target="_blank">Pivot</a>', 'pivot')?></p>
       </div>
 
