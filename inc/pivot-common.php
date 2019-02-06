@@ -201,7 +201,7 @@ function _get_number_of_offers($field_params, $page_id){
   $params['content_details'] = ';content=1';
 
   // Get offers
-  $xml_object = _pivot_request('offer-search', 1, $params, $xml_query);
+  $xml_object = _pivot_request('offer-init-list', 1, $params, $xml_query);
 
   if($xml_object){
     $number_of_offers = $xml_object->attributes()->count->__toString();
@@ -403,7 +403,7 @@ function _get_event_date($offre, $wanted_date){
  */
 function _add_pagination($nb_offres){
   /* Init pagination */
-  $total = $nb_offres/12;
+  $total = ceil($nb_offres/12);
 
   // Check if we have more than 1 page!
   if($total > 1)  {
