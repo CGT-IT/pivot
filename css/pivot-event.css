@@ -6,13 +6,6 @@
     margin-bottom: 15px;
 }
 
-.pivot-row.event-list article.pivot-offer{
-    /*height: auto;*/
-}
-
-/*.event-list .social{
-    margin-top: -12px;
-}*/
 .event-list .add-to-calendar span{
     margin-right: 5px;
     border-right: 1px solid grey;
