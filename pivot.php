@@ -30,7 +30,8 @@ $bitly_params['domain'] = 'bit.ly';
 
 register_activation_hook(__FILE__, 'pivot_install');
 register_activation_hook(__FILE__, 'pivot_install_data');
-register_deactivation_hook(__FILE__, 'pivot_uninstall');
+register_deactivation_hook(__FILE__, 'pivot_deactivation');
+register_uninstall_hook(__FILE__, 'pivot_uninstall');
 
 add_action('init', 'init');
 add_action('admin_menu', 'pivot_menu');
@@ -119,6 +120,12 @@ function pivot_install_data() {
   wp_insert_rows($data_set,$table_name);
 }
 
+
+function pivot_deactivation(){
+  flush_rewrite_rules();
+  wp_cache_flush();
+}
+
 /**
  * Drop Pivot tables on plugin uninstall
  * @global Object $wpdb
@@ -137,7 +144,12 @@ function pivot_uninstall() {
     $sql = "DROP TABLE IF EXISTS $table_name;";
     $wpdb->query($sql);
     
-    delete_option("my_plugin_db_version");
+    delete_option('pivot_uri');
+    delete_option('pivot_key');
+    delete_option('pivot_mdt');
+    delete_option('pivot_bootstrap');
+    delete_option('pivot_bitly');
+    
     flush_rewrite_rules();
 }
 
@@ -195,7 +207,7 @@ function pivot_options() {
       </div>
       <div class="form-item form-type-textfield form-item-pivot-key">
         <label for="edit-pivot-key">WS_KEY <span class="form-required" title="<?php esc_html_e('This field is required')?>">*</span></label>
-        <input type="text" id="edit-pivot-key" name="pivot_key" value="<?php echo get_option('pivot_key')?>" size="60" maxlength="128" class="form-text required">
+        <input type="password" id="edit-pivot-key" name="pivot_key" value="<?php echo get_option('pivot_key')?>" size="60" maxlength="128" class="form-text required">
         <p class="description"><?php _e('Personnal Key to access Pivot webservices, take contact with <a href="http://pivot.tourismewallonie.be/index.php/2015-05-05-10-23-26/flux-de-donnees-3-1" target="_blank">Pivot</a>', 'pivot')?></p>
       </div>
 
@@ -320,7 +332,7 @@ function _pivot_request($type, $detail, $params = NULL, $postfields = NULL){
  * @param array $field_params
  * @return xml file
  */
-function _xml_query_construction($query_id, $field_params = NULL){
+function _xml_query_construction($query_id = NULL, $field_params = NULL){
   // Init XML document
   $domDocument = new DOMDocument('1.0', "UTF-8");
   $queryElement = $domDocument->createElement('Query');
@@ -329,6 +341,7 @@ function _xml_query_construction($query_id, $field_params = NULL){
   $xmlnsAttribute = $domDocument->createAttribute('xmlns');
   // Value for the created attribute
   $xmlnsAttribute->value = 'http://pivot.tourismewallonie.be/files/xsd/pivot/3.1';
+//  $xmlnsAttribute->value = 'https://pivotwebstg.tourismewallonie.be:443/files/xsd/PivotWeb-3.1';
   // Append it to the element
   $queryElement->appendChild($xmlnsAttribute);
 
@@ -338,6 +351,7 @@ function _xml_query_construction($query_id, $field_params = NULL){
 
   $schemaLocationAttribute = $domDocument->createAttribute('xsi:schemaLocation');
   $schemaLocationAttribute->value = 'http://pivot.tourismewallonie.be/files/xsd/pivot/3.1 http://pivot.tourismewallonie.be/files/xsd/pivot/3.1/pivot310-import-query.xsd';
+//  $schemaLocationAttribute->value = 'https://pivotwebstg.tourismewallonie.be:443/files/xsd/PivotWeb-3.1 https://pivotwebstg.tourismewallonie.be:443/files/xsd/pivot/3.1/pivot310-import-query.xsd';
   $queryElement->appendChild($schemaLocationAttribute);
 
   // Add sorting if needed
@@ -357,35 +371,49 @@ function _xml_query_construction($query_id, $field_params = NULL){
   $typeAttribute = $domDocument->createAttribute('type');
   $typeAttribute->value = 'and';
   $criteriaGroupElement->appendChild($typeAttribute);
+  
+  /*if(isset($field_params['radius'])){
+    print 'coucou: '.$field_params['offer_id'].' radius: '.$field_params['radius'];
+    $criteriaOrthodromicElement = $domDocument->createElement('CriteriaOrthodromic');
+    $offerValueElement = $domDocument->createElement('offre', $field_params['offer_id']);
+    $criteriaOrthodromicElement->appendChild($offerValueElement);
+    $radiusValueElement = $domDocument->createElement('radius', $field_params['radius']);
+    $criteriaOrthodromicElement->appendChild($radiusValueElement);
+    
+    $criteriaGroupElement->appendChild($criteriaOrthodromicElement);
+  }*/
 
-  $criteriaQueryElement = $domDocument->createElement('CriteriaQuery');
-  $queryValueElement = $domDocument->createElement('value', $query_id);
+//  if(isset($query_id)){
+    $criteriaQueryElement = $domDocument->createElement('CriteriaQuery');
+    $queryValueElement = $domDocument->createElement('value', $query_id);
+    $criteriaQueryElement->appendChild($queryValueElement);
+    $criteriaGroupElement->appendChild($criteriaQueryElement);
 
-  $criteriaQueryElement->appendChild($queryValueElement);
-  $criteriaGroupElement->appendChild($criteriaQueryElement);
-
-  if(isset($field_params['filters'])){
-    foreach ($field_params['filters'] as $filter){
-      $criteriaFieldElement = _create_dom_criteria_field_element($domDocument, $filter);
-      $criteriaGroupElement->appendChild($criteriaFieldElement);
+    if(isset($field_params['filters'])){
+      foreach ($field_params['filters'] as $filter){
+        $criteriaFieldElement = _create_dom_criteria_field_element($domDocument, $filter);
+        $criteriaGroupElement->appendChild($criteriaFieldElement);
+      }
     }
-  }
 
-  if(isset($field_params['filters_object_date'])){
-    // Creation of a <CriteriaObjectDate>
-    $criteriaObjectDateElement = $domDocument->createElement('CriteriaObjectDate');
-    // <dateDeb>24/10/2017</dateDeb>
-    $criteriadateDebElement = $domDocument->createElement('dateDeb', $field_params['filters_object_date']['startDate']);
-    $criteriaObjectDateElement->appendChild($criteriadateDebElement);
-    // <dateFin>25/11/2017</dateFin>
-    $criteriadateFinElement = $domDocument->createElement('dateFin', $field_params['filters_object_date']['endDate']);
-    $criteriaObjectDateElement->appendChild($criteriadateFinElement);
-    $criteriaGroupElement->appendChild($criteriaObjectDateElement);
-  }
-
+    if(isset($field_params['filters_object_date'])){
+      // Creation of a <CriteriaObjectDate>
+      $criteriaObjectDateElement = $domDocument->createElement('CriteriaObjectDate');
+      // <dateDeb>24/10/2017</dateDeb>
+      $criteriadateDebElement = $domDocument->createElement('dateDeb', $field_params['filters_object_date']['startDate']);
+      $criteriaObjectDateElement->appendChild($criteriadateDebElement);
+      // <dateFin>25/11/2017</dateFin>
+      $criteriadateFinElement = $domDocument->createElement('dateFin', $field_params['filters_object_date']['endDate']);
+      $criteriaObjectDateElement->appendChild($criteriadateFinElement);
+      $criteriaGroupElement->appendChild($criteriaObjectDateElement);
+    }
+//  }
+  
   $queryElement->appendChild($criteriaGroupElement);
   $domDocument->appendChild($queryElement);
-  $domDocument->save('/var/www/html/wordpress/test/test'.rand(10, 30).'.xml');
+  
+  // debug command
+  //$domDocument->save('/var/www/html/wordpress/test/test'.rand(10, 30).'.xml');
 
   return $domDocument->saveXML();
 }
@@ -494,7 +522,7 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
     $offres = $xml_object->offre;
   }else{
     // Get token + current page (set +1 to current page as it start with 0 but with 1 in Pivot)
-    $params['token'] = '/'.$_SESSION['pivot'][$page_id]['token'].'/'.++$current_page;
+    $params['token'] = '/'.$_SESSION['pivot'][$page_id]['token'].'/'.$current_page;
 
     // Get offers
     $xml_object = _pivot_request('offer-pager', 2, $params);
