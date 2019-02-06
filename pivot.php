@@ -120,7 +120,6 @@ function pivot_install_data() {
   wp_insert_rows($data_set,$table_name);
 }
 
-
 function pivot_deactivation(){
   flush_rewrite_rules();
   wp_cache_flush();
@@ -149,7 +148,7 @@ function pivot_uninstall() {
     delete_option('pivot_mdt');
     delete_option('pivot_bootstrap');
     delete_option('pivot_bitly');
-    
+
     flush_rewrite_rules();
 }
 
@@ -341,7 +340,6 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL){
   $xmlnsAttribute = $domDocument->createAttribute('xmlns');
   // Value for the created attribute
   $xmlnsAttribute->value = 'http://pivot.tourismewallonie.be/files/xsd/pivot/3.1';
-//  $xmlnsAttribute->value = 'https://pivotwebstg.tourismewallonie.be:443/files/xsd/PivotWeb-3.1';
   // Append it to the element
   $queryElement->appendChild($xmlnsAttribute);
 
@@ -351,7 +349,6 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL){
 
   $schemaLocationAttribute = $domDocument->createAttribute('xsi:schemaLocation');
   $schemaLocationAttribute->value = 'http://pivot.tourismewallonie.be/files/xsd/pivot/3.1 http://pivot.tourismewallonie.be/files/xsd/pivot/3.1/pivot310-import-query.xsd';
-//  $schemaLocationAttribute->value = 'https://pivotwebstg.tourismewallonie.be:443/files/xsd/PivotWeb-3.1 https://pivotwebstg.tourismewallonie.be:443/files/xsd/pivot/3.1/pivot310-import-query.xsd';
   $queryElement->appendChild($schemaLocationAttribute);
 
   // Add sorting if needed
@@ -411,8 +408,8 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL){
   
   $queryElement->appendChild($criteriaGroupElement);
   $domDocument->appendChild($queryElement);
-  
-  // debug command
+	
+  // Debug function
   //$domDocument->save('/var/www/html/wordpress/test/test'.rand(10, 30).'.xml');
 
   return $domDocument->saveXML();
