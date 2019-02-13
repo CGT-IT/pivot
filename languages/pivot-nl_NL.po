@@ -1,18 +1,19 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-02-12 10:38+0100\n"
-"PO-Revision-Date: 2019-02-12 10:38+0100\n"
+"POT-Creation-Date: 2019-02-13 16:56+0100\n"
+"PO-Revision-Date: 2019-02-13 16:56+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: de\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.2.1\n"
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-KeywordsList: __;_e;_;esc_html_e;esc_html;esc_attr_e;esc_attr\n"
+"X-Poedit-KeywordsList: esc_attr_e;esc_attr;__;_;_e;esc_html_e;esc_html;"
+"esc_attr__;esc_html__\n"
 "X-Poedit-SearchPath-0: .\n"
 
 #: inc/pivot-common.php:316
@@ -69,6 +70,10 @@ msgstr ""
 
 #: inc/pivot-filters.php:74 pivot-shortcode.php:224
 msgid "in"
+msgstr ""
+
+#: inc/pivot-filters.php:76 pivot-shortcode.php:226
+msgid "Type of comparison"
 msgstr ""
 
 #: inc/pivot-filters.php:81
@@ -315,6 +320,10 @@ msgstr ""
 msgid "Share"
 msgstr ""
 
+#: inc/pivot-template-helper.php:76 inc/pivot-template-helper.php:77
+msgid "Share button"
+msgstr ""
+
 #: inc/pivot-template-helper.php:90
 msgid "Contact"
 msgstr ""
@@ -468,8 +477,18 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
+#: templates/pivot-activite-details-template.php:23
+#: templates/pivot-default-details-template.php:24
+#: templates/pivot-hebergement-details-template.php:44
+msgid "Extra infos"
+msgstr ""
+
 #: templates/pivot-activite-details-template.php:33
 msgid "Dates"
+msgstr ""
+
+#: templates/pivot-activite-details-template.php:72
+msgid "Theme(s)"
 msgstr ""
 
 #: templates/pivot-activite-details-template.php:75
@@ -488,12 +507,34 @@ msgstr ""
 msgid "offers"
 msgstr ""
 
-#: templates/pivot-hebergement-details-template.php:23
-msgid "Equipments"
+#: templates/pivot-default-details-template.php:34
+#: templates/pivot-hebergement-details-template.php:75
+msgid "Language(s)"
 msgstr ""
 
-#: templates/pivot-hebergement-details-template.php:44
-msgid "Extra infos"
+#: templates/pivot-default-details-template.php:35
+msgid "Product(s)"
+msgstr ""
+
+#: templates/pivot-default-details-template.php:36
+msgid "Price(s)"
+msgstr ""
+
+#: templates/pivot-default-details-template.php:37
+msgid "Visit"
+msgstr ""
+
+#: templates/pivot-default-details-template.php:38
+msgid "Equipments & services"
+msgstr ""
+
+#: templates/pivot-default-details-template.php:39
+#: templates/pivot-hebergement-details-template.php:76
+msgid "Themes"
+msgstr ""
+
+#: templates/pivot-hebergement-details-template.php:23
+msgid "Equipments"
 msgstr ""
 
 #: templates/pivot-image-slider.php:53

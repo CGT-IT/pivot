@@ -21,7 +21,7 @@ function _add_section($offre, $urnCat, $title, $faIcon='', $urnSubCat=0){
   // Init var, will be used to check if there is well content or not
   $content = '';
 
-  $open_balise = '<h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 f0fc '.$faIcon.'"></i>'. __($title) .'</h5>'
+  $open_balise = '<h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 f0fc '.$faIcon.'"></i>'. __($title, 'pivot') .'</h5>'
            .'<section class="pivot-'.$cat.' card lis-brd-light mb-4">'
            .'<div class="card-body p-4">'
            .'<ul class="list-unstyled lis-line-height-2 mb-0">';
@@ -70,11 +70,11 @@ function _add_section($offre, $urnCat, $title, $faIcon='', $urnSubCat=0){
  */
 function _add_section_share($offre){
   $url_offer_details = get_bloginfo('wpurl').'/details/'.$offre->attributes()->codeCgt->__toString().'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString();
-  $output = '<h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-share-square-o"></i>'.esc_html('Share', 'pivot').'</h5>'
+  $output = '<h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-share-square-o"></i>'.__('Share', 'pivot').'</h5>'
           .   '<section class="pivot-share card lis-brd-light wow fadeInUp mb-4">'
           .     '<div class="card-body p-4">'
-          .       '<span><a class="social-icon" href="https://www.facebook.com/sharer.php?u='.$url_offer_details.'&amp;t='._get_urn_value($offre, 'urn:fld:nomofr').'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urlfacebook;h=35" alt="Facebook Share button" title="Facebook Share button"/></a></span>'
-          .       '<span><a class="social-icon" href="https://twitter.com/share?text='._get_urn_value($offre, 'urn:fld:nomofr').'&amp;url='.$url_offer_details.'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urltwitter;h=35" alt="Twitter Share button" title="Twitter Share button"/></a></span>'
+          .       '<span><a class="social-icon" href="https://www.facebook.com/sharer.php?u='.$url_offer_details.'&amp;t='._get_urn_value($offre, 'urn:fld:nomofr').'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urlfacebook;h=35" alt="Facebook '.esc_attr__('Share button').'" title="Facebook '.esc_attr__('Share button').'"/></a></span>'
+          .       '<span><a class="social-icon" href="https://twitter.com/share?text='._get_urn_value($offre, 'urn:fld:nomofr').'&amp;url='.$url_offer_details.'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urltwitter;h=35" alt="Twitter '.esc_attr__('Share button').'" title="Twitter '.esc_attr__('Share button').'"/></a></span>'
           .     '</div>'
           .   '</section>';
   
@@ -158,7 +158,7 @@ function _add_section_linked_offers($offre){
                 .          '</div>'
                 .          '<div class="col-sm-9">'
                 .            '<p>'._get_urn_value($relation->offre, 'urn:fld:descmarket').'</p>'
-                .            '<small>'._get_urn_value($relation->offre, 'urn:fld:nomofr').'</small>'
+                .            '<small><b>'._get_urn_value($relation->offre, 'urn:fld:nomofr').'</b></small>'
                 .          '</div>'
                 .        '</div>'
                 .      '</a>'

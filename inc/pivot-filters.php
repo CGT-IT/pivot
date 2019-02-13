@@ -73,7 +73,7 @@ function pivot_filters_meta_box() {
         <option <?php if(isset($edit_page) && $edit_page->operator == 'between') echo 'selected="selected"';?>value="between"><?php esc_html_e('Between', 'pivot')?></option>
         <option <?php if(isset($edit_page) && $edit_page->operator == 'in') echo 'selected="selected"';?>value="in"><?php esc_html_e('in', 'pivot')?></option>
       </select>
-      <p class="description">Type of comparison</p>
+      <p class="description"><?php esc_html_e('Type of comparison', 'pivot') ?></p>
     </div>
   </div>      
       
@@ -184,7 +184,7 @@ function pivot_add_filter(){
   <div class="wrap">
     <div id="faq-wrapper">
       <form method="post" action="?page=pivot-filters">
-        <h2><?php echo $tf_title = ($id == 0)?$tf_title = esc_attr('Add filter', 'pivot') : $tf_title = esc_attr('Edit filter', 'pivot');?></h2>
+        <h2><?php echo $tf_title = ($id == 0)?$tf_title = esc_attr__('Add filter', 'pivot') : $tf_title = esc_attr__('Edit filter', 'pivot');?></h2>
         <div id="poststuff" class="metabox-holder">
           <?php do_meta_boxes('pivot', 'normal','low'); ?>
         </div>

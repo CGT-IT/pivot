@@ -223,7 +223,7 @@ function pivot_build_shortcode_box_html(){
         <option <?php if(isset($edit_page) && $edit_page->operator == 'between') echo 'selected="selected"';?>value="between"><?php esc_html_e('Between', 'pivot')?></option>
         <option <?php if(isset($edit_page) && $edit_page->operator == 'in') echo 'selected="selected"';?>value="in"><?php esc_html_e('in', 'pivot')?></option>
       </select>
-      <p class="description">Type of comparison</p>
+      <p class="description"><?php esc_html_e('Type of comparison', 'pivot') ?></p>
     </div>
     <div class="form-item form-type-textfield form-item-pivot-filter-value">
       <label for="edit-pivot-filter-value"><?php esc_html_e('Filter value', 'pivot')?> </label>

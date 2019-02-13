@@ -12,7 +12,7 @@
 <?php $offres = pivot_lodging_page($pivot_page->id); ?>
   
 <div class="container-fluid pivot-list">
-  <p><?php echo esc_html('There are', 'pivot') .' '. $_SESSION['pivot'][$pivot_page->id]['nb_offres'] .' '.  esc_html('offers', 'pivot'); ?></p>
+  <p><?php echo __('There are', 'pivot') .' '. $_SESSION['pivot'][$pivot_page->id]['nb_offres'] .' '.  __('offers', 'pivot'); ?></p>
   <div class="row row-eq-height pivot-row">
     <?php if($_SESSION['pivot'][$pivot_page->id]['map'] == 1): ?>
       <div class="col-12 col-lg-6 py-5 order-lg-1 order-2 left-sidebar z-index-99">

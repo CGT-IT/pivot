@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pivot\n"
-"POT-Creation-Date: 2019-02-11 10:50+0100\n"
-"PO-Revision-Date: 2019-02-11 11:20+0100\n"
+"POT-Creation-Date: 2019-02-13 16:55+0100\n"
+"PO-Revision-Date: 2019-02-13 16:56+0100\n"
 "Last-Translator: \n"
 "Language-Team: pivot\n"
 "Language: fr_BE\n"
@@ -13,7 +13,8 @@ msgstr ""
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;_;esc_attr;esc_html;esc_html_e\n"
+"X-Poedit-KeywordsList: __;_e;_;esc_attr;esc_html;esc_html_e;esc_html__;"
+"esc_attr_e;esc_attr__\n"
 "X-Poedit-SearchPath-0: .\n"
 
 #: inc/pivot-common.php:316
@@ -72,6 +73,10 @@ msgstr ""
 msgid "in"
 msgstr ""
 
+#: inc/pivot-filters.php:76 pivot-shortcode.php:226
+msgid "Type of comparison"
+msgstr "Type de  comparaison"
+
 #: inc/pivot-filters.php:81
 msgid "Grouping filters"
 msgstr "Groupement de filtres"
@@ -86,7 +91,7 @@ msgstr "Membre du groupe"
 
 #: inc/pivot-filters.php:91
 msgid "Existing groups: "
-msgstr "Groupes existants:"
+msgstr "Groupes existants: "
 
 #: inc/pivot-filters.php:180
 msgid "Pivot filter"
@@ -102,7 +107,7 @@ msgstr "Editer un filtre"
 
 #: inc/pivot-filters.php:204 inc/pivot-pages.php:219
 msgid "Pivot Plugin Pages"
-msgstr ""
+msgstr "Les pages du plugin Pivot"
 
 #: inc/pivot-filters.php:212
 msgid "Filter name"
@@ -134,7 +139,7 @@ msgstr "Supprimer"
 
 #: inc/pivot-filters.php:257
 msgid "There are no data."
-msgstr "Il n'y a pas de donnée"
+msgstr "Il n'y a pas de donnée."
 
 #: inc/pivot-offer-type.php:65
 msgid "Type of offer"
@@ -162,13 +167,13 @@ msgstr "Catégorie parente"
 
 #: inc/pivot-offer-type.php:86
 msgid "Existing categories: "
-msgstr "Catégories existantes"
+msgstr "Catégories existantes: "
 
 #: inc/pivot-offer-type.php:145
 msgid "Category is required"
 msgstr "La catégorie est requise"
 
-#: inc/pivot-offer-type.php:171
+#: inc/pivot-offer-type.php:171 inc/pivot-offer-type.php:190
 msgid "Add type"
 msgstr "Ajouter un type"
 
@@ -186,7 +191,7 @@ msgstr "Catégorie parente"
 
 #: inc/pivot-offer-type.php:231 inc/pivot-pages.php:284
 msgid "There is no data."
-msgstr "Il n'y a pas de donnée"
+msgstr "Il n'y a pas de donnée."
 
 #: inc/pivot-pages.php:54 inc/pivot-pages.php:230 pivot-shortcode.php:188
 msgid "Query"
@@ -288,6 +293,10 @@ msgstr "Ajouter une page"
 msgid "Edit page"
 msgstr "Editer une page"
 
+#: inc/pivot-pages.php:222
+msgid "Add a new page"
+msgstr "Ajouter une nouvelle page"
+
 #: inc/pivot-pages.php:234
 msgid "Map ?"
 msgstr "Carte ?"
@@ -312,6 +321,10 @@ msgstr "Ajouter un filtre"
 msgid "Share"
 msgstr "Partager"
 
+#: inc/pivot-template-helper.php:76 inc/pivot-template-helper.php:77
+msgid "Share button"
+msgstr "bouton de partage"
+
 #: inc/pivot-template-helper.php:90
 msgid "Contact"
 msgstr ""
@@ -326,7 +339,7 @@ msgstr "Offres liées"
 #: templates/pivot-hebergement-details-part-template.php:12
 #: templates/pivot-linked-offers.php:16
 msgid "Link to"
-msgstr "Lié à"
+msgstr "Lien vers"
 
 #: inc/pivot-template.php:127 inc/pivot-template.php:154
 msgid "The required template"
@@ -376,7 +389,7 @@ msgstr "Définir le nombre d'offres"
 
 #: pivot-shortcode.php:204
 msgid "It will be 3 by default"
-msgstr "ça sera 3 par défaut"
+msgstr "ça sera 3 par défaut."
 
 #: pivot-shortcode.php:208
 msgid "Filter URN"
@@ -404,7 +417,7 @@ msgstr "Copier et coller ce texte dans votre post, page, … corps de texte"
 
 #: pivot.php:182
 msgid "You do not have sufficient permissions to access this page."
-msgstr "Vous n'avez pas les droits suffisants pour accéder à cette page"
+msgstr "Vous n'avez pas les droits suffisants pour accéder à cette page."
 
 #: pivot.php:203
 msgid "Base Uri"
@@ -416,7 +429,7 @@ msgstr "Ce champ est requis"
 
 #: pivot.php:205
 msgid "Uri to access Pivot Database."
-msgstr "Uri pour accéder à la Base de données Pivot"
+msgstr "Uri pour accéder à la Base de données Pivot."
 
 #: pivot.php:205
 msgid "End / is required !"
@@ -473,9 +486,19 @@ msgstr "Site web"
 msgid "Description"
 msgstr ""
 
+#: templates/pivot-activite-details-template.php:23
+#: templates/pivot-default-details-template.php:24
+#: templates/pivot-hebergement-details-template.php:44
+msgid "Extra infos"
+msgstr "Infos supplémentaires"
+
 #: templates/pivot-activite-details-template.php:33
 msgid "Dates"
 msgstr ""
+
+#: templates/pivot-activite-details-template.php:72
+msgid "Theme(s)"
+msgstr "Thème(s)"
 
 #: templates/pivot-activite-details-template.php:75
 msgid "Add to calendar"
@@ -493,13 +516,35 @@ msgstr "Il y a"
 msgid "offers"
 msgstr "offres"
 
+#: templates/pivot-default-details-template.php:34
+#: templates/pivot-hebergement-details-template.php:75
+msgid "Language(s)"
+msgstr "Langue(s)"
+
+#: templates/pivot-default-details-template.php:35
+msgid "Product(s)"
+msgstr "Produit(s)"
+
+#: templates/pivot-default-details-template.php:36
+msgid "Price(s)"
+msgstr "Prix"
+
+#: templates/pivot-default-details-template.php:37
+msgid "Visit"
+msgstr "Visite"
+
+#: templates/pivot-default-details-template.php:38
+msgid "Equipments & services"
+msgstr "Equipements & services"
+
+#: templates/pivot-default-details-template.php:39
+#: templates/pivot-hebergement-details-template.php:76
+msgid "Themes"
+msgstr "Thèmes"
+
 #: templates/pivot-hebergement-details-template.php:23
 msgid "Equipments"
 msgstr "Equipements"
-
-#: templates/pivot-hebergement-details-template.php:44
-msgid "Extra infos"
-msgstr "Infos supplémentaires"
 
 #: templates/pivot-image-slider.php:53
 msgid "Previous"

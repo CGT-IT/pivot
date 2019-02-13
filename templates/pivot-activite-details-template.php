@@ -20,7 +20,7 @@
           </div>
         </section>
 
-        <?php print _add_section($offre,'urn:cat:accueil', 'Extra infos', 'fa-info'); ?>
+        <?php print _add_section($offre,'urn:cat:accueil', __('Extra infos'), 'fa-info'); ?>
         <?php print _add_section_linked_offers($offre); ?>
       </div>
     </div>
@@ -69,7 +69,7 @@
       </div>
     </section>
 
-    <?php print _add_section($offre,'urn:cat:classlab', 'Theme(s)', 'fa-list-ol'); ?>
+    <?php print _add_section($offre,'urn:cat:classlab', __('Theme(s)'), 'fa-list-ol'); ?>
     <?php print _add_section_share($offre); ?>
         
     <h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-calendar"></i><?php esc_html_e('Add to calendar', 'pivot')?></h5>

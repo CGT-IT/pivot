@@ -21,7 +21,7 @@
           </div>
         </section>
         
-        <?php print _add_section($offre,'urn:cat:accueil', 'Extra infos', 'fa-info'); ?>
+        <?php print _add_section($offre,'urn:cat:accueil', __('Extra infos'), 'fa-info'); ?>
         <?php print _add_section_linked_offers($offre); ?>
       </div>
     </div>
@@ -31,12 +31,12 @@
       
     <?php print _add_section_contact($offre); ?>
     
-    <?php print _add_section($offre,'urn:cat:accueil:langpar', 'Language(s)', 'fa-language', 1); ?>
-    <?php print _add_section($offre,'urn:cat:prod', 'Product(s)', 'fa-shopping-basket'); ?>
-    <?php print _add_section($offre,'urn:cat:tarif', 'Price(s)', 'fa-eur'); ?>
-    <?php print _add_section($offre,'urn:cat:visite', 'Visit', 'fa-map-signs'); ?>
-    <?php print _add_section($offre,'urn:cat:eqpsrv', 'Equipments & services', 'fa-thumb-tack'); ?>
-    <?php print _add_section($offre,'urn:cat:classlab', 'Themes', 'fa-list-alt'); ?>
+    <?php print _add_section($offre,'urn:cat:accueil:langpar', __('Language(s)'), 'fa-language', 1); ?>
+    <?php print _add_section($offre,'urn:cat:prod', __('Product(s)'), 'fa-shopping-basket'); ?>
+    <?php print _add_section($offre,'urn:cat:tarif', __('Price(s)'), 'fa-eur'); ?>
+    <?php print _add_section($offre,'urn:cat:visite', __('Visit)'), 'fa-map-signs'); ?>
+    <?php print _add_section($offre,'urn:cat:eqpsrv', __('Equipments & services'), 'fa-thumb-tack'); ?>
+    <?php print _add_section($offre,'urn:cat:classlab', __('Themes'), 'fa-list-alt'); ?>
     <?php print _add_section_share($offre); ?>
   </aside>
 </article>

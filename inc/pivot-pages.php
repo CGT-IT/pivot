@@ -252,8 +252,8 @@ function pivot_manage_page(){
           <td>
             <strong><?php echo $pivot_page->query?></strong>
             <div class="row-actions-visible">
-              <span class="edit"><a href="?page=pivot-pages&amp;id=<?php echo $pivot_page->id?>&amp;edit=true"><?php esc_html_e('Edit')?></a> | </span>
-              <span class="delete"><a href="?page=pivot-pages&amp;delete=<?php echo $pivot_page->id?>" onclick="return confirm('Are you sure you want to delete this page?');"><?php esc_html_e('Delete')?></a></span>
+              <span class="edit"><a href="?page=pivot-pages&amp;id=<?php echo $pivot_page->id?>&amp;edit=true"><?php esc_html_e('Edit', 'pivot')?></a> | </span>
+              <span class="delete"><a href="?page=pivot-pages&amp;delete=<?php echo $pivot_page->id?>" onclick="return confirm(__('Are you sure you want to delete this page?', 'pivot'));"><?php esc_html_e('Delete', 'pivot')?></a></span>
             </div>
           </td>
           <td><?php echo $pivot_page->type?></td>

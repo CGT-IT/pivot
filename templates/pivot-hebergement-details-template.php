@@ -72,8 +72,8 @@
 
     <?php print _add_section_contact($offre); ?>
     
-    <?php print _add_section($offre, 'urn:cat:accueil:langpar', 'Language(s)', 'fa-language', 1); ?>
-    <?php print _add_section($offre, 'urn:cat:classlab', 'Themes', 'fa-list-alt'); ?>
+    <?php print _add_section($offre, 'urn:cat:accueil:langpar', __('Language(s)'), 'fa-language', 1); ?>
+    <?php print _add_section($offre, 'urn:cat:classlab', __('Themes'), 'fa-list-alt'); ?>
     
     <?php print _add_section_share($offre); ?>
 

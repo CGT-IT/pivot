@@ -1,6 +1,6 @@
 <?php
 /*
- * Plugin Name: Pivot
+ * Plugin Name: pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
  * Version: 0.1
  * Author: Maxime Degembe
@@ -38,7 +38,7 @@ add_action('admin_menu', 'pivot_menu');
 add_action('admin_init', 'pivot_settings');
 add_action('init', 'pivot_load_textdomain');
 function pivot_load_textdomain() {
-	load_plugin_textdomain('pivot', false, MY_PLUGIN_PATH . 'lang/');
+	load_plugin_textdomain('pivot', false, basename( dirname( __FILE__ ) ) . '/languages' );
 }
 
 /**
