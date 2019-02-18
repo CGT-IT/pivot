@@ -250,7 +250,7 @@ function _pivot_request($type, $detail, $params = NULL, $postfields = NULL){
   if(isset($params['shuffle']) && $params['shuffle'] == TRUE){
     $shuffle = ';shuffle=true'; 
   }else{
-    $shuffle = '';
+    $shuffle = ''; 
   }
   // Get Pivot Base URI
   $pivot_url = esc_url(get_option('pivot_uri'));
@@ -508,7 +508,10 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
     $params['items_per_page'] = $offers_per_page;
     // Define content details we want to receive from Pivot
     $params['content_details'] = ';content=2';
-    
+    $page = pivot_get_page($page_id);
+    if(isset($page->sortMode) && $page->sortMode == 'shuffle'){
+      $params['shuffle'] = TRUE;
+    }
     // Get offers
     $xml_object = _pivot_request($case, 2, $params, $xml_query);
     // Store number of offers
