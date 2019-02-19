@@ -47,7 +47,7 @@ Il en faut 3 par catégorie structurés de la façon suivante:
     - [x] EN (= langue de base)
     - [x] FR
     - [ ] NL
-    - [ ] DE 
+    - [x] DE 
 - [x] Template (affichage) par défaut pour liste et détails
 - [x] Aide à la création des shortcodes
 - [x] Affichage des offres liées
