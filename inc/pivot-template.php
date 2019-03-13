@@ -116,35 +116,22 @@ function pivot_locate_template($template_name, $template_path = '', $default_pat
   }
 	// Search template file in theme folder.
 	$template = locate_template(array($template_path.$template_name, $template_name));
+    
 	// Get plugins template file.
 	if(!$template){
 		$template = $default_path.$template_name;
   }
+  
+  // Ensure the file exists
+  if(!file_exists($template)){
+    $text = __('The required template', 'pivot' );
+    $text .= ' '.$template_name.' ';
+    $text .= __('was not found!', 'pivot');
+    print _show_warning($text, 'warning');
+    return '';
+  }
+  
 	return apply_filters('pivot_locate_template', $template, $template_name, $template_path, $default_path);
-}
-
-/**
- * Get template.
- *
- * Search for the template and include the file.
- *
- * @see pivot_locate_template()
- *
- * @param string $template_name	Template to load.
- * @param array $args	Args passed for the template file.
- * @param string $string $template_path	Path to templates.
- * @param string $default_path Default path to template files.
- */
-function pivot_get_template( $template_name, $args = array(), $tempate_path = '', $default_path = '' ) {
-	if(is_array($args) && isset($args)):
-		extract( $args );
-	endif;
-	$template_file = pivot_locate_template($template_name, $tempate_path, $default_path);
-	if(!file_exists($template_file)) :
-		_doing_it_wrong(__FUNCTION__, sprintf( '<code>%s</code> does not exist.', $template_file ), '1.0.0');
-		return;
-	endif;
-	include $template_file;
 }
 
 /**

@@ -54,14 +54,14 @@
       </div>
     </div>
 
-    <h2 class="pivot-title"><?php print $offre->nom->__toString(); ?></h2>
+    <h2 class="pivot-title"><?php print _get_urn_value($offre, 'urn:fld:nomofr'); ?></h2>
   </header>
 
   <aside class="well pivot-contacts col-xs-12 col-md-4">
   
     <section class="pivot-contacts">
       <dl class="vcard">
-        <dt class="fn"><h3 class="pito-title"><?php print $offre->nom->__toString(); ?></h3></dt>
+        <dt class="fn"><h3 class="pito-title"><?php print _get_urn_value($offre, 'urn:fld:nomofr'); ?></h3></dt>
         <?php foreach($offre->spec as $specification): ?>
           <?php if($specification->urnCat->__toString() == 'urn:cat:moycom'): ?>
             <dd>
@@ -169,7 +169,7 @@
 
     <section class="pivot-contacts tab-pane fade" id="tab-contacts" role="tabpanel">
       <dl class="vcard">
-        <dt class="fn"><h3 class="pito-title"><?php print $offre->nom->__toString(); ?></h3></dt>
+        <dt class="fn"><h3 class="pito-title"><?php print _get_urn_value($offre, 'urn:fld:nomofr'); ?></h3></dt>
         <?php foreach($offre->spec as $specification): ?>
           <?php if($specification->urnCat->__toString() == 'urn:cat:moycom'): ?>
             <dd>

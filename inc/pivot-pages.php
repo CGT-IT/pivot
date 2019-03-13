@@ -58,13 +58,7 @@ function pivot_meta_box() {
   <div class="form-item form-type-textfield form-item-pivot-type">
     <label for="edit-pivot-type"><?php esc_html_e('Type', 'pivot') ?> </label>
     <select id="edit-pivot-type" name="type">
-    <?php print _get_offer_types($edit_page); ?>
-      <!--<option selected disabled hidden><?php // esc_html_e('Choose a type', 'pivot') ?></option>-->
-<!--      <option <?php // if(isset($edit_page) && $edit_page->type == 'hebergement') echo 'selected="selected"';?>value="hebergement"><?php // esc_html_e('Hébergements', 'pivot') ?></option>
-      <option <?php // if(isset($edit_page) && $edit_page->type == 'activite') echo 'selected="selected"';?>value="activite"><?php // esc_html_e('Activités / événementiel', 'pivot') ?></option>
-      <option <?php // if(isset($edit_page) && $edit_page->type == 'loisir') echo 'selected="selected"';?>value="loisir"><?php // esc_html_e('Loisirs / découvertes', 'pivot') ?></option>
-      <option <?php // if(isset($edit_page) && $edit_page->type == 'terroir') echo 'selected="selected"';?>value="terroir"><?php // esc_html_e('Terroir', 'pivot') ?></option>
-      <option <?php // if(isset($edit_page) && $edit_page->type == 'guide') echo 'selected="selected"';?>value="guide"><?php // esc_html_e('Guide touristique', 'pivot') ?></option>-->
+      <?php print _get_offer_types($edit_page); ?>
     </select>
     <p class="description"><?php esc_html_e('Type of query', 'pivot') ?></p>
   </div>
@@ -258,8 +252,8 @@ function pivot_manage_page(){
           <td>
             <strong><?php echo $pivot_page->query?></strong>
             <div class="row-actions-visible">
-              <span class="edit"><a href="?page=pivot-pages&amp;id=<?php echo $pivot_page->id?>&amp;edit=true"><?php esc_html_e('Edit')?></a> | </span>
-              <span class="delete"><a href="?page=pivot-pages&amp;delete=<?php echo $pivot_page->id?>" onclick="return confirm('Are you sure you want to delete this page?');"><?php esc_html_e('Delete')?></a></span>
+              <span class="edit"><a href="?page=pivot-pages&amp;id=<?php echo $pivot_page->id?>&amp;edit=true"><?php esc_html_e('Edit', 'pivot')?></a> | </span>
+              <span class="delete"><a href="?page=pivot-pages&amp;delete=<?php echo $pivot_page->id?>" onclick="return confirm(__('Are you sure you want to delete this page?', 'pivot'));"><?php esc_html_e('Delete', 'pivot')?></a></span>
             </div>
           </td>
           <td><?php echo $pivot_page->type?></td>

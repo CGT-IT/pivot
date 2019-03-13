@@ -8,14 +8,40 @@
  * @param string $lang current language interface
  * @return string Return string value of a urn (field)
  */
-function _get_urn_value($offre, $urn_name, $lang = NULL){
-  if($lang){
-    $urn_name = $lang.':'.$urn_name;
+function _get_urn_value($offre, $urn_name){
+  $lang = substr(get_locale(), 0, 2 );
+  // Construct URN with language code
+  if($lang && $lang != 'fr'){
+    $lang_urn_name = $lang.':'.$urn_name;
   }
+  
+  // Search for specific URN
   foreach ($offre->spec as $spec){
-    if($spec->attributes()->__toString() == $urn_name){
-      return $spec->value->__toString();
+    // In case language is set and different of 'fr'
+    if($lang && $lang != 'fr'){
+      // Reminder of default value (fr)
+      if($spec->attributes()->__toString() == $urn_name){
+        $french_value = $spec->value->__toString();
+      }
+      // Get translated value and return it
+      if($spec->attributes()->__toString() == $lang_urn_name){
+        return $spec->value->__toString();
+      }
+    }else{
+      // French case, return it
+      if($spec->attributes()->__toString() == $urn_name){
+        return $spec->value->__toString();
+      }else{
+        // Specific case where we need offer title in french
+        if($urn_name == 'urn:fld:nomofr'){
+          return $offre->nom->__toString();
+        }
+      }
     }
+  }
+  // In case value is not translated
+  if(isset($french_value)){
+    return $french_value;
   }
 }
 
@@ -175,7 +201,7 @@ function _get_number_of_offers($field_params, $page_id){
   $params['content_details'] = ';content=1';
 
   // Get offers
-  $xml_object = _pivot_request('offer-search', 1, $params, $xml_query);
+  $xml_object = _pivot_request('offer-init-list', 1, $params, $xml_query);
 
   if($xml_object){
     $number_of_offers = $xml_object->attributes()->count->__toString();
@@ -318,10 +344,10 @@ function _add_meta_data($offre, $path){
 //    $bitly_url = bitly_get('shorten', $bitly_params);
   }
   if(isset($offre) && is_object($offre)){
-    echo  '<title>'.$offre->nom->__toString().' - '. get_bloginfo('name').'</title>'
+    echo  '<title>'._get_urn_value($offre, 'urn:fld:nomofr').' - '. get_bloginfo('name').'</title>'
          .'<meta property="og:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:'').'">'
          .'<meta property="og:type" content="article">'
-         .'<meta property="og:title" content="'.$offre->nom->__toString().'">'
+         .'<meta property="og:title" content="'._get_urn_value($offre, 'urn:fld:nomofr').'">'
          .'<meta property="og:description" content="'.wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket')).'">'
          .'<meta property="og:updated_time" content="'.$offre->attributes()->dateModification->__toString().'">'
   //       .'<meta property="og:image" content="'.$meta_datas['url'].'">'
@@ -329,7 +355,7 @@ function _add_meta_data($offre, $path){
   //       .'<meta property="og:image:height" content="'.$meta_datas['img_height'].'">'
          .'<meta name="twitter:card" content="summary_large_image">'
          .'<meta name="twitter:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:'').'">'
-         .'<meta name="twitter:title" content="'.$offre->nom->__toString().'">'
+         .'<meta name="twitter:title" content="'._get_urn_value($offre, 'urn:fld:nomofr').'">'
          .'<meta property="article:published_time" content="'.$offre->attributes()->dateCreation->__toString().'">'
          .'<meta property="article:modified_time" content="'.$offre->attributes()->dateModification->__toString().'">';
   }
@@ -377,7 +403,7 @@ function _get_event_date($offre, $wanted_date){
  */
 function _add_pagination($nb_offres){
   /* Init pagination */
-  $total = $nb_offres/12;
+  $total = ceil($nb_offres/12);
 
   // Check if we have more than 1 page!
   if($total > 1)  {
@@ -529,4 +555,26 @@ function _construct_filters_array(&$field_params,$filter, $key = 'shortcode', $p
     $field_params['filters'][$key]['operator'] = 'equal';
     $field_params['filters'][$key]['searched_value'][] = 'true';
   }
+}
+
+function _get_urnValue_translated($offre, $specification){
+  switch($specification->type->__toString()){
+    case 'Boolean':
+      $output = '';
+      break;
+    case 'Currency':
+      $output = $specification->value->__toString().' €';
+      break;
+    case 'Choice':
+      $output = _get_urn_documentation($specification->value->__toString());
+      break;
+    case 'TextML':
+    case 'FirstUpperStringML':
+      $output = _get_urn_value($offre, $specification->attributes()->__toString());
+      break;
+    default:
+      $output = $specification->value->__toString();
+      break;
+  }
+  return $output;
 }

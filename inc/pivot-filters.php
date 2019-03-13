@@ -52,7 +52,7 @@ function pivot_filters_meta_box() {
   <div class="form-item form-type-textfield form-item-pivot-urn">
     <label for="edit-pivot-urn"><?php esc_html_e('URN', 'pivot')?> </label>
     <input type="text" id="edit-pivot-urn" name="urn" value="<?php if(isset($edit_page)) echo $edit_page->urn;?>" maxlength="128" class="form-text">
-    <span><button id="load-urn-info" type="button"><?php esc_html_e('Load URN Infos', 'pivot')?> </button></span>
+    <span><input id="load-urn-info" class="button" type="button" value="<?php esc_html_e('Load URN Infos', 'pivot')?>"> </button></span>
     <p class="description"><?php esc_html_e('URN or ID of the field you want to filter', 'pivot')?></p>
   </div>
 
@@ -65,7 +65,7 @@ function pivot_filters_meta_box() {
     <div class="form-item form-type-textfield form-item-pivot-operator">
       <label for="edit-pivot-operator"><?php esc_html_e('Operator', 'pivot')?> </label>
       <select id="edit-pivot-operator" name="operator">
-        <option selected disabled hidden><?php esc_html_e('Choisir un opérateur', 'pivot')?></option>
+        <option selected disabled hidden><?php esc_html_e('Choose an operator', 'pivot')?></option>
         <option <?php if(isset($edit_page) && $edit_page->operator == 'exist') echo 'selected="selected"';?>value="exist"><?php esc_html_e('Exist', 'pivot')?></option>
         <option <?php if(isset($edit_page) && $edit_page->operator == 'equal') echo 'selected="selected"';?>value="equal"><?php esc_html_e('Equal', 'pivot')?></option>
         <option <?php if(isset($edit_page) && $edit_page->operator == 'like') echo 'selected="selected"';?>value="like"><?php esc_html_e('Like', 'pivot')?></option>
@@ -73,9 +73,18 @@ function pivot_filters_meta_box() {
         <option <?php if(isset($edit_page) && $edit_page->operator == 'between') echo 'selected="selected"';?>value="between"><?php esc_html_e('Between', 'pivot')?></option>
         <option <?php if(isset($edit_page) && $edit_page->operator == 'in') echo 'selected="selected"';?>value="in"><?php esc_html_e('in', 'pivot')?></option>
       </select>
-      <p class="description">Type of comparison</p>
+      <p class="description"><?php esc_html_e('Type of comparison', 'pivot') ?></p>
     </div>
-  </div>      
+  </div>
+
+  <?php if(!isset($edit_page->id)): ?>
+    <br>
+    <div class="form-item form-type-textfield form-item-pivot-allpages">
+      <input type="checkbox" id="edit-pivot-allpages" name="allpages" class="form-checkbox">
+      <label for="edit-pivot-allpages"><?php esc_html_e('Add this filter to all Pivot pages', 'pivot') ?> </label>
+      <p class="description"><?php esc_html_e('If you want to add this filter to all other pages', 'pivot');?></p>
+    </div>
+  <?php endif; ?>
       
   <br>
   <h2 class="hndle"><b><span><?php esc_html_e('Grouping filters', 'pivot') ?></span></b></h2>
@@ -148,14 +157,23 @@ function pivot_filters_action(){
         $operator = $_POST['operator'];
         break;
     }
-      
+
     $name = substr(strrchr($urn, ":"), 1);
     $title = $_POST['title'];
     $group = $_POST['filter_group'];
 
     if(empty($_POST['id'])) {
-      // Insert data
-      $wpdb->query("INSERT INTO " .$wpdb->prefix ."pivot_filter (page_id,filter_name,filter_title,urn,operator,type,filter_group) VALUES('" .$_POST['page_id'] ."','" .$name ."','" .$title."','" .$urn."','" .$operator."','" .$type."','" .$group."');");
+      // If we add the filter to all pages
+      if(isset($_POST['allpages'])){
+        $pages = pivot_get_pages();
+        foreach($pages as $page){
+          // Insert data
+          $wpdb->query("INSERT INTO " .$wpdb->prefix ."pivot_filter (page_id,filter_name,filter_title,urn,operator,type,filter_group) VALUES('" .$page->id ."','" .$name ."','" .$title."','" .$urn."','" .$operator."','" .$type."','" .$group."');");
+        }
+      }else{
+        // Insert data
+        $wpdb->query("INSERT INTO " .$wpdb->prefix ."pivot_filter (page_id,filter_name,filter_title,urn,operator,type,filter_group) VALUES('" .$_POST['page_id'] ."','" .$name ."','" .$title."','" .$urn."','" .$operator."','" .$type."','" .$group."');");
+      }
     } else {
       // Update data
       $id = $_POST['id'];
@@ -183,8 +201,8 @@ function pivot_add_filter(){
   <!--Display the form to add a new row-->
   <div class="wrap">
     <div id="faq-wrapper">
-      <form method="post" action="?page=pivot-filters">
-        <h2><?php echo $tf_title = ($id == 0)?$tf_title = esc_attr('Add filter', 'pivot') : $tf_title = esc_attr('Edit filter', 'pivot');?></h2>
+      <form method="post" action="?page=pivot-filters&page_id=<?php echo $_GET['page_id']?>">
+        <h2><?php echo $tf_title = ($id == 0)?$tf_title = esc_attr__('Add filter', 'pivot') : $tf_title = esc_attr__('Edit filter', 'pivot');?></h2>
         <div id="poststuff" class="metabox-holder">
           <?php do_meta_boxes('pivot', 'normal','low'); ?>
         </div>
@@ -201,8 +219,40 @@ function pivot_manage_filter(){
 ?>
 <div class="wrap">
   <div class="icon32" id="icon-edit"><br></div>
-  <h2><?php esc_html_e('Pivot Plugin Pages', 'pivot')?></h2>
+  <h2><?php esc_html_e('Pivot Plugin filters', 'pivot')?></h2>
+    
+  <?php if(isset($_GET['page_id'])): ?>
+    <?php if(isset($_POST['submit'])): ?>
+      <?php pivot_filter_csv_import($_GET['page_id']); ?>
+    <?php endif; ?>
+    <div id="poststuff" class="postbox-container widefat page fixed">
+      <div id="side-sortables" class="meta-box-sortables ui-sortable" style="">
+        <div id="formatdiv" class="postbox ">
+          <button type="button" class="handlediv" aria-expanded="true">
+            <span class="screen-reader-text"><?php esc_html_e('Toggle panel: Import filters', 'pivot')?></span>
+            <span class="toggle-indicator" aria-hidden="true"></span>
+          </button>
+          <h2 class="hndle ui-sortable-handle"><?php esc_html_e('Import filters', 'pivot')?></h2>
+          <div class="inside">
+            <div id="import-filters-file">
+              <fieldset>
+                <form action="" method="post" enctype="multipart/form-data">
+                  <input type="file" name="csv_file">
+                  <input type="hidden" value="<?php echo $_GET['page_id']; ?>" name="page_id" />
+                  <input type="submit" class="button" name="submit" value="<?php esc_html_e('Submit', 'pivot')?>">
+                </form>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <?php endif; ?>
+    
   <form method="post" action="?page=pivot-filters" id="pivot_form_action">
+    <?php if(isset($_GET['page_id'])): ?>
+      <p><input type="button" class="button button-secondary" value="<?php esc_html_e('Add a filter', 'pivot')?>" onclick="window.location='?page=pivot-filters&amp;page_id=<?php echo $_GET['page_id']; ?>&amp;edit=true'" /></p>
+    <?php endif; ?>
     <table class="widefat page fixed" cellpadding="0">
       <thead>
         <tr>
@@ -236,7 +286,7 @@ function pivot_manage_filter(){
             <strong><?php echo $filter->filter_name?></strong>
             <div class="row-actions-visible">
               <span class="edit"><a href="?page=pivot-filters&amp;id=<?php echo $filter->id?>&amp;page_id=<?php echo $filter->page_id;?>&amp;edit=true"><?php esc_html_e('Edit', 'pivot')?></a> | </span>
-              <span class="delete"><a href="?page=pivot-filters&amp;delete=<?php echo $filter->id?>" onclick="return confirm(esc_attr('Are you sure you want to delete this filter?', 'pivot'));"><?php esc_html_e('Delete', 'pivot')?></a></span>
+              <span class="delete"><a href="?page=pivot-filters&amp;page_id=<?php echo $filter->page_id;?>&amp;delete=<?php echo $filter->id?>" onclick="return confirm(esc_attr('Are you sure you want to delete this filter?', 'pivot'));"><?php esc_html_e('Delete', 'pivot')?></a></span>
             </div>
           </td>
           <td><?php echo $filter->filter_title?></td>
@@ -261,6 +311,115 @@ function pivot_manage_filter(){
       </tbody>
     </table>
   </form>
+  <?php if(isset($_GET['page_id']) && $table): ?>
+  <br/><a class="button" href="?export=dump&amp;page_id=<?php echo $_GET['page_id']; ?>" target="_blank"><i class="fa fa-align-right fa-download"></i><?php esc_html_e('Export filters', 'pivot')?></a>
+  <?php endif; ?>
 </div>
 <?php
+}
+
+/**
+ * Import filters based on a CSV file
+ * @global Object $wpdb
+ * @param int $page_id
+ */
+function pivot_filter_csv_import($page_id) {
+  global $wpdb;
+  $text = '';
+  
+  $csv_file = $_FILES['csv_file'];
+  $csv_to_array = array_map('str_getcsv', file($csv_file['tmp_name']));
+
+  foreach ($csv_to_array as $key => $value) {
+    // First line (Header)
+    if ($key == 0){
+      $check = pivot_filter_csv_control_header($value);
+      if($check == 0){
+        echo _show_admin_notice(__("The CSV file doesn't respect the format",'pivot'), 'error');
+        break;
+      }
+    }else{
+      // Check CSV quality
+      $error = pivot_filter_csv_control($text, $key, $value);
+      // If no error detected on first check
+      if($error == false){
+        $urn = $value[0];
+        $urnDoc= _get_urn_documentation_full_spec($urn);
+        $type = $urnDoc->spec->type->__toString();
+        switch($type){
+          case 'Boolean':
+            $operator = 'exist';
+            break;
+          case 'Type':
+          case 'Value':
+            $operator = 'in';
+            break;
+          default:
+            $operator = $value[1];
+            break;
+        }
+
+        $name = substr(strrchr($urn, ":"), 1);
+        $title = $value[2];
+        $group = $value[3];
+        
+        // Insert data
+        $wpdb->query("INSERT INTO " .$wpdb->prefix ."pivot_filter (page_id,filter_name,filter_title,urn,operator,type,filter_group) VALUES('" .$page_id."','" .$name ."','" .$title."','" .$urn."','" .$operator."','" .$type."','" .$group."');");
+
+      }
+    }
+  }
+  
+  // If there is an error to show
+  if($text != ''){
+    echo _show_admin_notice($text, 'error');
+  }
+}
+
+/**
+ * Check first line (header) of the CSV file and return if error or not
+ * @param array $value a row of the CSV file
+ * @return boolean false if error true if OK
+ */
+function pivot_filter_csv_control_header($value){
+  if($value[0] != 'urn'){
+    return 0;
+  }
+  if($value[1] != 'operator'){
+    return 0;
+  }
+  if($value[2] != 'filter_title'){
+    return 0;
+  }
+  if($value[3] != 'filter_group'){
+    return 0;
+  }
+
+  return 1;
+}
+
+/**
+ * Check quality of the first two column (which are mandatory)
+ * @param String $text
+ * @param int $key
+ * @param String $value
+ * @return boolean true if error otherwise false
+ */
+function pivot_filter_csv_control(&$text, $key, $value){
+  $error = false;
+  // First check on field is well an urn
+  if(substr($value[0],0,4) !== 'urn:'){
+    $text .= __('URN is invalid on line ', 'pivot');
+    $text .= $key+1 .'</br>';
+    $error = true;
+  }
+
+  // Check if operator is on allowed list
+  if(!in_array($value[1], array('exist','equal','like','greaterequal','between','in'))){
+    $text .= __('Operator is invalid on line ', 'pivot');
+    $text .= $key+1 .'</br>';
+    $error = true;
+  }
+  
+  return $error;
 }

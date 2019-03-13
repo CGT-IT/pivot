@@ -77,7 +77,7 @@ function pivot_add_filters(){
 
     // Print footer section and close HTML form
     echo     '</div>'
-         .   '<button type="submit" id="filter-submit" name="op" value="Submit" class="btn btn-primary form-submit">'.esc_html("Search").'</button>'
+         .   '<button type="submit" id="filter-submit" name="op" value="Submit" class="btn btn-primary form-submit">'.esc_html('Search', 'pivot').'</button>'
          .   '<input type="hidden" name="filter-submit" value="1" />'
          . '</form>'
         .'</section>';

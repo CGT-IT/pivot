@@ -25,18 +25,27 @@ function pivot_get_offer_type($id = NULL, $type = NULL) {
   $sql_request .= " ORDER BY id ASC";
   
   $offer_type = $wpdb->get_results($sql_request);
-  
-  if(!isset($offer_type[1])){
+  if(!isset($offer_type[1]) && isset($offer_type[0])){
     return $offer_type[0];
   }
 
   return $offer_type;
 }
 
-function pivot_get_offer_type_categories() {
+/**
+ * SQL query to get all categories or to check if a category exist if param "category"is set
+ * @global Object $wpdb
+ * @param string $type Type / Category name
+ * @return string
+ */
+function pivot_get_offer_type_categories($type = NULL) {
   global $wpdb;
-
-  $categories = $wpdb->get_results("SELECT DISTINCT parent FROM " .$wpdb->prefix ."pivot_offer_type");
+  
+  $sql = "SELECT DISTINCT parent FROM " .$wpdb->prefix ."pivot_offer_type";
+  if($type){
+    $sql .= " WHERE parent = '".$type."'";
+  }
+  $categories = $wpdb->get_results($sql);
 
   if(!empty($categories[0])) {
     return $categories;
@@ -45,6 +54,10 @@ function pivot_get_offer_type_categories() {
   return;
 }
 
+/**
+ * 
+ * @global type $edit_type
+ */
 function pivot_offer_type_meta_box() {
     global $edit_type;
 ?>
@@ -119,7 +132,6 @@ function pivot_offer_type_action(){
     if(empty($_POST['type_id'])) {
       if(empty(pivot_get_offer_type($_POST['id']))){
         $sql = "INSERT INTO " .$wpdb->prefix ."pivot_offer_type(id,type,parent) VALUES('" .$_POST['id'] ."','" .$_POST['type']."','" .$_POST['parent']."');";
-        print $sql;
         $wpdb->query($sql);
       }else{
         print _show_admin_notice('This type has already been set', 'error');
