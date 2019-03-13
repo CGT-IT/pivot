@@ -1,0 +1,546 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2019-02-13 16:56+0100\n"
+"PO-Revision-Date: 2019-02-13 16:56+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2.1\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: esc_attr_e;esc_attr;__;_;_e;esc_html_e;esc_html;"
+"esc_attr__;esc_html__\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: inc/pivot-common.php:316
+msgid "Choose a type"
+msgstr ""
+
+#: inc/pivot-filters.php:53 inc/pivot-filters.php:214
+msgid "URN"
+msgstr ""
+
+#: inc/pivot-filters.php:55 pivot-shortcode.php:210
+msgid "Load URN Infos"
+msgstr ""
+
+#: inc/pivot-filters.php:56 pivot-shortcode.php:211
+msgid "URN or ID of the field you want to filter"
+msgstr ""
+
+#: inc/pivot-filters.php:61 inc/pivot-filters.php:213
+msgid "Filter title"
+msgstr ""
+
+#: inc/pivot-filters.php:63
+msgid "Title used in frontend (to display to the user)"
+msgstr ""
+
+#: inc/pivot-filters.php:66 inc/pivot-filters.php:215 pivot-shortcode.php:216
+msgid "Operator"
+msgstr ""
+
+#: inc/pivot-filters.php:68 pivot-shortcode.php:218
+msgid "Choose an operator"
+msgstr ""
+
+#: inc/pivot-filters.php:69 pivot-shortcode.php:219
+msgid "Exist"
+msgstr ""
+
+#: inc/pivot-filters.php:70 pivot-shortcode.php:220
+msgid "Equal"
+msgstr ""
+
+#: inc/pivot-filters.php:71 pivot-shortcode.php:221
+msgid "Like"
+msgstr ""
+
+#: inc/pivot-filters.php:72 pivot-shortcode.php:222
+msgid "Greater or equal"
+msgstr ""
+
+#: inc/pivot-filters.php:73 pivot-shortcode.php:223
+msgid "Between"
+msgstr ""
+
+#: inc/pivot-filters.php:74 pivot-shortcode.php:224
+msgid "in"
+msgstr ""
+
+#: inc/pivot-filters.php:76 pivot-shortcode.php:226
+msgid "Type of comparison"
+msgstr ""
+
+#: inc/pivot-filters.php:81
+msgid "Grouping filters"
+msgstr ""
+
+#: inc/pivot-filters.php:85
+msgid "If you want to group filters"
+msgstr ""
+
+#: inc/pivot-filters.php:86
+msgid "Member of group"
+msgstr ""
+
+#: inc/pivot-filters.php:91
+msgid "Existing groups: "
+msgstr ""
+
+#: inc/pivot-filters.php:180
+msgid "Pivot filter"
+msgstr ""
+
+#: inc/pivot-filters.php:187
+msgid "Add filter"
+msgstr ""
+
+#: inc/pivot-filters.php:187
+msgid "Edit filter"
+msgstr ""
+
+#: inc/pivot-filters.php:204 inc/pivot-pages.php:219
+msgid "Pivot Plugin Pages"
+msgstr ""
+
+#: inc/pivot-filters.php:212
+msgid "Filter name"
+msgstr ""
+
+#: inc/pivot-filters.php:216 inc/pivot-offer-type.php:77
+#: inc/pivot-offer-type.php:198 inc/pivot-pages.php:59 inc/pivot-pages.php:231
+#: pivot-shortcode.php:194
+msgid "Type"
+msgstr ""
+
+#: inc/pivot-filters.php:217
+msgid "Linked to query"
+msgstr ""
+
+#: inc/pivot-filters.php:218
+msgid "In group"
+msgstr ""
+
+#: inc/pivot-filters.php:238 inc/pivot-offer-type.php:219
+#: inc/pivot-pages.php:255
+msgid "Edit"
+msgstr ""
+
+#: inc/pivot-filters.php:239 inc/pivot-offer-type.php:220
+#: inc/pivot-pages.php:256
+msgid "Delete"
+msgstr ""
+
+#: inc/pivot-filters.php:257
+msgid "There are no data."
+msgstr ""
+
+#: inc/pivot-offer-type.php:65
+msgid "Type of offer"
+msgstr ""
+
+#: inc/pivot-offer-type.php:67
+msgid "Choose a type of offer"
+msgstr ""
+
+#: inc/pivot-offer-type.php:72 inc/pivot-offer-type.php:200
+msgid "ID"
+msgstr ""
+
+#: inc/pivot-offer-type.php:74
+msgid "Pivot ID of the offer type"
+msgstr ""
+
+#: inc/pivot-offer-type.php:79
+msgid "Pivot Name of the offer type"
+msgstr ""
+
+#: inc/pivot-offer-type.php:82
+msgid "Parent category"
+msgstr ""
+
+#: inc/pivot-offer-type.php:86
+msgid "Existing categories: "
+msgstr ""
+
+#: inc/pivot-offer-type.php:145
+msgid "Category is required"
+msgstr ""
+
+#: inc/pivot-offer-type.php:171 inc/pivot-offer-type.php:190
+msgid "Add type"
+msgstr ""
+
+#: inc/pivot-offer-type.php:171
+msgid "Edit type"
+msgstr ""
+
+#: inc/pivot-offer-type.php:187
+msgid "Pivot Offer Types"
+msgstr ""
+
+#: inc/pivot-offer-type.php:199
+msgid "Parent Category"
+msgstr ""
+
+#: inc/pivot-offer-type.php:231 inc/pivot-pages.php:284
+msgid "There is no data."
+msgstr ""
+
+#: inc/pivot-pages.php:54 inc/pivot-pages.php:230 pivot-shortcode.php:188
+msgid "Query"
+msgstr ""
+
+#: inc/pivot-pages.php:56 pivot-shortcode.php:190
+msgid "Pivot predefined query"
+msgstr ""
+
+#: inc/pivot-pages.php:63 pivot-shortcode.php:198
+msgid "Type of query"
+msgstr ""
+
+#: inc/pivot-pages.php:66 inc/pivot-pages.php:232
+msgid "Path"
+msgstr ""
+
+#: inc/pivot-pages.php:68
+msgid "Path to access results"
+msgstr ""
+
+#: inc/pivot-pages.php:71
+msgid "Title"
+msgstr ""
+
+#: inc/pivot-pages.php:73 inc/pivot-pages.php:233
+msgid "Page title"
+msgstr ""
+
+#: inc/pivot-pages.php:77
+msgid "Show map"
+msgstr ""
+
+#: inc/pivot-pages.php:79
+msgid "Define if you want to show a map on this page or not"
+msgstr ""
+
+#: inc/pivot-pages.php:83
+msgid "Query sorting"
+msgstr ""
+
+#: inc/pivot-pages.php:87
+msgid "Sort mode"
+msgstr ""
+
+#: inc/pivot-pages.php:89
+msgid "Choose an order"
+msgstr ""
+
+#: inc/pivot-pages.php:90
+msgid "Ascending"
+msgstr ""
+
+#: inc/pivot-pages.php:91
+msgid "Descending"
+msgstr ""
+
+#: inc/pivot-pages.php:92
+msgid "Shuffle"
+msgstr ""
+
+#: inc/pivot-pages.php:94
+msgid "Choose the sort mode for the query"
+msgstr ""
+
+#: inc/pivot-pages.php:97
+msgid "Sort Field"
+msgstr ""
+
+#: inc/pivot-pages.php:99
+msgid "Define the field on which the sort mode will apply"
+msgstr ""
+
+#: inc/pivot-pages.php:158
+msgid "This path already exists"
+msgstr ""
+
+#: inc/pivot-pages.php:164
+msgid "Query is required"
+msgstr ""
+
+#: inc/pivot-pages.php:168
+msgid "Type is required"
+msgstr ""
+
+#: inc/pivot-pages.php:172
+msgid "Path is required"
+msgstr ""
+
+#: inc/pivot-pages.php:176
+msgid "Page title is required"
+msgstr ""
+
+#: inc/pivot-pages.php:203
+msgid "Add page"
+msgstr ""
+
+#: inc/pivot-pages.php:203
+msgid "Edit page"
+msgstr ""
+
+#: inc/pivot-pages.php:222
+msgid "Add a new page"
+msgstr ""
+
+#: inc/pivot-pages.php:234
+msgid "Map ?"
+msgstr ""
+
+#: inc/pivot-pages.php:235
+msgid "Sorting"
+msgstr ""
+
+#: inc/pivot-pages.php:236
+msgid "Filters"
+msgstr ""
+
+#: inc/pivot-pages.php:275
+msgid "View filter(s)"
+msgstr ""
+
+#: inc/pivot-pages.php:276
+msgid "Add a filter"
+msgstr ""
+
+#: inc/pivot-template-helper.php:73
+msgid "Share"
+msgstr ""
+
+#: inc/pivot-template-helper.php:76 inc/pivot-template-helper.php:77
+msgid "Share button"
+msgstr ""
+
+#: inc/pivot-template-helper.php:90
+msgid "Contact"
+msgstr ""
+
+#: inc/pivot-template-helper.php:139 templates/pivot-linked-offers.php:3
+msgid "Linked offers"
+msgstr ""
+
+#: inc/pivot-template-helper.php:154
+#: templates/pivot-activite-details-part-template.php:12
+#: templates/pivot-default-details-part-template.php:12
+#: templates/pivot-hebergement-details-part-template.php:12
+#: templates/pivot-linked-offers.php:16
+msgid "Link to"
+msgstr ""
+
+#: inc/pivot-template.php:127 inc/pivot-template.php:154
+msgid "The required template"
+msgstr ""
+
+#: inc/pivot-template.php:129 inc/pivot-template.php:156
+msgid "was not found!"
+msgstr ""
+
+#: pivot-filter-widget.php:80
+msgid "Search"
+msgstr ""
+
+#: pivot-shortcode.php:34
+msgid "The <strong>query</strong> argument is missing"
+msgstr ""
+
+#: pivot-shortcode.php:64
+msgid "It's not possible to add this type of filter: "
+msgstr ""
+
+#: pivot-shortcode.php:80
+msgid "The attribute \"operator\" is required for this kind of filter"
+msgstr ""
+
+#: pivot-shortcode.php:94
+msgid "The attribute \"operator\" is not valid, it should be one of these: "
+msgstr ""
+
+#: pivot-shortcode.php:102
+msgid "The attribute \"filtervalue\" is required for this kind of filter"
+msgstr ""
+
+#: pivot-shortcode.php:159
+msgid "The <strong>type</strong> attributes for the query is wrong or missing "
+msgstr ""
+
+#: pivot-shortcode.php:175
+msgid "Build Pivot Shortcode"
+msgstr ""
+
+#: pivot-shortcode.php:202
+msgid "Define number of offers"
+msgstr ""
+
+#: pivot-shortcode.php:204
+msgid "It will be 3 by default"
+msgstr ""
+
+#: pivot-shortcode.php:208
+msgid "Filter URN"
+msgstr ""
+
+#: pivot-shortcode.php:229
+msgid "Filter value"
+msgstr ""
+
+#: pivot-shortcode.php:231
+msgid "Searched value"
+msgstr ""
+
+#: pivot-shortcode.php:235
+msgid "Build shortcode"
+msgstr ""
+
+#: pivot-shortcode.php:238
+msgid "Shortcode to insert"
+msgstr ""
+
+#: pivot-shortcode.php:241
+msgid "Copy and paste this text in your post, page, ... body"
+msgstr ""
+
+#: pivot.php:182
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: pivot.php:203
+msgid "Base Uri"
+msgstr ""
+
+#: pivot.php:203 pivot.php:208 pivot.php:230
+msgid "This field is required"
+msgstr ""
+
+#: pivot.php:205
+msgid "Uri to access Pivot Database."
+msgstr ""
+
+#: pivot.php:205
+msgid "End / is required !"
+msgstr ""
+
+#: pivot.php:210
+msgid ""
+"Personnal Key to access Pivot webservices, take contact with <a href="
+"\"http://pivot.tourismewallonie.be/index.php/2015-05-05-10-23-26/flux-de-"
+"donnees-3-1\" target=\"_blank\">Pivot</a>"
+msgstr ""
+
+#: pivot.php:213
+msgid "Check Pivot config"
+msgstr ""
+
+#: pivot.php:218
+msgid "Votre maison de tourisme"
+msgstr ""
+
+#: pivot.php:220
+msgid "Choisir une maison de tourisme"
+msgstr ""
+
+#: pivot.php:226
+msgid "Include Bootstrap"
+msgstr ""
+
+#: pivot.php:227
+msgid "required for default templates"
+msgstr ""
+
+#: pivot.php:232
+msgid ""
+"Personnal Key to access bitly webservices, signin <a href=\"https://bitly."
+"com/\" target=\"_blank\">bitly.com</a> and get you access token"
+msgstr ""
+
+#: templates/pivot-activite-details-part-template.php:42
+#: templates/pivot-default-details-part-template.php:38
+#: templates/pivot-hebergement-details-part-template.php:43
+msgid "Website"
+msgstr ""
+
+#: templates/pivot-activite-details-template.php:16
+#: templates/pivot-default-details-template.php:17
+#: templates/pivot-hebergement-details-template.php:16
+msgid "Description"
+msgstr ""
+
+#: templates/pivot-activite-details-template.php:23
+#: templates/pivot-default-details-template.php:24
+#: templates/pivot-hebergement-details-template.php:44
+msgid "Extra infos"
+msgstr ""
+
+#: templates/pivot-activite-details-template.php:33
+msgid "Dates"
+msgstr ""
+
+#: templates/pivot-activite-details-template.php:72
+msgid "Theme(s)"
+msgstr ""
+
+#: templates/pivot-activite-details-template.php:75
+msgid "Add to calendar"
+msgstr ""
+
+#: templates/pivot-activite-list-template.php:15
+#: templates/pivot-default-list-template.php:15
+#: templates/pivot-hebergement-list-template.php:15
+msgid "There are"
+msgstr ""
+
+#: templates/pivot-activite-list-template.php:15
+#: templates/pivot-default-list-template.php:15
+#: templates/pivot-hebergement-list-template.php:15
+msgid "offers"
+msgstr ""
+
+#: templates/pivot-default-details-template.php:34
+#: templates/pivot-hebergement-details-template.php:75
+msgid "Language(s)"
+msgstr ""
+
+#: templates/pivot-default-details-template.php:35
+msgid "Product(s)"
+msgstr ""
+
+#: templates/pivot-default-details-template.php:36
+msgid "Price(s)"
+msgstr ""
+
+#: templates/pivot-default-details-template.php:37
+msgid "Visit"
+msgstr ""
+
+#: templates/pivot-default-details-template.php:38
+msgid "Equipments & services"
+msgstr ""
+
+#: templates/pivot-default-details-template.php:39
+#: templates/pivot-hebergement-details-template.php:76
+msgid "Themes"
+msgstr ""
+
+#: templates/pivot-hebergement-details-template.php:23
+msgid "Equipments"
+msgstr ""
+
+#: templates/pivot-image-slider.php:53
+msgid "Previous"
+msgstr ""
+
+#: templates/pivot-image-slider.php:57
+msgid "Next"
+msgstr ""

@@ -23,7 +23,6 @@
         
         <?php print _add_section($offre,'urn:cat:accueil', __('Extra infos'), 'fa-info'); ?>
         <?php print _add_section_linked_offers($offre); ?>
-        
       </div>
     </div>
   </div>
