@@ -420,7 +420,7 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL){
   $domDocument->appendChild($queryElement);
 	
   // Debug function
-  $domDocument->save('/var/www/html/wordpress/test/test'.rand(10, 30).'.xml');
+//  $domDocument->save('/var/www/html/wordpress/test/test'.rand(10, 30).'.xml');
 
   return $domDocument->saveXML();
 }
