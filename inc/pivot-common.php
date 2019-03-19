@@ -501,6 +501,17 @@ function _get_offer_details(){
     }
   }
 
+  // Check if offer is publishable, if not redirect to 404 page.
+  if($offre->estActive != 30){
+    $warning_text = __("This offer doesn't exist or is not publishable anymore", "pivot");
+    echo _show_warning($warning_text);
+    global $wp_query;
+    $wp_query->set_404();
+    status_header(404);
+    get_template_part(404);
+    exit();
+  }
+  
   return $offre;
 }
 
