@@ -524,9 +524,6 @@ function _construct_filters_array(&$field_params,$filter, $key = 'shortcode', $p
       $field_params['filters'][$parent_urn]['operator'] = $filter->operator;
       $field_params['filters'][$parent_urn]['searched_value'][] = $filter->urn;
       break;
-    case 'Date':
-
-      break;
     default:
       $field_params['filters'][$key]['name'] = $filter->urn;
       $field_params['filters'][$key]['operator'] = $filter->operator;
@@ -545,8 +542,7 @@ function _construct_filters_array(&$field_params,$filter, $key = 'shortcode', $p
     if($filter->type === 'Date'){
       // Override value with the requested date format
       $value = date("d/m/Y", strtotime($value));
-      $field_params['filters_object_date']['startDate'] = '24/10/2018';
-      $field_params['filters_object_date']['endDate'] = '31/12/2018';
+      $field_params['filters'][$key]['searched_value'][] = $value;
     }else{
       $field_params['filters'][$key]['searched_value'][] = $value;
     }

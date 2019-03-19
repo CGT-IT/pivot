@@ -3,7 +3,7 @@
 /**
  * Return a HTML section with fields inside a group of info (category or sub category) 
  * like urn:cat:eqpsrv or urn:cat:tarif or urn:cat:visite or urn:cat:accueil:langpar, ...
- * @param Object $offre
+ * @param Object $offre complete offer object
  * @param string $urnCat URN of type Category like urn:cat:eqpsrv or urn:cat:tarif or urn:cat:visite or urn:cat:accueil:langpar, ...
  * @param string $title H5 title  above the section
  * @param string $faIcon Font Awesome icon class (without .)
@@ -83,7 +83,7 @@ function _add_section_share($offre){
 
 /**
  * Return a HTML section with all contact infos
- * @param Object $offre
+ * @param Object $offre complete offer object
  * @return string
  */
 function _add_section_contact($offre){
@@ -135,6 +135,11 @@ function _add_section_contact($offre){
   return $output;
 }
 
+/**
+ * Return a carousel of linked offers
+ * @param Object $offre complete offer object
+ * @return string
+ */
 function _add_section_linked_offers($offre){
   $output = '<h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-paperclip"></i>'.__('Linked offers', 'pivot').'</h5>'
           .  '<div class="carousel slide" data-ride="carousel" id="quote-carousel">'
@@ -194,4 +199,36 @@ function _add_section_linked_offers($offre){
   }
   
   return '';
+}
+
+/**
+ * Return HTML with date detail based on an activity Pivot offer
+ * @param Object $offre complete offer object
+ * @return string HTML with start and end dates
+ */
+function _add_section_event_dates($offre){
+  $dates_output = '';
+  
+  foreach($offre->spec as $specification){
+    if($specification->attributes()->urn->__toString() == 'urn:obj:date'){
+      $dates_output .= '<div class="pivot-date-object">';
+      foreach($specification->spec as $dateObj){
+        $date = date("Y-m-d", strtotime(str_replace('/', '-', $dateObj->value->__toString())));
+          if((strtotime($date) >= strtotime('now')) && (strtotime($date) <= strtotime('+3 month'))){
+            $dates_output .= '<span class="time time-start">'
+                            . '<span datetime="'.date("Y-M-D h:m", strtotime($date)).'">'
+                            .   (($dateObj->attributes()->urn->__toString() == 'urn:fld:date:datefin')?' - ':'')
+                            .   ' <span class="day">'.date('d', strtotime($date)).'</span>'
+                            .   ' <span class="month">'.date('M', strtotime($date)).'</span>'
+                            .   ' <span class="year">'.date('Y', strtotime($date)).'</span>'
+                            . '</span>'
+                            .'</span>';
+        }
+
+      }
+      $dates_output .= '</div>';
+    }
+  }
+  
+  return $dates_output;
 }

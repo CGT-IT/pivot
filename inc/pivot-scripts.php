@@ -39,7 +39,7 @@ function pivot_enqueue_admin_script() {
     wp_enqueue_script('pivot_shortcode_script', MY_PLUGIN_URL.'js/'.'shortcode.js',array('jquery'), '1.9', true);
   }
   if(isset($_GET['page']) && $_GET['page'] === "pivot-pages" && isset($_GET['edit']) && $_GET['edit'] === 'true'){
-    wp_enqueue_script('pivot_pages_script', MY_PLUGIN_URL.'js/'.'pages.js',array('jquery'), '3.0', true);
+    wp_enqueue_script('pivot_pages_script', MY_PLUGIN_URL.'js/'.'pages.js',array('jquery'), '3.1', true);
   }
   if(isset($_GET['page']) && $_GET['page'] === "pivot-offer-types" && isset($_GET['edit']) && $_GET['edit'] === 'true'){
     wp_enqueue_script('pivot_typeofr_script', MY_PLUGIN_URL.'js/'.'typeofr.js',array('jquery'), '3.0', true);

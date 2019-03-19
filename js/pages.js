@@ -15,7 +15,7 @@
     });
     
     function show_hide_sortField(){
-      if(sortMode.find(":selected").text() == 'Ascending' || sortMode.find(":selected").text() == 'Descending'){
+      if(sortMode.find(":selected").val() == 'ASC' || sortMode.find(":selected").text() == 'DESC'){
         sortField.show();
       }else{
         // Hide div and set input to empty

@@ -380,7 +380,6 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL){
   }
   
   if(isset($field_params['radius'])){
-    print 'coucou: '.$field_params['offer_id'].' radius: '.$field_params['radius'];
     $criteriaOrthodromicElement = $domDocument->createElement('CriteriaOrthodromic');
     $offerValueElement = $domDocument->createElement('offre', $field_params['offer_id']);
     $criteriaOrthodromicElement->appendChild($offerValueElement);
@@ -403,14 +402,22 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL){
       }
     }
 
-    if(isset($field_params['filters_object_date'])){
+    if($field_params['page_type'] == 'activite'){
       // Creation of a <CriteriaObjectDate>
       $criteriaObjectDateElement = $domDocument->createElement('CriteriaObjectDate');
-      // <dateDeb>24/10/2017</dateDeb>
-      $criteriadateDebElement = $domDocument->createElement('dateDeb', $field_params['filters_object_date']['startDate']);
+      // If defined by visitor
+      if(isset($field_params['filters_object_date']['startDate'])){
+        $criteriadateDebElement = $domDocument->createElement('dateDeb', $field_params['filters_object_date']['startDate']);
+      }else{
+        // Otherwise default value
+        $criteriadateDebElement = $domDocument->createElement('dateDeb', date("d/m/Y", strtotime('now')));
+      }
       $criteriaObjectDateElement->appendChild($criteriadateDebElement);
-      // <dateFin>25/11/2017</dateFin>
-      $criteriadateFinElement = $domDocument->createElement('dateFin', $field_params['filters_object_date']['endDate']);
+      if(isset($field_params['filters_object_date']['endDate'])){
+        $criteriadateDebElement = $domDocument->createElement('dateFin', $field_params['filters_object_date']['endDate']);
+      }else{
+        $criteriadateFinElement = $domDocument->createElement('dateFin', date("d/m/Y", strtotime('+3 month')));
+      }
       $criteriaObjectDateElement->appendChild($criteriadateFinElement);
       $criteriaGroupElement->appendChild($criteriaObjectDateElement);
     }
@@ -465,6 +472,18 @@ function pivot_lodging_page($page_id) {
   // Define how many offers per page
   $offers_per_page = 12;
 
+  // Get current page details
+  $pivot_page = pivot_get_page_path($_SESSION['pivot'][$page_id]['path']);
+  if($pivot_page){
+    $field_params['page_type'] = $pivot_page->type;
+  }
+  
+  // Check if there if a sort is defined
+  if(isset($pivot_page->sortMode) && $pivot_page->sortMode != NULL && $pivot_page->sortMode != ''){
+    $field_params['sortField'] = $pivot_page->sortField;
+    $field_params['sortMode'] = $pivot_page->sortMode;
+  }
+  
   // Check if there is at least ONE active filter
   if(isset($_SESSION['pivot']['filters'][$page_id]) && count($_SESSION['pivot']['filters'][$page_id]) > 0){
     foreach($_SESSION['pivot']['filters'][$page_id] as $key => $value){
@@ -478,13 +497,6 @@ function pivot_lodging_page($page_id) {
     }
   }
 
-  // Get current page details
-  $pivot_page = pivot_get_page_path($_SESSION['pivot'][$page_id]['path']);
-  // Check if there if a sort is defined
-  if(isset($pivot_page->sortMode) && $pivot_page->sortMode != NULL && $pivot_page->sortMode != ''){
-    $field_params['sortField'] = $pivot_page->sortField;
-    $field_params['sortMode'] = $pivot_page->sortMode;
-  }
   $xml_query = _xml_query_construction($_SESSION['pivot'][$page_id]['query'], $field_params);
 
   $offers = pivot_construct_output('offer-search', $offers_per_page, $xml_query, $page_id);
