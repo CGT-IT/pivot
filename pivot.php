@@ -402,7 +402,7 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL){
       }
     }
 
-    if($field_params['page_type'] == 'activite'){
+    if(isset($field_params['page_type']) && $field_params['page_type'] == 'activite'){
       // Creation of a <CriteriaObjectDate>
       $criteriaObjectDateElement = $domDocument->createElement('CriteriaObjectDate');
       // If defined by visitor
