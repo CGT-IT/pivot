@@ -93,7 +93,7 @@ function _add_section_contact($offre){
           .     '<h6 class="pivo-title">'._get_urn_value($offre, 'urn:fld:nomofr').'</h6>'
           .     '<ul class="list-unstyled lis-line-height-2 mb-0">';
   foreach($offre->spec as $specification){
-    if($specification->urnCat->__toString() == 'urn:cat:moycom'){
+    if($specification->urnCat->__toString() == 'urn:cat:moycom' && $specification->urnSubCat->__toString() != 'urn:cat:moycom:sitereservation'){
       $output .= '<li>'
               . '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$specification->attributes()->urn->__toString().';h=16"/>';
       switch ($specification->type->__toString()){
@@ -131,6 +131,27 @@ function _add_section_contact($offre){
           .    '<li class="pivot-latitude d-none">'.$offre->adresse1->latitude->__toString().'</li>'
           .    '<li class="pivot-longitude d-none">'.$offre->adresse1->longitude->__toString().'</li>'
           .  '</ul></div></section>';
+  
+  return $output;
+}
+
+function _add_section_booking($offre){
+  $output = '<h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-credit-card"></i>'.esc_html('Booking', 'pivot').'</h5>'
+          . '<section class="pivot-booking card lis-brd-light wow fadeInUp mb-4">'
+          .   '<div class="card-body p-4">'
+          .     '<ul class="list-unstyled lis-line-height-2 mb-0">';
+  foreach($offre->spec as $specification){
+    if($specification->urnSubCat->__toString() == 'urn:cat:moycom:sitereservation'){
+      $output .= '<li>';
+      if (esc_url($specification->value->__toString())){
+        $output .= '<a title="'.$specification->type->__toString().'" class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$specification->attributes()->urn->__toString().';h=40"/></a>';
+      }
+      $output .= '</li>';
+    }
+  }
+  $output .= '</ul>';
+            
+  $output .= '</div></section>';
   
   return $output;
 }
