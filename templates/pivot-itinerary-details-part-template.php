@@ -33,13 +33,25 @@
         <span class="pivot-longitude d-none item"><?php print $offre->adresse1->longitude->__toString(); ?></span>
       </p>
       <?php endif; ?>
-      <?php if(_get_urn_value($offre, 'urn:fld:urlweb')): ?>
-        <img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urlweb;h=16"/>
-        <a target="_blank" href="<?php print _get_urn_value($offre, 'urn:fld:urlweb'); ?>"><?php esc_html_e('Website', 'pivot');?></a>
-      <?php else: ?>
-        <br>
-      <?php endif; ?>
     </section>
+
+    <div class="row text-center pl-3 pr-3">
+      <div class="col pt-2 pb-2 border-top border-right">
+        <img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:typ:8;h=18"> <?php print _get_urn_value($offre, 'urn:fld:dist'); ?> km
+      </div>  
+      <?php $signalnrec = _get_urn_value($offre, 'urn:fld:signalnrec'); ?>
+      <?php if($signalnrec != ''): ?>
+        <div class="col pt-2 pb-2 border-top">
+          <i class="fa fa-map-signs"></i> <?php print $signalnrec; ?>
+        </div>
+      <?php endif; ?>
+      <?php $infusgvttdur = _get_urn_value($offre, 'urn:fld:infusgvttdur'); ?>
+      <?php if($infusgvttdur != ''): ?>
+        <div class="col pt-2 border-top border-left item-services">
+          <i class="fa fa-hourglass-half"></i> <?php print $infusgvttdur; ?>
+        </div>
+      <?php endif; ?>
+    </div>
 
   </article>
 </div>

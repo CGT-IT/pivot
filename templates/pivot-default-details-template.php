@@ -30,7 +30,7 @@
   <aside class="col-xs-12 col-md-3">
       
     <?php print _add_section_contact($offre); ?>
-    
+
     <?php print _add_section($offre,'urn:cat:accueil:langpar', __('Language(s)'), 'fa-language', 1); ?>
     <?php print _add_section($offre,'urn:cat:prod', __('Product(s)'), 'fa-shopping-basket'); ?>
     <?php print _add_section($offre,'urn:cat:tarif', __('Price(s)'), 'fa-eur'); ?>

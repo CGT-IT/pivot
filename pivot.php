@@ -116,6 +116,7 @@ function pivot_install_data() {
   $data_set[9]= array("id" => 258, "type" => "Producteur", "parent" => "default");
   $data_set[10]= array("id" => 259, "type" => "Artisan", "parent" => "default");
   $data_set[11]= array("id" => 269, "type" => "Point d'intérêt", "parent" => "default");
+  $data_set[12]= array("id" => 8, "type" => "Itinéraire", "parent" => "itinerary");
   // Execute the sql statement to insert datas
   wp_insert_rows($data_set,$table_name);
 }
@@ -166,6 +167,12 @@ function pivot_menu() {
 function init() {
 }
 
+function pivot_global_js_vars() {
+    echo '<script type="text/javascript">var _pivot_mapbox_token = '.wp_json_encode(get_option('pivot_mapbox')).";</script>\n";
+}
+add_action( 'wp_head', 'pivot_global_js_vars' );
+
+
 /**
  * Define main pivot settings
  */
@@ -175,6 +182,7 @@ function pivot_settings(){
   register_setting('pivot_settings', 'pivot_mdt');
   register_setting('pivot_settings', 'pivot_bootstrap');
   register_setting('pivot_settings', 'pivot_bitly');
+  register_setting('pivot_settings', 'pivot_mapbox');
 }
 
 function pivot_options() {
@@ -206,7 +214,7 @@ function pivot_options() {
       </div>
       <div class="form-item form-type-textfield form-item-pivot-key">
         <label for="edit-pivot-key">WS_KEY <span class="form-required" title="<?php esc_html_e('This field is required')?>">*</span></label>
-        <input type="password" id="edit-pivot-key" name="pivot_key" size="60" maxlength="128" class="form-text required">
+        <input type="password" id="edit-pivot-key" name="pivot_key" value="<?php echo get_option('pivot_key')?>" size="60" maxlength="128" class="form-text required">
         <p class="description"><?php _e('Personnal Key to access Pivot webservices, take contact with <a href="http://pivot.tourismewallonie.be/index.php/2015-05-05-10-23-26/flux-de-donnees-3-1" target="_blank">Pivot</a>', 'pivot')?></p>
       </div>
 
@@ -230,7 +238,12 @@ function pivot_options() {
         <label for="edit-pivot-bitly">Bitly access token <span class="form-required" title="<?php esc_html_e('This field is required')?>">*</span></label>
         <input type="text" id="edit-pivot-bitly" name="pivot_bitly" value="<?php echo get_option('pivot_bitly')?>" size="60" maxlength="128" class="form-text required">
         <p class="description"><?php _e('Personnal Key to access bitly webservices, signin <a href="https://bitly.com/" target="_blank">bitly.com</a> and get you access token', 'pivot')?></p>
-      </div>  
+      </div>
+      <div class="form-item form-type-textfield form-item-pivot-mapbox">
+        <label for="edit-pivot-bitly"><?php esc_html_e('MapBox access token', 'pivot')?> <span class="form-required" title="<?php esc_html_e('This field is required')?>">*</span></label>
+        <input type="text" id="edit-pivot-mapbox" name="pivot_mapbox" value="<?php echo get_option('pivot_mapbox')?>" size="60" maxlength="128" class="form-text required">
+        <p class="description"><?php _e('Personnal Key to access MapBox services, signin <a href="https://account.mapbox.com/" target="_blank">mapbox.com</a> and get you access token', 'pivot')?></p>
+      </div>
       <?php submit_button(); ?>
     </div>
   </form>

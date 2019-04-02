@@ -60,9 +60,9 @@ function pivot_add_filters(){
     }
 
     // Print head section and HTML Form
-    echo '<section id="block-pivot-lodging-pivot-lodging-filter" class="block block-pivot-lodging clearfix">'
-         . '<form action="'.$pivot_page->path.'" method="post" id="pivot-lodging-form" accept-charset="UTF-8">'
-         .   '<div  id="edit-equipment-body">';
+    echo '<section id="block-pivot-filters" class="block block-pivot block-pivot-filter clearfix">'
+         . '<form action="'.$pivot_page->path.'" method="post" id="pivot-filter-form" accept-charset="UTF-8">'
+         .   '<div  id="edit-filter-body">';
 
     foreach($filters as $filter){
       // if not first iteration and filter is member of a group already inserted, we do not recreate this group
@@ -77,8 +77,8 @@ function pivot_add_filters(){
 
     // Print footer section and close HTML form
     echo     '</div>'
-         .   '<button type="submit" id="filter-submit" name="op" value="Submit" class="btn btn-primary form-submit">'.esc_html('Search', 'pivot').'</button>'
-         .   '<input type="hidden" name="filter-submit" value="1" />'
+         .   '<button type="submit" id="filter-submit" name="filter-submit" value="'.esc_html('Search', 'pivot').'"class="btn btn-primary form-submit mr-2">'.esc_html('Search', 'pivot').'</button>'
+         .   '<button type="submit" id="filter-reset" name="filter-reset" value="'.esc_html('Reset', 'pivot').'" class="btn btn-secondary form-submit">'.esc_html('Reset', 'pivot').'</button>'
          . '</form>'
         .'</section>';
   }
@@ -101,6 +101,10 @@ function pivot_reset_filters($page_id){
           }
         }
       }
+    }
+  }else{
+    if(isset($_POST['filter-reset'])){
+      $_SESSION['pivot']['filters'][$page_id] = array();
     }
   }
 }

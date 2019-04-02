@@ -73,7 +73,7 @@ function _add_section_share($offre){
   $output = '<h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-share-square-o"></i>'.__('Share', 'pivot').'</h5>'
           .   '<section class="pivot-share card lis-brd-light wow fadeInUp mb-4">'
           .     '<div class="card-body p-4">'
-          .       '<span><a class="social-icon" href="https://www.facebook.com/sharer.php?u='.$url_offer_details.'&amp;t='._get_urn_value($offre, 'urn:fld:nomofr').'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urlfacebook;h=35" alt="Facebook '.esc_attr__('Share button').'" title="Facebook '.esc_attr__('Share button').'"/></a></span>'
+          .       '<span class="pr-3"><a class="social-icon" href="https://www.facebook.com/sharer.php?u='.$url_offer_details.'&amp;t='._get_urn_value($offre, 'urn:fld:nomofr').'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urlfacebook;h=35" alt="Facebook '.esc_attr__('Share button').'" title="Facebook '.esc_attr__('Share button').'"/></a></span>'
           .       '<span><a class="social-icon" href="https://twitter.com/share?text='._get_urn_value($offre, 'urn:fld:nomofr').'&amp;url='.$url_offer_details.'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urltwitter;h=35" alt="Twitter '.esc_attr__('Share button').'" title="Twitter '.esc_attr__('Share button').'"/></a></span>'
           .     '</div>'
           .   '</section>';
@@ -135,16 +135,23 @@ function _add_section_contact($offre){
   return $output;
 }
 
+/**
+ * Return a HTML section with all booking infos
+ * @param Object $offre complete offer object
+ * @return string
+ */
 function _add_section_booking($offre){
+  $booking = FALSE;
   $output = '<h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-credit-card"></i>'.esc_html('Booking', 'pivot').'</h5>'
           . '<section class="pivot-booking card lis-brd-light wow fadeInUp mb-4">'
           .   '<div class="card-body p-4">'
-          .     '<ul class="list-unstyled lis-line-height-2 mb-0">';
+          .     '<ul class="list-unstyled list-inline lis-line-height-2 mb-0">';
   foreach($offre->spec as $specification){
     if($specification->urnSubCat->__toString() == 'urn:cat:moycom:sitereservation'){
-      $output .= '<li>';
+      $booking = TRUE;
+      $output .= '<li class="list-inline-item pr-3">';
       if (esc_url($specification->value->__toString())){
-        $output .= '<a title="'.$specification->type->__toString().'" class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$specification->attributes()->urn->__toString().';h=40"/></a>';
+        $output .= '<a title="'._get_urn_documentation($specification->attributes()->urn->__toString()).'" class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'._get_urn_default_language($specification->attributes()->urn->__toString()).';h=40"/></a>';
       }
       $output .= '</li>';
     }
@@ -153,7 +160,11 @@ function _add_section_booking($offre){
             
   $output .= '</div></section>';
   
-  return $output;
+  if($booking === TRUE){
+    return $output;
+  }else{
+    return '';
+  }
 }
 
 /**

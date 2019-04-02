@@ -93,6 +93,13 @@ function _get_urn_documentation_full_spec($urn){
   return $xml_object;
 }
 
+function _get_urn_default_language($urn){
+  if(substr($urn, 0, 4) == 'urn:'){
+    return $urn;
+  }else{
+    return substr($urn, 3);
+  }
+}
 /**
  * Will return a span with an image inside with all parameters you have set
  * 

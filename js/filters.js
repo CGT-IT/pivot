@@ -86,6 +86,8 @@
       case 'Panel':
       case 'Type de champ':
       case 'HMultiChoice':
+      case 'Subcategory':
+      case 'Category':
         $('#filter-urn-infos').hide();
         $('#edit-pivot-urn').val('');
         $('#edit-pivot-filter-title').val('');

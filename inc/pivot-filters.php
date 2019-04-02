@@ -72,6 +72,7 @@ function pivot_filters_meta_box() {
         <option <?php if(isset($edit_page) && $edit_page->operator == 'greaterequal') echo 'selected="selected"';?>value="greaterequal"><?php esc_html_e('Greater or equal', 'pivot')?></option>
         <option <?php if(isset($edit_page) && $edit_page->operator == 'between') echo 'selected="selected"';?>value="between"><?php esc_html_e('Between', 'pivot')?></option>
         <option <?php if(isset($edit_page) && $edit_page->operator == 'in') echo 'selected="selected"';?>value="in"><?php esc_html_e('in', 'pivot')?></option>
+        <!--<option <?php // if(isset($edit_page) && $edit_page->operator == 'notempty') echo 'selected="selected"';?>value="notempty"><?php // esc_html_e('notempty', 'pivot')?></option>-->
       </select>
       <p class="description"><?php esc_html_e('Type of comparison', 'pivot') ?></p>
     </div>
