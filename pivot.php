@@ -60,7 +60,6 @@ function pivot_install() {
             query varchar(100) NOT NULL,
             path varchar(100) NOT NULL,
             title varchar(128) NOT NULL,
-            map tinyint(1) NOT NULL,
             sortMode varchar(50) DEFAULT NULL,
             sortField varchar(100) DEFAULT NULL,
             PRIMARY KEY (id)
@@ -263,7 +262,7 @@ function _pivot_request($type, $detail, $params = NULL, $postfields = NULL){
   if(isset($params['shuffle']) && $params['shuffle'] == TRUE){
     $shuffle = ';shuffle=true'; 
   }else{
-    $shuffle = ''; 
+    $shuffle = ';shuffle=false';  
   }
   // Get Pivot Base URI
   $pivot_url = esc_url(get_option('pivot_uri'));
@@ -394,8 +393,8 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL){
   
   if(isset($field_params['radius'])){
     $criteriaOrthodromicElement = $domDocument->createElement('CriteriaOrthodromic');
-    $offerValueElement = $domDocument->createElement('offre', $field_params['offer_id']);
-    $criteriaOrthodromicElement->appendChild($offerValueElement);
+    $idInsValueElement = $domDocument->createElement('idIns', $field_params['idIns']);
+    $criteriaOrthodromicElement->appendChild($idInsValueElement);
     $radiusValueElement = $domDocument->createElement('radius', $field_params['radius']);
     $criteriaOrthodromicElement->appendChild($radiusValueElement);
     

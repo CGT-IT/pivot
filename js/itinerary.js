@@ -1,7 +1,6 @@
 (function($) {
 
   $().ready(function(){
-
     // URL of GPX file
     var gpx = 'https://pivotwebstg.tourismewallonie.be/PivotWeb-3.1/media/'+$('#gpx-file-id').text();
 

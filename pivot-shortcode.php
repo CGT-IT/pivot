@@ -138,7 +138,7 @@ function pivot_custom_shortcode($atts) {
                       </thead>
                       <tbody>';
       }else{
-        $output = '<div class="container pivot-list">'
+        $output = '<div class="container-fluid pivot-list">'
                  .'<div class="row row-eq-height pivot-row">';
       }
 

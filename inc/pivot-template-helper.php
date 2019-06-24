@@ -12,6 +12,7 @@
  * @return string
  */
 function _add_section($offre, $urnCat, $title, $faIcon='', $urnSubCat=0){
+  $excludedUrn = array('urn:fld:dateech');
   // Define if sub category or category
   $cat_or_subcat = ($urnSubCat?'urnSubCat':'urnCat');
   // Get 2 letter language code
@@ -24,30 +25,40 @@ function _add_section($offre, $urnCat, $title, $faIcon='', $urnSubCat=0){
   $open_balise = '<h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 f0fc '.$faIcon.'"></i>'. __($title, 'pivot') .'</h5>'
            .'<section class="pivot-'.$cat.' card lis-brd-light mb-4">'
            .'<div class="card-body p-4">'
-           .'<ul class="list-unstyled lis-line-height-2 mb-0">';
+           .'<ul class="list-unstyled lis-line-height-2 m-0">';
   foreach($offre->spec as $specification){
     // If iteration is on an URN of the cat or subcat we are looking for
     if($specification->$cat_or_subcat->__toString() == $urnCat && !empty(_get_urn_documentation($specification->attributes()->urn->__toString()))){
-      // Case FR
-      if($lang == 'fr' && 'urn' == substr($specification->attributes()->urn->__toString(), 0, 3)){
-        $content .= '<li class="p-1 '. str_replace(":", "-", $specification->attributes()->urn->__toString()) .'">'
-                .    '<span class="'.$cat.'-label">'. _get_urn_documentation($specification->attributes()->urn->__toString()) .'</span>'
-                .    '<span class="'.$cat.'-value"> '
-                .      _get_urnValue_translated($offre, $specification)
-                .    '</span> '
-                .    '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'. $specification->attributes()->urn->__toString() .';h=16"/>'
-                .  '</li>';
-      }else{
-        // Case other language than french
-        if($lang != 'fr'){
-        $content .= '<li class="p-1 '. str_replace(":", "-", $specification->attributes()->urn->__toString()) .'">'
-                .    '<span class="'.$cat.'-label">'. _get_urn_documentation($specification->attributes()->urn->__toString()) .'</span>'
-                .    '<span class="'.$cat.'-value"> '
-                .      _get_urnValue_translated($offre, $specification)
-                .    '</span> '
-                .    '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'. $specification->attributes()->urn->__toString() .';h=16"/>'
-                .  '</li>';
-         }
+      if(!in_array($specification->attributes()->urn->__toString(),$excludedUrn)){
+        // Case FR
+        if($lang == 'fr' && 'urn' == substr($specification->attributes()->urn->__toString(), 0, 3)){
+          $content .= '<li class="p-1 '. str_replace(":", "-", $specification->attributes()->urn->__toString()) .'">';
+          if($specification->type != 'Boolean'){
+            $content .= '<span class="'.$cat.'-label">'. _get_urn_documentation($specification->attributes()->urn->__toString()) .'</span>';
+          }
+          $content .=    '<span class="'.$cat.'-value"> ';
+          if($specification->attributes()->urn->__toString() == 'urn:fld:signal'){
+            $content .= '<img class="pivot-img" src="https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/'._get_urn_value($offre, 'urn:fld:signal').';w=20"/>';
+          }else{
+            $content .= _get_urnValue_translated($offre, $specification);
+          }
+          $content  .=  '</span> '
+                    .    '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'. $specification->attributes()->urn->__toString() .';h=16"/>'
+                    .  '</li>';
+        }else{
+          // Case other language than french
+          if($lang != 'fr'){
+          $content .= '<li class="p-1 '. str_replace(":", "-", $specification->attributes()->urn->__toString()) .'">';
+          if($specification->type != 'Boolean'){
+            $content .=    '<span class="'.$cat.'-label">'. _get_urn_documentation($specification->attributes()->urn->__toString()) .'</span>';
+          }
+          $content .=     '<span class="'.$cat.'-value"> '
+                  .      _get_urnValue_translated($offre, $specification)
+                  .    '</span> '
+                  .    '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'. $specification->attributes()->urn->__toString() .';h=16"/>'
+                  .  '</li>';
+           }
+        }
       }
     }
   }
@@ -70,13 +81,10 @@ function _add_section($offre, $urnCat, $title, $faIcon='', $urnSubCat=0){
  */
 function _add_section_share($offre){
   $url_offer_details = get_bloginfo('wpurl').'/details/'.$offre->attributes()->codeCgt->__toString().'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString();
-  $output = '<h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-share-square-o"></i>'.__('Share', 'pivot').'</h5>'
-          .   '<section class="pivot-share card lis-brd-light wow fadeInUp mb-4">'
-          .     '<div class="card-body p-4">'
-          .       '<span class="pr-3"><a class="social-icon" href="https://www.facebook.com/sharer.php?u='.$url_offer_details.'&amp;t='._get_urn_value($offre, 'urn:fld:nomofr').'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urlfacebook;h=35" alt="Facebook '.esc_attr__('Share button').'" title="Facebook '.esc_attr__('Share button').'"/></a></span>'
-          .       '<span><a class="social-icon" href="https://twitter.com/share?text='._get_urn_value($offre, 'urn:fld:nomofr').'&amp;url='.$url_offer_details.'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urltwitter;h=35" alt="Twitter '.esc_attr__('Share button').'" title="Twitter '.esc_attr__('Share button').'"/></a></span>'
-          .     '</div>'
-          .   '</section>';
+  $output = '<div class="pivot-offer-share">'
+          .   '<span class="pr-3"><a class="social-icon" href="https://www.facebook.com/sharer.php?u='.$url_offer_details.'&amp;t='._get_urn_value($offre, 'urn:fld:nomofr').'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urlfacebook;h=35" alt="Facebook '.esc_attr__('Share button').'" title="Facebook '.esc_attr__('Share button').'"/></a></span>'
+          .   '<span><a class="social-icon" href="https://twitter.com/share?text='._get_urn_value($offre, 'urn:fld:nomofr').'&amp;url='.$url_offer_details.'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urltwitter;h=35" alt="Twitter '.esc_attr__('Share button').'" title="Twitter '.esc_attr__('Share button').'"/></a></span>'
+          . '</div>';
   
   return $output;
 }
@@ -91,7 +99,7 @@ function _add_section_contact($offre){
           . '<section class="pivot-contacts card lis-brd-light wow fadeInUp mb-4">'
           .   '<div class="card-body p-4">'
           .     '<h6 class="pivo-title">'._get_urn_value($offre, 'urn:fld:nomofr').'</h6>'
-          .     '<ul class="list-unstyled lis-line-height-2 mb-0">';
+          .     '<ul class="list-unstyled lis-line-height-2 m-0">';
   foreach($offre->spec as $specification){
     if($specification->urnCat->__toString() == 'urn:cat:moycom' && $specification->urnSubCat->__toString() != 'urn:cat:moycom:sitereservation'){
       $output .= '<li>'
@@ -123,7 +131,7 @@ function _add_section_contact($offre){
   }
   $output .= '</ul>';
             
-  $output .= '<ul class="adr list-unstyled lis-line-height-2 mb-0">'
+  $output .= '<ul class="adr list-unstyled lis-line-height-2 m-0">'
           .    '<li class="street-address"><i class="fa fa-map-o"></i> '.$offre->adresse1->rue->__toString().', '.$offre->adresse1->numero->__toString().'</li>'
           .      '<span class="postal-code">'.$offre->adresse1->cp->__toString().'</span>'
           .      '<span class="locality">'.(isset($offre->adresse1->commune)?$offre->adresse1->commune->value->__toString():'').'</span>'
@@ -145,7 +153,7 @@ function _add_section_booking($offre){
   $output = '<h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-credit-card"></i>'.esc_html('Booking', 'pivot').'</h5>'
           . '<section class="pivot-booking card lis-brd-light wow fadeInUp mb-4">'
           .   '<div class="card-body p-4">'
-          .     '<ul class="list-unstyled list-inline lis-line-height-2 mb-0">';
+          .     '<ul class="list-unstyled list-inline lis-line-height-2 m-0">';
   foreach($offre->spec as $specification){
     if($specification->urnSubCat->__toString() == 'urn:cat:moycom:sitereservation'){
       $booking = TRUE;
@@ -263,4 +271,93 @@ function _add_section_event_dates($offre){
   }
   
   return $dates_output;
+}
+
+/*function _add_itinerary_details($offre){
+  $output = '';
+  
+  if(_get_urn_value($offre, 'urn:fld:infusgped') != ''){
+    $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
+  }else{
+    if(_get_urn_value($offre, 'urn:fld:infusgequ') != ''){
+      $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
+    }else {
+      if(_get_urn_value($offre, 'urn:fld:infusgatt') != ''){
+        $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
+      }else{
+        if(_get_urn_value($offre, 'urn:fld:infusgvtc') != ''){
+          $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
+        }else{
+          if(_get_urn_value($offre, 'urn:fld:infusgvtt') != ''){
+            $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
+          }else{
+            if(_get_urn_value($offre, 'urn:fld:infusgauto') != ''){
+              $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
+            }else{
+              if(_get_urn_value($offre, 'urn:fld:infusgmoto') != ''){
+                $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
+              }else{
+                if(_get_urn_value($offre, 'urn:fld:infusgnwalk') != ''){
+                  $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
+                }else{
+                  if(_get_urn_value($offre, 'urn:fld:infusgski') != ''){
+                    $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  return $output;
+}*/
+function _add_itinerary_details($offre, $urnCat, $urnSubCat=0){
+  $previousSubCat = '';
+  // Get 2 letter language code
+  $lang = substr(get_locale(), 0, 2 );
+  // Define if sub category or category
+  $cat_or_subcat = ($urnSubCat?'urnSubCat':'urnCat');
+  // Init var, will be used to check if there is well content or not
+  $content = '';
+
+  foreach($offre->spec as $specification){
+    // If iteration is on an URN of the cat or subcat we are looking for
+    if($specification->$cat_or_subcat->__toString() == $urnCat){
+      $urnValue = _get_urnValue_translated($offre, $specification);
+      if(!empty($urnValue)){
+        if($previousSubCat == $specification->urnSubCat->__toString()){
+          // Case FR
+          if($lang == 'fr' && 'urn' == substr($specification->attributes()->urn->__toString(), 0, 3)){
+            $content .= ' || '
+                     .      $urnValue;
+          }else{
+            // Case other language than french
+            if($lang != 'fr'){
+            $content .= ' || '
+                     .      $urnValue;
+             }
+          }
+        }else{
+          // Case FR
+          if($lang == 'fr' && 'urn' == substr($specification->attributes()->urn->__toString(), 0, 3)){
+            $content .= '</p><p class="card-text">'
+                     .      $urnValue;
+          }else{
+            // Case other language than french
+            if($lang != 'fr'){
+            $content .= '</p><p class="card-text">'
+                     .      $urnValue;
+             }
+          }
+        }
+        
+        $previousSubCat = $specification->urnSubCat->__toString();
+      }
+    }
+  }
+
+  return $content;
 }

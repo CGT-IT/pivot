@@ -10,9 +10,19 @@
       <?php print pivot_template('pivot-image-slider', $offre); ?>
         
       <div class="col-12">
-        <h2 class="pivot-title"><?php print _get_urn_value($offre, 'urn:fld:nomofr'); ?></h2>
+        <div class="row">
+          <div class="col-12">
+            <div class="row mb-2">
+              <div class="col-10">
+                <h2 class="pivot-title"><?php print _get_urn_value($offre, 'urn:fld:nomofr'); ?></h2>
+              </div>    
+              <div class="col-2">
+                <?php print _add_section_share($offre); ?>
+              </div>      
+            </div>
+          </div>
+        </div>
 
-        <!--<div class="tab-content card">-->
         <h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 lis-f-14"></i><?php esc_html_e('Description', 'pivot')?></h5>
         <section class="card lis-brd-light mb-4">
           <div class="card-body p-4">
@@ -38,7 +48,6 @@
     </section>
 
     <?php print _add_section($offre,'urn:cat:classlab', __('Theme(s)'), 'fa-list-ol'); ?>
-    <?php print _add_section_share($offre); ?>
         
     <h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-calendar"></i><?php esc_html_e('Add to calendar', 'pivot')?></h5>
     <section class="pivot-share card lis-brd-light mb-4">

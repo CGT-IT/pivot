@@ -53,15 +53,15 @@ function pivot_enqueue_admin_script() {
  * Register Scripts
  */
 function pivot_register_script() {
-  wp_register_style('lodging_style', MY_PLUGIN_URL.'css/'.'pivot-lodging.css', array(), '3.2', false);
+  wp_register_style('lodging_style', MY_PLUGIN_URL.'css/'.'pivot-lodging.css', array(), '3.4', false);
   wp_register_style('event_style', MY_PLUGIN_URL.'css/'.'pivot-event.css', array(), '2.0', false);
-  wp_register_style('fontawesome', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css', array(), '1.0.0', false);
-  wp_register_style('bootstrapexternal', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css', array(), '1.0.0', false);
-  wp_register_script('slimmin', 'https://code.jquery.com/jquery-3.3.1.min.js', array(), null, false);
-  wp_register_script('poppermin', 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js', array(), null, true);
-  wp_register_script('bootstrapmin', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js', array(), null, true);
+  wp_register_style('fontawesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.1/css/all.min.css', array(), '1.0.0', false);
+  wp_register_style('bootstrapexternal', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', array(), '1.0.0', false);
+  wp_register_script('slimmin', 'https://code.jquery.com/jquery-3.4.1.slim.min.js', array(), null, false);
+  wp_register_script('poppermin', 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js', array(), null, true);
+  wp_register_script('bootstrapmin', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js', array(), null, true);
   wp_register_script('dataTablesmin', 'https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js', array(), null, true);
-  wp_register_script('itinerary', MY_PLUGIN_URL.'js/'.'itinerary.js', array(), '1.1', true);
+  wp_register_script('itinerary', MY_PLUGIN_URL.'js/'.'itinerary.js', array(), '1.2', true);
 }
 
 /**

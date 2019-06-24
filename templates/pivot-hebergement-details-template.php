@@ -10,17 +10,27 @@
       <?php print pivot_template('pivot-image-slider', $offre); ?>
         
       <div class="col-12">
-        <h2 class="pivot-title"><?php print _get_urn_value($offre, 'urn:fld:nomofr'); ?></h2>
+        <div class="row">
+          <div class="col-12">
+            <div class="row mb-2">
+              <div class="col-10">
+                <h2 class="pivot-title"><?php print _get_urn_value($offre, 'urn:fld:nomofr'); ?></h2>
+              </div>    
+              <div class="col-2">
+                <?php print _add_section_share($offre); ?>
+              </div>      
+            </div>
+          </div>
+        </div>
 
-        <!--<div class="tab-content card">-->
-        <h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 lis-f-14"></i><?php esc_html_e('Description', 'pivot')?></h5>
+        <h5 class="lis-font-weight-500"><i class="fas fa-align-right pr-2 lis-f-14"></i><?php esc_html_e('Description', 'pivot')?></h5>
         <section class="card lis-brd-light mb-4">
           <div class="card-body p-4">
             <p class="pivot-desc item mb-0"><?php print _get_urn_value($offre, 'urn:fld:descmarket') ;?></p>
           </div>
         </section>
 
-        <h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-thumb-tack"></i><?php esc_html_e('Equipments', 'pivot')?></h5>
+        <h5 class="lis-font-weight-500"><i class="fas fa-align-right pr-2 fa-thumb-tack"></i><?php esc_html_e('Equipments', 'pivot')?></h5>
         <section class="card lis-brd-light mb-4">
           <div class="card-body p-4">
             <div class="row">
@@ -41,7 +51,7 @@
           </div>
         </section>
 
-        <h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-info"></i><?php esc_html_e('Extra infos', 'pivot')?></h5>
+        <h5 class="lis-font-weight-500"><i class="fas fa-align-right pr-2 fa-info"></i><?php esc_html_e('Extra infos', 'pivot')?></h5>
         <section class="card lis-brd-light mb-4">
           <div class="card-body p-4">
             <ul id="pivot-extra-infos" class="list-unstyled lis-line-height-2 mb-0 ">
@@ -68,19 +78,16 @@
     </div>
   </div>
 
-  <aside class="col-xs-12 col-md-3">
+  <aside class="col-xs-12 col-md-4">
 
     <?php print _add_section_contact($offre); ?>
     <?php print _add_section_booking($offre); ?>
     
     <?php print _add_section($offre, 'urn:cat:accueil:langpar', __('Language(s)'), 'fa-language', 1); ?>
     <?php print _add_section($offre, 'urn:cat:classlab', __('Themes'), 'fa-list-alt'); ?>
-      
-    <?php print _add_section_share($offre); ?>
 
   </aside>
-
+    
 </article>
-
 
 <?php get_footer();

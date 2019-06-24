@@ -93,6 +93,12 @@ function _get_urn_documentation_full_spec($urn){
   return $xml_object;
 }
 
+/**
+ * return urn in default language.
+ * In case you have nl:urn:...
+ * @param string $urn URN name
+ * @return string
+ */
 function _get_urn_default_language($urn){
   if(substr($urn, 0, 4) == 'urn:'){
     return $urn;
@@ -100,6 +106,7 @@ function _get_urn_default_language($urn){
     return substr($urn, 3);
   }
 }
+
 /**
  * Will return a span with an image inside with all parameters you have set
  * 
@@ -241,7 +248,7 @@ function _get_address_one_line($offre){
 }
 
 function _get_list_mdt(){
-  $uri = 'https://pivotweb.tourismewallonie.be:8443/PivotWeb-3.1/thesaurus/tmdts;pretty=true;fmt=xml';
+  $uri = 'https://pivotweb.tourismewallonie.be/PivotWeb-3.1/thesaurus/tmdts;pretty=true;fmt=xml';
 
   $ssl_options=array(
     "ssl"=>array(
@@ -265,7 +272,7 @@ function _get_list_mdt(){
 }
 
 function _get_list_typeofr($selected_id = NULL){
-  $uri = 'https://pivotweb.tourismewallonie.be:8443/PivotWeb-3.1/thesaurus/typeofr;fmt=xml';
+  $uri = 'https://pivotweb.tourismewallonie.be/PivotWeb-3.1/thesaurus/typeofr;fmt=xml';
 
   $ssl_options=array(
     "ssl"=>array(
@@ -290,8 +297,7 @@ function _get_list_typeofr($selected_id = NULL){
 
 function _get_commune_from_pivot($type, $value){
   // Construction of request uri
-  $uri = 'https://pivotweb.tourismewallonie.be:8443/PivotWeb-3.1/thesaurus/tins/'.$type.'/'.$value.';pretty=true;fmt=xml';
-
+  $uri = 'https://pivotweb.tourismewallonie.be/PivotWeb-3.1/thesaurus/tins/'.$type.'/'.$value.';pretty=true;fmt=xml';
   $ssl_options=array(
     "ssl"=>array(
       "verify_peer"=>false,
@@ -497,14 +503,43 @@ function _get_path(){
   return $path;
 }
 
-function _get_offer_details(){
-  $path = $_SERVER['REQUEST_URI'];
-  if((strpos($path, "&type=")) !== FALSE){
-    if (preg_match('/\/(.*?)&type=/', $path, $match) == 1) {
-      $params['offer_code'] = substr($match[1], strrpos($match[1], '/' )+1);
-      $params['type'] = 'offer';
-      $xml_object = _pivot_request('offer-details', 3, $params);
-      $offre = $xml_object->offre;
+function _get_ot_details(){
+  $field_params['criterafield'] = TRUE;
+  $field_params['filters']['status']['name'] = 'urn:fld:etatedit';
+  $field_params['filters']['status']['operator'] = 'equal';
+  $field_params['filters']['status']['searched_value'][] = 'urn:val:etatedit:30';
+
+  // Hebergements
+  $field_params['filters']['typeofr']['name'] = 'urn:fld:typeofr';
+  $field_params['filters']['typeofr']['operator'] = 'equal';
+  $field_params['filters']['typeofr']['searched_value'] = 14;
+
+  // Hebergements
+  $field_params['filters']['typeofr']['name'] = 'urn:fld:adrot';
+  $field_params['filters']['typeofr']['operator'] = 'equal';
+  $field_params['filters']['typeofr']['searched_value'] = 'Ourthe Vesdre Amblève';
+
+  $xml_query = _xml_query_construction(NULL, $field_params);
+  $xml_object = _pivot_request('offer-search', 2, $field_params, $xml_query);
+//  $offer = pivot_construct_output('offer-search', 1, $xml_query);
+  return $xml_object;
+}
+
+function _get_offer_details($offer_id = NULL){
+  if($offer_id){
+    $params['offer_code'] = $offer_id;
+    $params['type'] = 'offer';
+    $xml_object = _pivot_request('offer-details', 3, $params);
+    $offre = $xml_object->offre;
+  }else{
+    $path = $_SERVER['REQUEST_URI'];
+    if((strpos($path, "&type=")) !== FALSE){
+      if (preg_match('/\/(.*?)&type=/', $path, $match) == 1) {
+        $params['offer_code'] = substr($match[1], strrpos($match[1], '/' )+1);
+        $params['type'] = 'offer';
+        $xml_object = _pivot_request('offer-details', 3, $params);
+        $offre = $xml_object->offre;
+      }
     }
   }
 
@@ -574,7 +609,7 @@ function _construct_filters_array(&$field_params,$filter, $key = 'shortcode', $p
 function _get_urnValue_translated($offre, $specification){
   switch($specification->type->__toString()){
     case 'Boolean':
-      $output = '';
+      $output = _get_urn_documentation($specification->attributes()->__toString());
       break;
     case 'Currency':
       $output = $specification->value->__toString().' €';

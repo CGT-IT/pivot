@@ -1,9 +1,47 @@
+h1,h2,h3,h4,h5,h6{
+    text-transform:uppercase;
+    margin-bottom:25px;
+    color:#32313b;
+    font-family:Raleway,sans-serif;
+    text-rendering:optimizelegibility;
+    font-style:normal;
+}
+h5 .no-transform{
+    text-transform:none;
+}
+h1{
+    font-size:58px;
+    font-weight:300;
+}
+h2{
+    font-size:36px;
+    font-weight:300;
+}
+h3{
+    color:rgb(112,108,107);
+    font-size:26px;
+}
+h4{
+    font-size:18px;
+    text-transform:none;
+}
+h5{
+}
+h6{
+}
+body{
+    line-height:1.4;
+    color:rgb(112,108,107);
+    font-size:15px !important;
+}
+  
 #mapid {
-    overflow: hidden;
-    position: fixed !important;
-    top: 0;
     height: 100%!important;
-    width: 50%!important;
+    width: 100%!important;
+}
+.pivot-offer-list{
+    max-height: 100%;
+    overflow-y: scroll;
 }
 @media screen and (max-width: 960px){
     #mapid{
