@@ -38,7 +38,6 @@
             <?php foreach($offres as $offre): ?>
               <?php $name = 'pivot-'.$pivot_page->type.'-details-part-template'; ?>
               <?php $offre->path = $_SESSION['pivot'][$pivot_page->id]['path']; ?>
-              <?php $offre->map = $_SESSION['pivot'][$pivot_page->id]['map']; ?>
               <?php print pivot_template($name, $offre); ?>
             <?php endforeach; ?>
           </div>        
