@@ -348,17 +348,18 @@ function _get_offer_types($edit_page){
  * @param String $path path to join the offer
  */
 function _add_meta_data($offre, $path){
-  if(strpos(get_bloginfo('wpurl'), 'localhost') !== false) {
-  }else{
+//  if(strpos(get_bloginfo('wpurl'), 'localhost') !== false) {
+    $url = get_bloginfo('wpurl').'/'.$path.'/'.$offre->attributes()->codeCgt->__toString();
+//  }else{
 //    $bitly_params = array();
 //    $bitly_params['access_token'] = get_option('pivot_bitly');
 //    $bitly_params['domain'] = 'bit.ly';
 //    $bitly_params['longUrl'] = get_bloginfo('wpurl').'/'.$path.'/'.$offre->attributes()->codeCgt->__toString(); 
 //    $bitly_url = bitly_get('shorten', $bitly_params);
-  }
+//  }
   if(isset($offre) && is_object($offre)){
     echo  '<title>'._get_urn_value($offre, 'urn:fld:nomofr').' - '. get_bloginfo('name').'</title>'
-         .'<meta property="og:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:'').'">'
+         .'<meta property="og:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:$url).'">'
          .'<meta property="og:type" content="article">'
          .'<meta property="og:title" content="'._get_urn_value($offre, 'urn:fld:nomofr').'">'
          .'<meta property="og:description" content="'.wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket')).'">'
@@ -367,7 +368,7 @@ function _add_meta_data($offre, $path){
   //       .'<meta property="og:image:width" content="'.$meta_datas['img_width'].'">'
   //       .'<meta property="og:image:height" content="'.$meta_datas['img_height'].'">'
          .'<meta name="twitter:card" content="summary_large_image">'
-         .'<meta name="twitter:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:'').'">'
+         .'<meta name="twitter:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:$url).'">'
          .'<meta name="twitter:title" content="'._get_urn_value($offre, 'urn:fld:nomofr').'">'
          .'<meta property="article:published_time" content="'.$offre->attributes()->dateCreation->__toString().'">'
          .'<meta property="article:modified_time" content="'.$offre->attributes()->dateModification->__toString().'">';
@@ -564,7 +565,7 @@ function _get_offer_details($offer_id = NULL){
  * @param String $key
  * @param int $page_id
  */
-function _construct_filters_array(&$field_params,$filter, $key = 'shortcode', $page_id = NULL){
+function _construct_filters_array($field_params,$filter, $key = 'shortcode', $page_id = NULL){
   switch($filter->type){
     case 'Type':
       $field_params['filters']['urn:fld:typeofr']['name'] = 'urn:fld:typeofr';
@@ -604,6 +605,7 @@ function _construct_filters_array(&$field_params,$filter, $key = 'shortcode', $p
     $field_params['filters'][$key]['operator'] = 'equal';
     $field_params['filters'][$key]['searched_value'][] = 'true';
   }
+  return $field_params;
 }
 
 function _get_urnValue_translated($offre, $specification){

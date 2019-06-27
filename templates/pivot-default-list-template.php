@@ -6,7 +6,8 @@
 <!--Include sidebar-->
 <?php // get_sidebar(); ?>
 
-
+<!--Get filters-->
+<?php $filters = pivot_add_filters(); ?>
 <!--Get offers-->
 <?php $offres = pivot_lodging_page($pivot_page->id); ?>
   
@@ -15,7 +16,6 @@
     <div class="col-12"><h1 class="text-center"><?php print $_SESSION['pivot'][$pivot_page->id]['page_title'];?></h1></div>
   </div>
   <div class="row">
-    <?php $filters = pivot_add_filters(); ?>
     <?php if($filters !== 0): ?>
       <div class="col-xs-12 col-md-3">
         <?php print $filters; ?>

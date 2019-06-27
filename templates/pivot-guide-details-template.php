@@ -207,18 +207,6 @@
 
   </div>
   
-<!--  <div class="col-xs-12 col-md-8">
-    <div id="map"></div>
-  </div>-->
-  
-  <?php /* $options = array(
-                    'type' => 'external',
-                    'defer' => TRUE,
-                  );
-  
-    drupal_add_js('https://maps.googleapis.com/maps/api/js?key=AIzaSyCietxDgWvF1rrEBs7VNKVol3eVOt461as', $options);*/
-  ?>
-
 </article>
 
 

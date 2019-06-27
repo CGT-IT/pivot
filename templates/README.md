@@ -42,9 +42,8 @@ Following lines should be included in ***.list-template.php**
 <?php foreach($offres as $offre): ?>
   // Construct file name for the template "details part"
   <?php $name = 'pivot-'.$pivot_page->type.'-details-part-template'; ?>
-  // Add Path and map to $offre object
+  // Add Path to $offre object
   <?php $offre->path = $_SESSION['pivot'][$pivot_page->id]['path']; ?>
-  <?php $offre->map = $_SESSION['pivot'][$pivot_page->id]['map']; ?>
   // Print "vignette" of the offer detail
   <?php print pivot_template($name, $offre); ?>
 <?php endforeach; ?>

@@ -502,7 +502,7 @@ function pivot_lodging_page($page_id) {
       // Get details of filter based on his ID
       $filter = pivot_get_filter($key);
       
-      _construct_filters_array($field_params, $filter, $key, $page_id);
+      $field_params = _construct_filters_array($field_params, $filter, $key, $page_id);
       
       // Reset var
       $parent_urn = '';
