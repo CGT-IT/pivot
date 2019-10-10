@@ -1,7 +1,7 @@
 
 <?php global $offre_meta_data; ?>
 <?php $offre = _get_offer_details(); ?>
-<?php get_header('pivot'); ?>
+<?php get_header(); ?>
 
 <article class="pivot-offer row m-3">
   <div class="col-xs-12 col-md-8">

@@ -2,9 +2,7 @@
 <?php $pivot_page = pivot_get_page_path(_get_path());?>
 <title><?php print $pivot_page->title .' - '. get_bloginfo('name');?></title>
 <!--Include header-->
-<?php get_header('pivot'); ?>
-<!--Include sidebar-->
-<?php // get_sidebar(); ?>
+<?php get_header(); ?>
 
 <!--Get filters-->
 <?php $filters = pivot_add_filters(); ?>

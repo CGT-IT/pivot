@@ -1,10 +1,7 @@
-
 <?php $pivot_page = pivot_get_page_path(_get_path());?>
 <title><?php print $pivot_page->title .' - '. get_bloginfo('name');?></title>
 <!--Include header-->
-<?php get_header('pivot'); ?>
-<!--Include sidebar-->
-<?php // get_sidebar(); ?>
+<?php get_header(); ?>
 
 <!--Get filters-->
 <?php $filters = pivot_add_filters(); ?>
@@ -12,11 +9,9 @@
 <?php $offres = pivot_lodging_page($pivot_page->id); ?>
   
 <div class="container-fluid pivot-list">
-  <?php // if(stristr($_SERVER['HTTP_REFERER'], 'page=pivot-pages') != FALSE): ?>  
-    <div class="row m-4">
-      <div class="col-12"><h1 class="text-center"><?php print $pivot_page->title;?></h1></div>
-    </div>
-  <?php // endif;?>
+  <div class="row m-4">
+    <div class="col-12"><h1 class="text-center"><?php print $pivot_page->title;?></h1></div>
+  </div>
   <div class="row">
     <?php if(!(empty($filters))): ?>
       <div class="col-xs-12 col-md-3">
