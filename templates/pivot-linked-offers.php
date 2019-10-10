@@ -41,10 +41,10 @@
   <!-- Carousel Buttons Next/Prev -->
   <a class="carousel-control-prev" href="#quote-carousel" role="button" data-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="sr-only">Previous</span>
+    <span class="sr-only"><?php esc_html_e('Previous', 'pivot')?></span>
   </a>
   <a class="carousel-control-next" href="#quote-carousel" role="button" data-slide="next">
     <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="sr-only">Next</span>
+    <span class="sr-only"><?php esc_html_e('Next', 'pivot')?></span>
   </a>
 </div>

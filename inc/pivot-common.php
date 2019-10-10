@@ -295,7 +295,7 @@ function _get_list_typeofr($selected_id = NULL){
   return $typeofr_list;
 }
 
-function _get_commune_from_pivot($type, $value){
+function _get_commune_from_pivot($type, $value, $selected_value = NULL){
   // Construction of request uri
   $uri = 'https://pivotweb.tourismewallonie.be/PivotWeb-3.1/thesaurus/tins/'.$type.'/'.$value.';pretty=true;fmt=xml';
   $ssl_options=array(
@@ -310,12 +310,16 @@ function _get_commune_from_pivot($type, $value){
 
   // Init vars
   $commune_list = array();
-  $output = '<option selected disabled hidden>Choisir une commune</option>';
+  $output = '<option '.(isset($selected_value)?'':'selected').' disabled hidden>Choisir une commune</option>';
 
   foreach($communes as $commune){
     if(!in_array(_get_translated_value($commune->commune), $commune_list)){
       $commune_list[] = _get_translated_value($commune->commune);
-      $output .= '<option value="'._get_translated_value($commune->commune).'">'._get_translated_value($commune->commune).'</option>';
+      $output .= '<option value="'._get_translated_value($commune->commune).'" ';
+      if($selected_value == _get_translated_value($commune->commune)){
+        $output .= 'selected';
+      }
+      $output .= '>'._get_translated_value($commune->commune).'</option>';
     }
   }
   return $output;
@@ -339,6 +343,52 @@ function _get_offer_types($edit_page){
     }
   }
   return $output;
+}
+
+/**
+ * Override page title with offer name + site name
+ * Add metadata for twitter and og (facebook, google, ...)
+ * @param Object $offre Complete Offer object
+ * @param String $path path to join the offer
+ */
+function _overide_yoast_seo_meta_data($offre, $path){
+  global $offre_meta_data;
+//  if(strpos(get_bloginfo('wpurl'), 'localhost') !== false) {
+    $url = get_bloginfo('wpurl').'/'.$path.'/'.$offre->attributes()->codeCgt->__toString();
+//  }else{
+//    $bitly_params = array();
+//    $bitly_params['access_token'] = get_option('pivot_bitly');
+//    $bitly_params['domain'] = 'bit.ly';
+//    $bitly_params['longUrl'] = get_bloginfo('wpurl').'/'.$path.'/'.$offre->attributes()->codeCgt->__toString(); 
+//    $bitly_url = bitly_get('shorten', $bitly_params);
+//  }
+  if(isset($offre) && is_object($offre)){
+    $offre_meta_data['title'] = _get_urn_value($offre, 'urn:fld:nomofr').' - '. get_bloginfo('name');
+    $offre_meta_data['type'] = 'article';
+    $offre_meta_data['url'] = (isset($bitly_url['data']['url'])?$bitly_url['data']['url']:$url);
+    $offre_meta_data['description'] = wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket'));
+    $offre_meta_data['updated_time'] = $offre->attributes()->dateModification->__toString();
+    $offre_meta_data['published_time'] = $offre->attributes()->dateCreation->__toString();
+    $offre_meta_data['modified_time'] = $offre->attributes()->dateModification->__toString();
+//    $offre_meta_data['image'] = ;
+//    $offre_meta_data['image_width'] = ;
+//    $offre_meta_data['image_height'] = ;
+//    $offre_meta_data[''] = ;
+    /*echo  '<title>'._get_urn_value($offre, 'urn:fld:nomofr').' - '. get_bloginfo('name').'</title>'
+         .'<meta property="og:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:$url).'">'
+         .'<meta property="og:type" content="article">'
+         .'<meta property="og:title" content="'._get_urn_value($offre, 'urn:fld:nomofr').'">'
+         .'<meta property="og:description" content="'.wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket')).'">'
+         .'<meta property="og:updated_time" content="'.$offre->attributes()->dateModification->__toString().'">'
+  //       .'<meta property="og:image" content="'.$meta_datas['url'].'">'
+  //       .'<meta property="og:image:width" content="'.$meta_datas['img_width'].'">'
+  //       .'<meta property="og:image:height" content="'.$meta_datas['img_height'].'">'
+         .'<meta name="twitter:card" content="summary_large_image">'
+         .'<meta name="twitter:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:$url).'">'
+         .'<meta name="twitter:title" content="'._get_urn_value($offre, 'urn:fld:nomofr').'">'
+         .'<meta property="article:published_time" content="'.$offre->attributes()->dateCreation->__toString().'">'
+         .'<meta property="article:modified_time" content="'.$offre->attributes()->dateModification->__toString().'">';*/
+  }
 }
 
 /**
@@ -384,11 +434,13 @@ function _add_meta_data($offre, $path){
  * @return string
  */
 function _construct_media_copyright($copyright, $date){
-  $date_explode = explode('/', $date);
-  if((strpos($copyright, '©') !== false) || (strpos($copyright, '(c)') !== false)){
-    return str_replace('copyright','',$copyright) . ' ' . (isset($date_explode[2])?$date_explode[2]:'');
-  }else{
-    return '© '.str_replace('copyright','',$copyright) . ' ' . $date_explode[2];
+  if(!empty($copyright) && !empty($date)){
+    $date_explode = explode('/', $date);
+    if((strpos($copyright, '©') !== false) || (strpos($copyright, '(c)') !== false)){
+      return str_replace('copyright','',$copyright) . ' ' . (isset($date_explode[2])?$date_explode[2]:'');
+    }else{
+      return '© '.str_replace('copyright','',$copyright) . ' ' . $date_explode[2];
+    }
   }
 }
 
@@ -503,7 +555,7 @@ function _get_path(){
 
   return $path;
 }
-
+/*
 function _get_ot_details(){
   $field_params['criterafield'] = TRUE;
   $field_params['filters']['status']['name'] = 'urn:fld:etatedit';
@@ -524,7 +576,7 @@ function _get_ot_details(){
   $xml_object = _pivot_request('offer-search', 2, $field_params, $xml_query);
 //  $offer = pivot_construct_output('offer-search', 1, $xml_query);
   return $xml_object;
-}
+}*/
 
 function _get_offer_details($offer_id = NULL){
   if($offer_id){

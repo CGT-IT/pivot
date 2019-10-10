@@ -61,7 +61,7 @@ function pivot_add_filters(){
 
     // Print head section and HTML Form
     $output = '<section id="block-pivot-filters" class="block block-pivot block-pivot-filter clearfix">'
-         . '<form action="'.$pivot_page->path.'" method="post" id="pivot-filter-form" accept-charset="UTF-8">'
+         . '<form action="'.get_site_url().'/'.$pivot_page->path.'" method="post" id="pivot-filter-form" accept-charset="UTF-8">'
          .   '<div  id="edit-filter-body">';
 
     foreach($filters as $filter){
@@ -78,10 +78,10 @@ function pivot_add_filters(){
     // Print footer section and close HTML form
     $output .= '</div>'
          .   '<div class="row mt-2">'
-         .     '<div class="col-8 pr-1">'
-         .       '<button type="submit" id="filter-submit" name="filter-submit" value="'.esc_html('Search', 'pivot').'"class="btn text-dark btn-lg btn-block form-submit" style="background-color:#f5f5f5;"><i class="fas fa-search"></i> '.esc_html('Search', 'pivot').'</button>'
+         .     '<div class="col-xl-8 col-12">'
+         .       '<button type="submit" id="filter-submit" name="filter-submit" value="'.esc_html('Chercher', 'pivot').'"class="btn text-dark btn-lg btn-block form-submit" style="background-color:#f5f5f5;"><i class="fas fa-search"></i> '.esc_html('Search', 'pivot').'</button>'
          .     '</div>'
-         .     '<div class="col-4 pl-1">'
+         .     '<div class="col-xl-4 col-12">'
          .       '<button type="submit" id="filter-reset" name="filter-reset" value="'.esc_html('Reset', 'pivot').'" class="btn btn-lg btn-block form-submit text-white" style="background-color:#555555;"><i class="fas fa-redo-alt"></i> '.esc_html('Reset', 'pivot').'</button>'
          .     '</div>'
          .   '</div>'
@@ -172,7 +172,7 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL){
       $output .= '<div class="pl-2 form-item form-item-'.$filter->filter_name.'">'
                 .  '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.$filter->filter_title.'">'
                 .    $filter->filter_title
-                .  '<input type="number" id="edit-'.$filter->filter_name.'" name="'.$filter->id.'" min="1" max="30" placeholder="'.$filter->filter_name.' 0 à 30"  value="'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?$_SESSION['pivot']['filters'][$page_id][$filter->id]:'').'">'
+                .  '<input type="number" id="edit-'.$filter->filter_name.'" name="'.$filter->id.'" min="1" max="200" placeholder="'.$filter->filter_name.' 0 à 200"  value="'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?$_SESSION['pivot']['filters'][$page_id][$filter->id]:'').'">'
                 .'</div>';
       return $output;
     case 'String':
@@ -180,7 +180,7 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL){
         $output .= '<div class="pl-2 form-item form-item-'.$filter->filter_name.' form-type-select select">'
                   .  '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.$filter->filter_title.'">'
                   .  '<select id="edit-'.$filter->filter_name.'" name="'.$filter->id.'">'
-                  .    _get_commune_from_pivot('mdt', get_option('pivot_mdt'))
+                  .    _get_commune_from_pivot('mdt', get_option('pivot_mdt'), $_SESSION['pivot']['filters'][$page_id][$filter->id])
                   .  '</select>'
                   .'</div>';
       }else{

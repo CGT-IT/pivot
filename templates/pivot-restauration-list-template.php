@@ -12,9 +12,11 @@
 <?php $offres = pivot_lodging_page($pivot_page->id); ?>
   
 <div class="container-fluid pivot-list">
-  <div class="row m-4">
-    <div class="col-12"><h1 class="text-center"><?php print $pivot_page->title;?></h1></div>
-  </div>
+  <?php // if(stristr($_SERVER['HTTP_REFERER'], 'page=pivot-pages') != FALSE): ?>  
+    <div class="row m-4">
+      <div class="col-12"><h1 class="text-center"><?php print $pivot_page->title;?></h1></div>
+    </div>
+  <?php // endif;?>
   <div class="row">
     <?php if(!(empty($filters))): ?>
       <div class="col-xs-12 col-md-3">
@@ -55,7 +57,7 @@
                    crossorigin=""></script>
 
           <!--Create Map element-->  
-          <div id="mapid" style="height: 600px;width: 600px;z-index:0;"></div>
+          <div id="mapid" style="height: 600px;width: 600px; z-index:0;"></div>
           <!--Include map custom js-->
           <script src="<?php echo plugins_url('js/map.js', dirname(__FILE__)) ?>"></script>
         </div>

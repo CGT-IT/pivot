@@ -1,4 +1,3 @@
-
 <?php $offre = $args; ?>
 
 <div class="offers-area-col <?php print ($offre->map==1)?'col-12':'col-xl-3 col-lg-4 col-md-6 col-sm-6 col-xs-12';?>  mb-3">
@@ -7,13 +6,30 @@
   <div class="card text-left pivot-offer">
     <div class="container-img">
       <img class="pivot-img card-img-top zoom pivot-img-list" src="https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/<?php print $offre->attributes()->codeCgt->__toString() ;?>;w=428;h=284"/>
+      <div class="p-3 position-absolute fixed-top">
+        <?php print _search_specific_urn_img($offre, 'urn:fld:label:bvvelo', 40, null, true); ?>
+      </div>
+      <div class="p-3 position-absolute fixed-top text-right">
+        <span class="item-services">
+          <?php print _search_specific_urn_img($offre, 'urn:fld:eqpsrv:accwebwifi', 20, 'FFFFFF'); ?>
+          <?php print _search_specific_urn_img($offre, 'urn:fld:pmr', 20, 'FFFFFF'); ?>
+          <?php print _search_specific_urn_img($offre, 'urn:fld:animauxacc', 20, 'FFFFFF'); ?>
+        </span>
+      </div>
     </div>
     <h5 class="card-header"><?php print _get_urn_value($offre, 'urn:fld:nomofr'); ?></h5>
     <div class="card-body">
-      <?php if(_get_urn_value($offre, 'urn:fld:phone1') != ''): ?>
+      <?php $nbcouv = _get_urn_value($offre, 'urn:fld:nbcouv'); ?>
+      <?php if(!empty($nbcouv) && $nbcouv != 0): ?>
+        <p class="card-text">
+          <i class="fas fas-align-right pr-2 fa-utensils"></i><?php print $nbcouv; ?>
+        </p>
+      <?php endif; ?>
+      <?php $phone = _get_urn_value($offre, 'urn:fld:phone1'); ?>
+      <?php if($phone != ''): ?>
         <p class="card-text">
           <i class="fas fa-phone"></i>
-          <?php print _get_urn_value($offre, 'urn:fld:phone1'); ?>
+          <?php print $phone; ?>
         </p>
       <?php endif; ?>
       <p class="card-text">
@@ -28,5 +44,5 @@
       <span class="pivot-longitude d-none item"><?php print $offre->adresse1->longitude->__toString(); ?></span>
     </div>
   </div>
-
+      
 </div>

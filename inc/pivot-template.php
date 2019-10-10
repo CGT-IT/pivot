@@ -74,7 +74,9 @@ function pivot_template_include($template) {
       $new_template = pivot_locate_template('pivot-'.$pivot_page->type.'-details-template.php');
     }
   }
-
+  if(isset($pivot_page->map)){
+    $_SESSION['pivot'][$pivot_page->id]['map'] = $pivot_page->map;
+  }
   if(isset($pivot_page->path) && $pivot_page->path != 'details'){
     $_SESSION['pivot'][$pivot_page->id]['path'] = $pivot_page->path;
   }

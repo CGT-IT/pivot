@@ -1,8 +1,8 @@
 
-<?php $pivot_page = pivot_get_page_path(_get_path()); ?>
-<title><?php print $_SESSION['pivot'][$pivot_page->id]['page_title'] .' - '. get_bloginfo('name');?></title>
+<?php $pivot_page = pivot_get_page_path(_get_path());?>
+<title><?php print $pivot_page->title .' - '. get_bloginfo('name');?></title>
 <!--Include header-->
-<?php get_header(); ?>
+<?php get_header('pivot'); ?>
 <!--Include sidebar-->
 <?php // get_sidebar(); ?>
 
@@ -12,11 +12,13 @@
 <?php $offres = pivot_lodging_page($pivot_page->id); ?>
   
 <div class="container-fluid pivot-list">
-  <div class="row m-4">
-    <div class="col-12"><h1 class="text-center"><?php print $_SESSION['pivot'][$pivot_page->id]['page_title'];?></h1></div>
-  </div>
+  <?php // if(stristr($_SERVER['HTTP_REFERER'], 'page=pivot-pages') != FALSE): ?>  
+    <div class="row m-4">
+      <div class="col-12"><h1 class="text-center"><?php print $pivot_page->title;?></h1></div>
+    </div>
+  <?php // endif;?>
   <div class="row">
-    <?php if($filters !== 0): ?>
+    <?php if(!(empty($filters))): ?>
       <div class="col-xs-12 col-md-3">
         <?php print $filters; ?>
       </div>
@@ -25,25 +27,26 @@
       <div class="col-xs-12 col-md-12 bg-white">
     <?php endif;?>
       <div class="row p-3">
-        <div class="col-9 pt-3" style="background-color:#f5f5f5;">
+        <div class="col-11 pt-3" style="background-color:#f5f5f5;">
           <h5><?php echo __('There are', 'pivot') .' '. $_SESSION['pivot'][$pivot_page->id]['nb_offres'] .' '.  __('offers', 'pivot'); ?></h5>
         </div>
-        <div class="col-3" role="button">
-          <i id="carte" class="float-right fas fa-map-marked-alt fa-4x" role="button"> Carte</i>
+        <div class="col-1" role="button">
+          <i id="carte" class="float-right fas <?php print ($pivot_page->map==1)?'fa-list':'fa-map-marked-alt';?> fa-4x" role="button"></i>
         </div>
       </div>
       <div class="row">
-        <div id="offers-area" class="col-12">
+        <div id="offers-area" class="<?php print ($pivot_page->map==1)?'col-3 pivot-offer-list':'col-12';?>">
           <div class="row">
             <?php foreach($offres as $offre): ?>
               <?php $name = 'pivot-'.$pivot_page->type.'-details-part-template'; ?>
-              <?php $offre->path = $_SESSION['pivot'][$pivot_page->id]['path']; ?>
+              <?php $offre->path = $pivot_page->path; ?>
+              <?php $offre->map = $pivot_page->map; ?>
               <?php print pivot_template($name, $offre); ?>
             <?php endforeach; ?>
-          </div>        
+          </div>
         </div>
 
-        <div id="maparea" class="">
+        <div id="maparea" class="<?php print ($pivot_page->map==1)?'col-9':'';?>">
           <!--Include leaflet css for map-->
            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
                  integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
@@ -54,9 +57,9 @@
                    crossorigin=""></script>
 
           <!--Create Map element-->  
-          <div id="mapid" style="height: 600px;width: 600px;"></div>
+          <div id="mapid" style="height: 600px;width: 600px;z-index:0;"></div>
           <!--Include map custom js-->
-          <script src="<?php echo plugins_url('/map.js', __FILE__) ?>"></script>
+          <script src="<?php echo plugins_url('js/map.js', dirname(__FILE__)) ?>"></script>
         </div>
           
       </div>
@@ -72,4 +75,4 @@
 </div>
     
 <!--Include footer-->
-<?php get_footer();
+<?php get_footer('pivot');

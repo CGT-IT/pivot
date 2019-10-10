@@ -9,6 +9,47 @@
  * Domain Path: /languages
  */
 
+add_action( 'wpseo_opengraph', 'change_yoast_seo_og_meta' );
+
+/**
+* Function to add hooks and filter out the Yoast SEO Open Graph Meta Tags
+*/
+function change_yoast_seo_og_meta() {
+  add_filter( 'wpseo_opengraph_title', 'change_title');
+//  add_filter( 'wpseo_locale', 'change_locale' );
+  add_filter( 'wpseo_opengraph_type', 'change_type' );
+  add_filter( 'wpseo_opengraph_desc', 'change_desc' );
+  add_filter( 'wpseo_opengraph_url', 'change_url' );
+//  add_action( 'wpseo_add_opengraph_images', 'add_images' );
+}
+function change_title($title){
+  global $offre_meta_data;
+  if(!is_singular()){
+    $title = $offre_meta_data['title'];
+  }
+  return $title;
+}
+function change_type($type){
+  global $offre_meta_data;
+  if(!is_singular()){
+    $type = $offre_meta_data['type'];
+  }
+  return $type;
+}
+function change_desc($desc){
+  global $offre_meta_data;
+  if(!is_singular()){
+    $desc = $offre_meta_data['description'];
+  }
+  return $desc;
+}
+function change_url($url){
+  global $offre_meta_data;
+  if(!is_singular()){
+    $url = $offre_meta_data['url'];
+  }
+  return $url;
+}
 define('MY_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('MY_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -60,6 +101,7 @@ function pivot_install() {
             query varchar(100) NOT NULL,
             path varchar(100) NOT NULL,
             title varchar(128) NOT NULL,
+            map tinyint(1) NOT NULL,
             sortMode varchar(50) DEFAULT NULL,
             sortField varchar(100) DEFAULT NULL,
             PRIMARY KEY (id)
@@ -116,6 +158,7 @@ function pivot_install_data() {
   $data_set[10]= array("id" => 259, "type" => "Artisan", "parent" => "default");
   $data_set[11]= array("id" => 269, "type" => "Point d'intérêt", "parent" => "default");
   $data_set[12]= array("id" => 8, "type" => "Itinéraire", "parent" => "itinerary");
+  $data_set[13]= array("id" => 261, "type" => "Restauration", "parent" => "restauration");
   // Execute the sql statement to insert datas
   wp_insert_rows($data_set,$table_name);
 }
@@ -156,11 +199,11 @@ function pivot_uninstall() {
  * Add Pivot Menu and submenu
  */
 function pivot_menu() {
-  add_menu_page('Pivot administration', 'Pivot', 'manage_options', 'pivot-admin', 'pivot_options');
-  add_submenu_page('pivot-admin', 'Pivot administration', 'Pivot', 'manage_options', 'pivot-admin');
+  add_menu_page('Pivot administration', 'Pivot', 'delete_others_pages', 'pivot-admin', 'pivot_options');
+  add_submenu_page('pivot-admin', 'Pivot administration', 'Pivot', 'delete_others_pages', 'pivot-admin');
   add_submenu_page('pivot-admin', 'Offer types', 'Manage offer type', 'manage_options', 'pivot-offer-types', 'pivot_offer_type_settings');
-  add_submenu_page('pivot-admin', 'Pages', 'Manage pages', 'manage_options', 'pivot-pages', 'pivot_pages_settings');
-  add_submenu_page('pivot-admin', 'Filters', 'Manage filters', 'manage_options', 'pivot-filters', 'pivot_filters_settings');
+  add_submenu_page('pivot-admin', 'Pages', 'Manage pages', 'delete_others_pages', 'pivot-pages', 'pivot_pages_settings');
+  add_submenu_page('pivot-admin', 'Filters', 'Manage filters', 'delete_others_pages', 'pivot-filters', 'pivot_filters_settings');
 }
 
 function init() {
@@ -185,7 +228,7 @@ function pivot_settings(){
 }
 
 function pivot_options() {
-	if (!current_user_can('manage_options')) {
+	if(!(current_user_can('editor')) && !(current_user_can('administrator'))){
 		wp_die(__( 'You do not have sufficient permissions to access this page.'));
 	}
   echo '<h1>'.get_admin_page_title().'</h1>';
@@ -274,9 +317,7 @@ function _pivot_request($type, $detail, $params = NULL, $postfields = NULL){
     case 'shortcode':
       $pivot_url .= $params['type'].';content='.$detail.$shuffle;
     case 'offer-init-list':
-//      $pivot_url .= $params['type'].';content='.$detail.$shuffle;
       $pivot_url .= $params['type'].'/paginated;itemsperpage='.$params['items_per_page'].';content='.$detail.$shuffle;
-      //$pivot_url .= $params['type'].'/'.$_SESSION['pivot']['query'] . '/paginated;itemsperpage='.$params['items_per_page'].';content=' . $detail;
       break;
     case 'offer-pager':
       $pivot_url .= $params['type'].'/paginated'.$params['token'].';content='.$detail.$shuffle;
@@ -428,7 +469,7 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL){
       if(isset($field_params['filters_object_date']['endDate'])){
         $criteriadateDebElement = $domDocument->createElement('dateFin', $field_params['filters_object_date']['endDate']);
       }else{
-        $criteriadateFinElement = $domDocument->createElement('dateFin', date("d/m/Y", strtotime('+3 month')));
+        $criteriadateFinElement = $domDocument->createElement('dateFin', date("d/m/Y", strtotime('+6 month')));
       }
       $criteriaObjectDateElement->appendChild($criteriadateFinElement);
       $criteriaGroupElement->appendChild($criteriaObjectDateElement);
@@ -438,9 +479,6 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL){
   $queryElement->appendChild($criteriaGroupElement);
   $domDocument->appendChild($queryElement);
 	
-  // Debug function
-//  $domDocument->save('/var/www/html/wordpress/test/test'.rand(10, 30).'.xml');
-
   return $domDocument->saveXML();
 }
 
@@ -523,7 +561,7 @@ function pivot_lodging_page($page_id) {
  * @param Object $xml_query XML file with request to Pivot (filter on specific fields)
  * @return string part of HTML to display
  */
-function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $page_id = NULL){
+function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $page_id = NULL, $details = 2){
   // Get current page number (start with 0)
   if(($pos = strpos($_SERVER['REQUEST_URI'], "paged=")) !== FALSE){ 
     $page_number = substr($_SERVER['REQUEST_URI'], $pos+6); 
@@ -547,7 +585,7 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
       $params['shuffle'] = TRUE;
     }
     // Get offers
-    $xml_object = _pivot_request($case, 2, $params, $xml_query);
+    $xml_object = _pivot_request($case, $details, $params, $xml_query);
     // Store number of offers
     $_SESSION['pivot'][$page_id]['nb_offres'] = str_replace(',', '', $xml_object->attributes()->count->__toString());
     // Store the token to get next x items
@@ -559,7 +597,7 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
     $params['token'] = '/'.$_SESSION['pivot'][$page_id]['token'].'/'.$current_page;
 
     // Get offers
-    $xml_object = _pivot_request('offer-pager', 2, $params);
+    $xml_object = _pivot_request('offer-pager', $details, $params);
     $offres = $xml_object->offre;
   }
   

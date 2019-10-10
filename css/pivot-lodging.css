@@ -117,6 +117,15 @@ body{
     background-color: #fff;
 }
 
+#pivotCarousel img.pivot-img.pivot-img-details {
+    max-height: 600px;
+    width: auto;
+}
+#pivotCarousel .carousel-item{
+    background-color: #000;
+    text-align: center;
+}
+
 section.pivot-equipments.col-md-4,
 aside.pivot-contacts.col-md-4{
     float: right;

@@ -61,6 +61,8 @@
     </section>
 
   </aside>
+    
+  <?php print pivot_template('map-orthodromic', $offre->adresse1->idIns); ?>
 
 </article>
 

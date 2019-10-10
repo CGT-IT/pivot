@@ -44,10 +44,13 @@
     <?php print _add_section($offre,'urn:cat:accueil:langpar', __('Language(s)'), 'fa-language', 1); ?>
     <?php print _add_section($offre,'urn:cat:prod', __('Product(s)'), 'fa-shopping-basket'); ?>
     <?php print _add_section($offre,'urn:cat:tarif', __('Price(s)'), 'fa-eur'); ?>
-    <?php print _add_section($offre,'urn:cat:visite', __('Visit)'), 'fa-map-signs'); ?>
+    <?php print _add_section($offre,'urn:cat:visite', __('Visit'), 'fa-map-signs'); ?>
     <?php print _add_section($offre,'urn:cat:eqpsrv', __('Equipments & services'), 'fa-thumb-tack'); ?>
     <?php print _add_section($offre,'urn:cat:classlab', __('Themes'), 'fa-list-alt'); ?>
   </aside>
+    
+  <?php // print pivot_template('map-orthodromic', $offre->adresse1->idIns); ?>
+
 </article>
 
 <?php get_footer();

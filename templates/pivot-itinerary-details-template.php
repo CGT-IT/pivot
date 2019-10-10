@@ -1,8 +1,6 @@
-
+<?php global $offre_meta_data; ?>
 <?php $offre = _get_offer_details(); ?>
-<?php _add_meta_data($offre, 'details'); ?>
-<?php get_header(); ?>
-
+<?php get_header('pivot'); ?>
 
 <article class="pivot-offer row m-3">
   <div class="col-xs-12 col-md-8">
@@ -71,6 +69,9 @@
     <?php print _add_section($offre,'urn:cat:classlab', __('Themes'), 'fa-list-alt'); ?>
     <?php print _add_section($offre,'urn:cat:desc', __('Route details'), 'fa-map-signs'); ?>
   </aside>
+    
+  <?php // print pivot_template('map-orthodromic', $offre->adresse1->idIns); ?>
+    
 </article>
 
 <?php get_footer();

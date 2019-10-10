@@ -22,7 +22,7 @@ function _add_section($offre, $urnCat, $title, $faIcon='', $urnSubCat=0){
   // Init var, will be used to check if there is well content or not
   $content = '';
 
-  $open_balise = '<h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 f0fc '.$faIcon.'"></i>'. __($title, 'pivot') .'</h5>'
+  $open_balise = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 f0fc '.$faIcon.'"></i>'. __($title, 'pivot') .'</h5>'
            .'<section class="pivot-'.$cat.' card lis-brd-light mb-4">'
            .'<div class="card-body p-4">'
            .'<ul class="list-unstyled lis-line-height-2 m-0">';
@@ -74,6 +74,29 @@ function _add_section($offre, $urnCat, $title, $faIcon='', $urnSubCat=0){
   return $output;
 }
 
+function _add_section_themes($offre){
+  $excludedUrn = array('urn:fld:dateech', 'urn:fld:class');
+  // Init var, will be used to check if there is well content or not
+  $content = '';
+
+  foreach($offre->spec as $specification){
+    if(!in_array($specification->attributes()->urn->__toString(),$excludedUrn)){
+      if($specification->urnCat->__toString() == 'urn:cat:classlab'){
+        $content .= '<span class="ml-1 badge badge-dark"> '
+                 .  _get_urnValue_translated($offre, $specification)
+                 .  '<span class="m-1 badge badge-light"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'. $specification->attributes()->urn->__toString() .';h=16"/></span>'
+                 .  '</span>';
+      }
+    }
+  }
+  // Check if there is well something to display
+  if($content != ''){
+    $output = $content;
+  }
+  
+  return $output;
+}
+
 /**
  * Return a HTML section with facebook and twitter share link
  * @param Object $offre
@@ -81,6 +104,14 @@ function _add_section($offre, $urnCat, $title, $faIcon='', $urnSubCat=0){
  */
 function _add_section_share($offre){
   $url_offer_details = get_bloginfo('wpurl').'/details/'.$offre->attributes()->codeCgt->__toString().'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString();
+  /*$output = '<div class="fb-share-button" 
+    data-href="'.$url_offer_details.'" 
+    data-layout="button_count">cccc
+  </div><div class="pivot-offer-share">'
+          .'<img class="pivot-picto fb-share-button" data-href="'.$url_offer_details.'" data-layout="button_count" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urlfacebook;h=35" alt="Facebook '.esc_attr__('Share button').'" title="Facebook '.esc_attr__('Share button').'"/>'
+//          .   '<span class="pr-3"><a class="social-icon" href="https://www.facebook.com/sharer.php?u='.$url_offer_details.'&amp;t='._get_urn_value($offre, 'urn:fld:nomofr').'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urlfacebook;h=35" alt="Facebook '.esc_attr__('Share button').'" title="Facebook '.esc_attr__('Share button').'"/></a></span>'
+          .   '<span><a class="social-icon" href="https://twitter.com/share?text='._get_urn_value($offre, 'urn:fld:nomofr').'&amp;url='.$url_offer_details.'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urltwitter;h=35" alt="Twitter '.esc_attr__('Share button').'" title="Twitter '.esc_attr__('Share button').'"/></a></span>'
+          . '</div>';*/
   $output = '<div class="pivot-offer-share">'
           .   '<span class="pr-3"><a class="social-icon" href="https://www.facebook.com/sharer.php?u='.$url_offer_details.'&amp;t='._get_urn_value($offre, 'urn:fld:nomofr').'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urlfacebook;h=35" alt="Facebook '.esc_attr__('Share button').'" title="Facebook '.esc_attr__('Share button').'"/></a></span>'
           .   '<span><a class="social-icon" href="https://twitter.com/share?text='._get_urn_value($offre, 'urn:fld:nomofr').'&amp;url='.$url_offer_details.'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urltwitter;h=35" alt="Twitter '.esc_attr__('Share button').'" title="Twitter '.esc_attr__('Share button').'"/></a></span>'
@@ -95,7 +126,7 @@ function _add_section_share($offre){
  * @return string
  */
 function _add_section_contact($offre){
-  $output = '<h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-id-card-o"></i>'.esc_html('Contact', 'pivot').'</h5>'
+  $output = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-id-card"></i>'.esc_html('Contact', 'pivot').'</h5>'
           . '<section class="pivot-contacts card lis-brd-light wow fadeInUp mb-4">'
           .   '<div class="card-body p-4">'
           .     '<h6 class="pivo-title">'._get_urn_value($offre, 'urn:fld:nomofr').'</h6>'
@@ -132,7 +163,7 @@ function _add_section_contact($offre){
   $output .= '</ul>';
             
   $output .= '<ul class="adr list-unstyled lis-line-height-2 m-0">'
-          .    '<li class="street-address"><i class="fa fa-map-o"></i> '.$offre->adresse1->rue->__toString().', '.$offre->adresse1->numero->__toString().'</li>'
+          .    '<li class="street-address"><i class="fas fa-map"></i> '.$offre->adresse1->rue->__toString().', '.$offre->adresse1->numero->__toString().'</li>'
           .      '<span class="postal-code">'.$offre->adresse1->cp->__toString().'</span>'
           .      '<span class="locality">'.(isset($offre->adresse1->commune)?$offre->adresse1->commune->value->__toString():'').'</span>'
           .    '<li class="country-name">'.$offre->adresse1->pays->__toString().'</li>'
@@ -150,7 +181,7 @@ function _add_section_contact($offre){
  */
 function _add_section_booking($offre){
   $booking = FALSE;
-  $output = '<h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-credit-card"></i>'.esc_html('Booking', 'pivot').'</h5>'
+  $output = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-credit-card"></i>'.esc_html('Booking', 'pivot').'</h5>'
           . '<section class="pivot-booking card lis-brd-light wow fadeInUp mb-4">'
           .   '<div class="card-body p-4">'
           .     '<ul class="list-unstyled list-inline lis-line-height-2 m-0">';
@@ -174,6 +205,34 @@ function _add_section_booking($offre){
     return '';
   }
 }
+/**
+ * Return a HTML section with all booking infos
+ * @param Object $offre complete offer object
+ * @return string
+ */
+function _add_section_booking2($offre){
+  $booking = FALSE;
+  $output = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-credit-card"></i>'.esc_html('Réservation', 'pivot').'</h5>'
+          . '<section class="pivot-booking card lis-brd-light wow fadeInUp mb-4">'
+          .   '<div class="card-body p-4">';
+  
+  foreach($offre->spec as $specification){
+    if($specification->urnSubCat->__toString() == 'urn:cat:moycom:sitereservation'){
+      $booking = TRUE;
+      if(esc_url($specification->value->__toString()) && $specification->attributes()->urn->__toString() == 'urn:fld:urlresa:default'){
+        $output .= '<a target="_blank" href="'.$specification->value->__toString().'" class="elementor-button-link elementor-button elementor-size-md">'.esc_html('Réserver', 'pivot').'</a>';
+      }
+    }
+  }  
+            
+  $output .= '</div></section>';
+  
+  if($booking === TRUE){
+    return $output;
+  }else{
+    return '';
+  }
+}
 
 /**
  * Return a carousel of linked offers
@@ -181,7 +240,7 @@ function _add_section_booking($offre){
  * @return string
  */
 function _add_section_linked_offers($offre){
-  $output = '<h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-paperclip"></i>'.__('Linked offers', 'pivot').'</h5>'
+  $output = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-paperclip"></i>'.__('Linked offers', 'pivot').'</h5>'
           .  '<div class="carousel slide" data-ride="carousel" id="quote-carousel">'
                 // Carousel Slides
           .     '<div class="carousel-inner">';
@@ -215,7 +274,7 @@ function _add_section_linked_offers($offre){
 
   // Bottom Carousel Indicators
   $output .= '<ol class="carousel-indicators">';
-  for($x = 0; $x <= $i; $x++){
+  for($x = 0; $x < $i; $x++){
     $output .= '<li data-target="#quote-carousel" data-slide-to="'.$x.'" ';
     if($x == 0)
       $output .= 'class="active"';
@@ -225,12 +284,10 @@ function _add_section_linked_offers($offre){
 
   // Carousel Buttons Next/Prev
   $output .= '<a class="carousel-control-prev" href="#quote-carousel" role="button" data-slide="prev">'
-            . '<span class="carousel-control-prev-icon" aria-hidden="true"></span>'
-            . '<span class="sr-only">Previous</span>'
+            . '<i class="fa fa-chevron-left"></i>'
             .'</a>'
             .'<a class="carousel-control-next" href="#quote-carousel" role="button" data-slide="next">'
-            . '<span class="carousel-control-next-icon" aria-hidden="true"></span>'
-            . '<span class="sr-only">Next</span>'
+            . '<i class="fa fa-chevron-right"></i>'
             .'</a></div>';
   
   // There is minimum one offer
@@ -240,6 +297,40 @@ function _add_section_linked_offers($offre){
   
   return '';
 }
+
+/**
+ * Return a list of related titles offers
+ * @param Object $offre complete offer object
+ * @return string
+ *//*
+function _add_section_related_offers($offre){
+  $output = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-paperclip"></i>'.__('Related offer(s)', 'pivot').'</h5>'
+           .'<section class="card lis-brd-light mb-4">'
+           .'<div class="card-body p-4">'
+           .'<ul class="list-unstyled lis-line-height-2 m-0">';
+  $i= 0;
+  foreach($offre->relOffre as $relation){
+    // The linked offer shouldn't be a contact or a media
+    if($relation->attributes()->urn->__toString() == 'urn:lnk:offre:voiraussi'){
+      $i++;
+      // The linked offer type should exist in "pivot offer type" otherwise no template will be used
+      $type_offre = $relation->offre->typeOffre->attributes()->idTypeOffre->__toString();
+      if(pivot_get_offer_type($type_offre)){
+        $url = get_bloginfo('wpurl').'/details/'.$relation->offre->attributes()->codeCgt->__toString().'&type='.$type_offre;
+        $output .= '<li class="">'
+                .    '<a class="text-dark" title="'.esc_attr('Link to', 'pivot').' '.$relation->offre->nom.'" href="'.$url.'">'
+                .  '</li>';
+      }
+    }
+  }
+  
+  // There is minimum one offer
+  if($i > 0){
+    return $output;
+  }
+  
+  return '';
+}*/
 
 /**
  * Return HTML with date detail based on an activity Pivot offer
@@ -254,13 +345,13 @@ function _add_section_event_dates($offre){
       $dates_output .= '<div class="pivot-date-object">';
       foreach($specification->spec as $dateObj){
         $date = date("Y-m-d", strtotime(str_replace('/', '-', $dateObj->value->__toString())));
-          if((strtotime($date) >= strtotime('now')) && (strtotime($date) <= strtotime('+3 month'))){
+          if((strtotime($date) >= strtotime('now')) && (strtotime($date) <= strtotime('+6 month'))){
             $dates_output .= '<span class="time time-start">'
                             . '<span datetime="'.date("Y-M-D h:m", strtotime($date)).'">'
-                            .   (($dateObj->attributes()->urn->__toString() == 'urn:fld:date:datefin')?' - ':'')
+                            .   (($dateObj->attributes()->urn->__toString() == 'urn:fld:date:datefin')?' <i class="fas fa-angle-double-right"></i> ':'')
                             .   ' <span class="day">'.date('d', strtotime($date)).'</span>'
                             .   ' <span class="month">'.date('M', strtotime($date)).'</span>'
-                            .   ' <span class="year">'.date('Y', strtotime($date)).'</span>'
+//                            .   ' <span class="year">'.date('Y', strtotime($date)).'</span>'
                             . '</span>'
                             .'</span>';
         }
@@ -273,47 +364,6 @@ function _add_section_event_dates($offre){
   return $dates_output;
 }
 
-/*function _add_itinerary_details($offre){
-  $output = '';
-  
-  if(_get_urn_value($offre, 'urn:fld:infusgped') != ''){
-    $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
-  }else{
-    if(_get_urn_value($offre, 'urn:fld:infusgequ') != ''){
-      $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
-    }else {
-      if(_get_urn_value($offre, 'urn:fld:infusgatt') != ''){
-        $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
-      }else{
-        if(_get_urn_value($offre, 'urn:fld:infusgvtc') != ''){
-          $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
-        }else{
-          if(_get_urn_value($offre, 'urn:fld:infusgvtt') != ''){
-            $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
-          }else{
-            if(_get_urn_value($offre, 'urn:fld:infusgauto') != ''){
-              $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
-            }else{
-              if(_get_urn_value($offre, 'urn:fld:infusgmoto') != ''){
-                $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
-              }else{
-                if(_get_urn_value($offre, 'urn:fld:infusgnwalk') != ''){
-                  $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
-                }else{
-                  if(_get_urn_value($offre, 'urn:fld:infusgski') != ''){
-                    $output .= _get_urn_value($offre, 'urn:fld:infusgvttdur');
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  
-  return $output;
-}*/
 function _add_itinerary_details($offre, $urnCat, $urnSubCat=0){
   $previousSubCat = '';
   // Get 2 letter language code

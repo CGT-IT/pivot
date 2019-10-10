@@ -1,7 +1,7 @@
 
 <?php $offre = $args; ?>
 
-<div class="offers-area-col col-xl-3 col-lg-4 col-md-6 col-sm-6 col-xs-12 mb-3">
+<div class="offers-area-col <?php print ($offre->map==1)?'col-12':'col-xl-3 col-lg-4 col-md-6 col-sm-6 col-xs-12';?>  mb-3">
   
   <?php $url = get_bloginfo('wpurl').'/'.$offre->path.'/'.$offre->attributes()->codeCgt->__toString().'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString(); ?>
   <div class="card text-left pivot-offer">
@@ -23,10 +23,27 @@
       <p class="card-text">
         <?php print $offre->typeOffre->label->value->__toString().'  '._get_ranking_picto($offre); ?>
       </p>
-      <?php if(_get_urn_value($offre, 'urn:fld:phone1') != ''): ?>
+      <?php $capbase = _get_urn_value($offre, 'urn:fld:capbase'); ?>
+      <?php if(!empty($capbase) && $capbase != 0): ?>
+        <p class="card-text">
+          <i class="fas fas-align-right pr-2 fa-bed"></i><?php print $capbase; ?>
+          <?php $capadd = _get_urn_value($offre, 'urn:fld:capadd'); ?>
+          <?php if(!empty($capadd) && $capadd != 0): ?>
+            <?php print ' '.__('à', 'pivot').' '.($capbase+$capadd); ?>
+          <?php endif; ?>
+        </p>
+      <?php endif; ?>
+      <?php $prixmin = _get_urn_value($offre, 'urn:fld:tarifind:pmin:webssais'); ?>
+      <?php if(!empty($prixmin) && $prixmin != 0): ?>
+        <p class="card-text">
+          <i class="fas fas-align-right pr-2 fa-euro-sign"></i><?php print __('à partir de ','pivot').$prixmin.'€'; ?>
+        </p>
+      <?php endif; ?>
+      <?php $phone = _get_urn_value($offre, 'urn:fld:phone1'); ?>
+      <?php if($phone != ''): ?>
         <p class="card-text">
           <i class="fas fa-phone"></i>
-          <?php print _get_urn_value($offre, 'urn:fld:phone1'); ?>
+          <?php print $phone; ?>
         </p>
       <?php endif; ?>
       <p class="card-text">
@@ -34,7 +51,7 @@
         <?php print $offre->adresse1->cp; ?> 
         <?php print $offre->adresse1->commune->value->__toString(); ?>
       </p>
-      <a class="text-dark stretched-link" title="<?php echo __('Link to', 'pivot') .' '. _get_urn_value($offre, 'urn:fld:nomofr'); ?>" href="<?php print $url; ?>"></a>
+      <a target="_blank" class="text-dark stretched-link" title="<?php echo __('Link to', 'pivot') .' '. _get_urn_value($offre, 'urn:fld:nomofr'); ?>" href="<?php print $url; ?>"></a>
       <span class="pivot-id-type-offre d-none item"><?php print $offre->typeOffre->attributes()->idTypeOffre->__toString(); ?></span>
       <span class="pivot-code-cgt d-none item"><?php print $offre->attributes()->codeCgt->__toString(); ?></span>
       <span class="pivot-latitude d-none item"><?php print $offre->adresse1->latitude->__toString(); ?></span>

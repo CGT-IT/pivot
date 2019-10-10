@@ -70,6 +70,7 @@ function pivot_filters_meta_box() {
         <option <?php if(isset($edit_page) && $edit_page->operator == 'equal') echo 'selected="selected"';?>value="equal"><?php esc_html_e('Equal', 'pivot')?></option>
         <option <?php if(isset($edit_page) && $edit_page->operator == 'like') echo 'selected="selected"';?>value="like"><?php esc_html_e('Like', 'pivot')?></option>
         <option <?php if(isset($edit_page) && $edit_page->operator == 'greaterequal') echo 'selected="selected"';?>value="greaterequal"><?php esc_html_e('Greater or equal', 'pivot')?></option>
+        <option <?php if(isset($edit_page) && $edit_page->operator == 'lesserequal') echo 'selected="selected"';?>value="lesserequal"><?php esc_html_e('Lesser or equal', 'pivot')?></option>
         <option <?php if(isset($edit_page) && $edit_page->operator == 'between') echo 'selected="selected"';?>value="between"><?php esc_html_e('Between', 'pivot')?></option>
         <option <?php if(isset($edit_page) && $edit_page->operator == 'in') echo 'selected="selected"';?>value="in"><?php esc_html_e('in', 'pivot')?></option>
         <!--<option <?php // if(isset($edit_page) && $edit_page->operator == 'notempty') echo 'selected="selected"';?>value="notempty"><?php // esc_html_e('notempty', 'pivot')?></option>-->
@@ -416,7 +417,7 @@ function pivot_filter_csv_control(&$text, $key, $value){
   }
 
   // Check if operator is on allowed list
-  if(!in_array($value[1], array('exist','equal','like','greaterequal','between','in'))){
+  if(!in_array($value[1], array('exist','equal','like','greaterequal','lesserequal','between','in'))){
     $text .= __('Operator is invalid on line ', 'pivot');
     $text .= $key+1 .'</br>';
     $error = true;

@@ -112,6 +112,9 @@ function pivot_custom_shortcode($atts) {
         $field_params['sortMode'] = 'shuffle';
         $field_params['sortField'] = 'urn:fld:codecgt';
       }
+      if($atts['type'] == 'activite'){
+        $field_params['page_type'] = 'activite';
+      }
       $xml_query = _xml_query_construction($atts['query'], $field_params);
       
       // Get template name depending of query type

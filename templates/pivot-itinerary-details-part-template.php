@@ -1,6 +1,6 @@
 <?php $offre = $args; ?>
 
-<div class="offers-area-col col-xl-3 col-lg-4 col-md-6 col-sm-6 col-xs-12 mb-3">
+<div class="offers-area-col <?php print ($offre->map==1)?'col-12':'col-xl-3 col-lg-4 col-md-6 col-sm-6 col-xs-12';?>  mb-3">
   
   <?php $url = get_bloginfo('wpurl').'/'.$offre->path.'/'.$offre->attributes()->codeCgt->__toString().'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString(); ?>
   <div class="card text-left pivot-offer">
@@ -21,7 +21,7 @@
         <?php print $offre->adresse1->cp; ?> 
         <?php print $offre->adresse1->commune->value->__toString(); ?>
       </p>
-      <a class="text-dark stretched-link" title="<?php echo __('Link to', 'pivot') .' '. _get_urn_value($offre, 'urn:fld:nomofr'); ?>" href="<?php print $url; ?>"></a>
+      <a target="_blank" class="text-dark stretched-link" title="<?php echo __('Link to', 'pivot') .' '. _get_urn_value($offre, 'urn:fld:nomofr'); ?>" href="<?php print $url; ?>"></a>
       <span class="pivot-id-type-offre d-none item"><?php print $offre->typeOffre->attributes()->idTypeOffre->__toString(); ?></span>
       <span class="pivot-code-cgt d-none item"><?php print $offre->attributes()->codeCgt->__toString(); ?></span>
       <span class="pivot-latitude d-none item"><?php print $offre->adresse1->latitude->__toString(); ?></span>

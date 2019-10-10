@@ -1,4 +1,3 @@
-
 <?php $offre = $args; ?>
 
 <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-xs-12 mb-3">
