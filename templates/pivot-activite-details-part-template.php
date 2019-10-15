@@ -8,7 +8,8 @@
       <img class="pivot-img card-img-top zoom pivot-img-list" src="https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/<?php print $offre->attributes()->codeCgt->__toString() ;?>;w=428;h=284"/>
     </div>
     <div class="card-body">
-      <h5 class="card-title"><?php print _get_urn_value($offre, 'urn:fld:nomofr'); ?></h5>
+      <?php $offerTitle = _get_urn_value($offre, 'urn:fld:nomofr'); ?>
+      <h5 class="card-title"><?php print $offerTitle; ?></h5>
       <p class="card-text"><?php print _add_section_event_dates($offre); ?></p>
       <span class="pivot-id-type-offre d-none item"><?php print $offre->typeOffre->attributes()->idTypeOffre->__toString(); ?></span>
       <span class="pivot-code-cgt d-none item"><?php print $offre->attributes()->codeCgt->__toString(); ?></span>
@@ -21,7 +22,7 @@
       <?php // print $offre->adresse1->cp; ?> 
       <?php print $offre->adresse1->commune->value->__toString(); ?>
     </div>
-    <a target="_blank" class="text-dark stretched-link" title="<?php echo __('Link to', 'pivot') .' '. _get_urn_value($offre, 'urn:fld:nomofr'); ?>" href="<?php print $url; ?>"></a>
+    <a target="_blank" class="text-dark stretched-link" title="<?php echo __('Link to', 'pivot') .' '. $offerTitle; ?>" href="<?php print $url; ?>"></a>
   </div>
       
 </div>

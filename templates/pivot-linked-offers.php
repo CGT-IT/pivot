@@ -7,20 +7,23 @@
     <?php $i= 0; ?>
     <?php foreach($offre->relOffre as $relation): ?>
       <!--The linked offer shouldn't be a contact or a media-->
-      <?php if(!(in_array($relation->offre->typeOffre->attributes()->idTypeOffre->__toString(), array('268', '23')))): ?>
+      <?php $idTypeOffre = $relation->offre->typeOffre->attributes()->idTypeOffre->__toString(); ?>
+      <?php if(!(in_array($idTypeOffre, array('268', '23')))): ?>
         <!--The linked offer type should exist in "pivot offer type" otherwise no template will be used-->
-        <?php if(pivot_get_offer_type($relation->offre->typeOffre->attributes()->idTypeOffre->__toString())): ?>
-          <?php $url = get_bloginfo('wpurl').'/details/'.$relation->offre->attributes()->codeCgt->__toString().'&type='.$relation->offre->typeOffre->attributes()->idTypeOffre->__toString(); ?>
+        <?php if(pivot_get_offer_type($idTypeOffre)): ?>
+          <?php $offerTitle = _get_urn_value($relation->offre, 'urn:fld:nomofr'); ?>
+          <?php $codeCGT = $relation->offre->attributes()->codeCgt->__toString(); ?>
+          <?php $url = get_bloginfo('wpurl').'/details/'.$codeCGT.'&type='.$idTypeOffre; ?>
           <div class="carousel-item <?php print ($i++ == 0)?"active":"" ?>">
             <blockquote>
-              <a class="text-dark" title="<?php echo esc_attr('Link to', 'pivot') .' '. _get_urn_value($relation->offre, 'urn:fld:nomofr'); ?>" href="<?php print $url; ?>">
+              <a class="text-dark" title="<?php echo esc_attr('Link to', 'pivot') .' '. $offerTitle; ?>" href="<?php print $url; ?>">
                 <div class="row">
                   <div class="col-sm-3 text-center">
-                    <img class="pivot-img zoom pivot-img-list" src="https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/<?php print $relation->offre->attributes()->codeCgt->__toString() ;?>;w=256;h=170"/>
+                    <img class="pivot-img zoom pivot-img-list" src="https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/<?php print $codeCGT;?>;w=256;h=170"/>
                   </div>
                   <div class="col-sm-9">
                     <p><?php print _get_urn_value($relation->offre, 'urn:fld:descmarket'); ?></p>
-                    <small><?php print _get_urn_value($relation->offre, 'urn:fld:nomofr'); ?></small>
+                    <small><?php print $offerTitle; ?></small>
                   </div>
                 </div>
               </a>

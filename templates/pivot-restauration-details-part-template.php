@@ -17,7 +17,8 @@
         </span>
       </div>
     </div>
-    <h5 class="card-header"><?php print _get_urn_value($offre, 'urn:fld:nomofr'); ?></h5>
+    <?php $offerTitle = _get_urn_value($offre, 'urn:fld:nomofr'); ?>
+    <h5 class="card-header"><?php print $offerTitle; ?></h5>
     <div class="card-body">
       <?php $nbcouv = _get_urn_value($offre, 'urn:fld:nbcouv'); ?>
       <?php if(!empty($nbcouv) && $nbcouv != 0): ?>
@@ -37,7 +38,7 @@
         <?php print $offre->adresse1->cp; ?> 
         <?php print $offre->adresse1->commune->value->__toString(); ?>
       </p>
-      <a target="_blank" class="text-dark stretched-link" title="<?php echo __('Link to', 'pivot') .' '. _get_urn_value($offre, 'urn:fld:nomofr'); ?>" href="<?php print $url; ?>"></a>
+      <a target="_blank" class="text-dark stretched-link" title="<?php echo __('Link to', 'pivot') .' '. $offerTitle; ?>" href="<?php print $url; ?>"></a>
       <span class="pivot-id-type-offre d-none item"><?php print $offre->typeOffre->attributes()->idTypeOffre->__toString(); ?></span>
       <span class="pivot-code-cgt d-none item"><?php print $offre->attributes()->codeCgt->__toString(); ?></span>
       <span class="pivot-latitude d-none item"><?php print $offre->adresse1->latitude->__toString(); ?></span>
