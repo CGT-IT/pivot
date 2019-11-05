@@ -12,7 +12,7 @@
  * @return string
  */
 function _add_section($offre, $urnCat, $title, $faIcon='', $urnSubCat=0){
-  $excludedUrn = array('urn:fld:dateech');
+  $excludedUrn = array('urn:fld:dateech', 'urn:fld:idaccessi', 'urn:fld:accessi', 'urn:fld:accessi:url', 'urn:fld:accessi:perfautroul', 'urn:fld:accessi:permardif', 'urn:fld:accessi:perave', 'urn:fld:accessi:permalvoy', 'urn:fld:accessi:persou', 'urn:fld:accessi:permalent', 'urn:fld:accessi:perdifcomp');
   // Define if sub category or category
   $cat_or_subcat = ($urnSubCat?'urnSubCat':'urnCat');
   // Get 2 letter language code
@@ -410,4 +410,42 @@ function _add_itinerary_details($offre, $urnCat, $urnSubCat=0){
   }
 
   return $content;
+}
+
+function _add_section_accessi($offre){
+  $output = '';
+  if(_get_urn_value($offre, 'urn:fld:accessi') == TRUE){
+    $perfautroul = _get_urn_value($offre, 'urn:fld:accessi:perfautroul');
+    $permardif = _get_urn_value($offre, 'urn:fld:accessi:permardif');
+    $perave = _get_urn_value($offre, 'urn:fld:accessi:perave');
+    $permalvoy = _get_urn_value($offre, 'urn:fld:accessi:permalvoy');
+    $persou = _get_urn_value($offre, 'urn:fld:accessi:persou');
+    $permalent = _get_urn_value($offre, 'urn:fld:accessi:permalent');
+    $perdifcomp = _get_urn_value($offre, 'urn:fld:accessi:perdifcomp');
+      
+    $output .= '<h5 class="lis-font-weight-500">Access-I</h5>
+                <section class="pivot-accessi card lis-brd-light mb-4">
+                  <div class="card-body tetris__wrapper p-4">
+                  <a alt="Access-I site" target="_blank" href="'._get_urn_value($offre, 'urn:fld:accessi:url').'">
+                      <img class="tetrisImg" src="'.plugins_url('img/accessi/label-i.png', dirname(__FILE__)).'" width="222" height="216" alt="Label Access-i">
+                      <!-- Fauteuil roulant -->
+                      <img class="tetrisImg" src="'.plugins_url('img/accessi/wheelchair_'.substr($perfautroul, strrpos($perfautroul, ':') + 1).'.png', dirname(__FILE__)).'" width="222" height="216" alt="Une fiche informative est disponible pour l’accessibilité pour les personnes en fauteuil roulant">
+                      <!-- Marchant difficilement -->
+                      <img class="tetrisImg" src="'.plugins_url('img/accessi/walking_'.substr($permardif, strrpos($permardif, ':') + 1).'.png', dirname(__FILE__)).'" width="222" height="216" alt="Accessible en autonomie aux personnes marchant difficilement">
+                      <!-- Aveugle -->
+                      <img class="tetrisImg" src="'.plugins_url('img/accessi/blind_'.substr($perave, strrpos($perave, ':') + 1).'.png', dirname(__FILE__)).'" width="222" height="216" alt="Accessible en autonomie aux personnes aveugles">
+                      <!-- Lowvision -->
+                      <img class="tetrisImg" src="'.plugins_url('img/accessi/lowvision_'.substr($permalvoy, strrpos($permalvoy, ':') + 1).'.png', dirname(__FILE__)).'" width="222" height="216" alt="Accessible avec un coup de main ponctuel aux personnes malvoyantes">
+                      <!-- deaf -->
+                      <img class="tetrisImg" src="'.plugins_url('img/accessi/deaf_'.substr($persou, strrpos($persou, ':') + 1).'.png', dirname(__FILE__)).'" width="222" height="216" alt="Accessible avec un coup de main ponctuel aux personnes sourdes">
+                      <!-- harthearing -->
+                      <img class="tetrisImg" src="'.plugins_url('img/accessi/harthearing_'.substr($permalent, strrpos($permalent, ':') + 1).'.png', dirname(__FILE__)).'" width="222" height="216" alt="Accessible en autonomie aux personnes malentendantes">
+                      <!-- comprehension -->
+                      <img class="tetrisImg" src="'.plugins_url('img/accessi/comprehension_'.substr($perdifcomp, strrpos($perdifcomp, ':') + 1).'.png', dirname(__FILE__)).'" width="222" height="216" alt="Accessible en autonomie aux personnes avec difficultés de compréhension">
+                    </div>
+                  </a>
+                </section>';
+  }
+  
+  return $output;
 }
