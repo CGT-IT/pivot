@@ -122,23 +122,38 @@ function pivot_offer_type_action(){
 
   // Delete the data if the variable "delete" is set
   if(isset($_GET['delete'])) {
-      $_GET['delete'] = absint($_GET['delete']);
-      // First delete dependencies (filters linked to this page)
-      $wpdb->query("DELETE FROM " .$wpdb->prefix ."pivot_offer_type WHERE id='" .$_GET['delete']."'");
+    $_GET['delete'] = absint($_GET['delete']);
+    // First delete dependencies (filters linked to this page)
+    $wpdb->delete($wpdb->prefix.'pivot_offer_type', array('id' => $_GET['delete']), array('%d'));
   }
   // Process the changes in the custom table
   if(isset($_POST['pivot_add_type']) && $_POST['pivot_typeofr'] != '' && $_POST['parent'] != '') {
     // Add new row in the custom table
     if(empty($_POST['type_id'])) {
       if(empty(pivot_get_offer_type($_POST['id']))){
-        $sql = "INSERT INTO " .$wpdb->prefix ."pivot_offer_type(id,type,parent) VALUES('" .$_POST['id'] ."','" .$_POST['type']."','" .$_POST['parent']."');";
-        $wpdb->query($sql);
+        $wpdb->insert( 
+          $wpdb->prefix.'pivot_offer_type', 
+          array( 
+            'id' => $_POST['id'], 
+            'type' => $_POST['type'],
+            'parent' => $_POST['parent']
+          ), 
+          array('%d','%s','%s') 
+        );
       }else{
         print _show_admin_notice('This type has already been set', 'error');
       }
     } else {
       // Update the data
-      $wpdb->query("UPDATE " .$wpdb->prefix. "pivot_offer_type SET parent='" .$_POST['parent']."' WHERE id='" .$_POST['type_id'] ."'");
+      $wpdb->update( 
+        $wpdb->prefix.'pivot_offer_type', 
+        array( 
+          'parent' => $_POST['parent']
+        ), 
+        array('id' => $_POST['type_id']), 
+        array('%s'),
+        array('%d')
+      );
     }
   }else{
     if(isset($_POST['pivot_add_type']) && $_POST['parent'] == '') {
