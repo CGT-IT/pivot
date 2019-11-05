@@ -535,7 +535,7 @@ function _show_warning($text, $severity = 'warning'){
  * @return string
  */
 function _show_admin_notice($text, $severity = 'error'){
-  $output = '<div class="'.$severity.' notice">'
+  $output = '<div class="'.$severity.' notice notice-info">'
           .   '<p>'.$text.'</p>'
           . '</div>';
 
