@@ -28,7 +28,7 @@ function pivot_custom_shortcode($atts) {
 		$atts,
 		'pivot_shortcode'
 	);
-  
+
   // Check if attribute "query" is not empty
   if(empty($atts['query'])){
     $text = __('The <strong>query</strong> argument is missing', 'pivot');
@@ -106,7 +106,7 @@ function pivot_custom_shortcode($atts) {
             }
             break;
         }
-        _construct_filters_array($field_params,$filter);
+        $field_params = _construct_filters_array($field_params,$filter);
       }
       if(!empty($atts['sort']) && $atts['sort'] == 'shuffle'){
         $field_params['sortMode'] = 'shuffle';
@@ -123,27 +123,8 @@ function pivot_custom_shortcode($atts) {
       // Get offers
       $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query);
       
-      // Start and open HTML balise in output
-      if($atts['type'] == 'guide'){
-        $output = '<div class="container">
-                    <div class="row">
-                    <div class="col-md-12">
-                    <table id="cgt-table-search-paging" class="table table-striped table-bordered">
-                      <thead>
-                        <tr>
-                          <th>Nom</th>
-                          <th>Province</th>
-                          <th>Contact</th>
-                          <th>Adresse</th>
-                          <th>Email</th>
-                          <th>Salary</th>
-                        </tr>
-                      </thead>
-                      <tbody>';
-      }else{
-        $output = '<div class="container-fluid pivot-list">'
+      $output = '<div class="container-fluid pivot-list">'
                  .'<div class="row row-eq-height pivot-row">';
-      }
 
       // Add main HTML content in output
       foreach($offres as $offre){
@@ -151,12 +132,7 @@ function pivot_custom_shortcode($atts) {
         $output.= pivot_template($template_name, $offre);
       }
 
-      // Close HTML balise in output
-      if($atts['type'] == 'guide'){
-        $output .= '</tbody></table></div></div></div>';
-      }else{
-        $output .= '</div></div>';
-      }
+      $output .= '</div></div>';
 
     }else{
       $text = __('The <strong>type</strong> attributes for the query is wrong or missing ', 'pivot');
