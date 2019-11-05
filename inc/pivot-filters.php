@@ -8,10 +8,11 @@
 function pivot_get_filters($page_id = NULL) {
   global $wpdb;
   if(!empty($page_id)){
-    $filters = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."pivot_filter WHERE page_id ='".$page_id."'ORDER BY filter_group ASC, filter_title ASC");
+    $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}pivot_filter WHERE page_id = %d ORDER BY filter_group ASC, filter_title ASC", $page_id);
   }else{
-    $filters = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."pivot_filter ORDER BY filter_title ASC");
+    $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}pivot_filter ORDER BY filter_title ASC");
   }
+  $filters = $wpdb->get_results($query);
   
   return $filters;
 }
@@ -24,20 +25,18 @@ function pivot_get_filters($page_id = NULL) {
  */
 function pivot_get_filter($id) {
   global $wpdb;
+  
+  $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}pivot_filter WHERE id = %d", $id);
+  $filter = $wpdb->get_row($query);
 
-  $filter = $wpdb->get_results("SELECT * FROM " .$wpdb->prefix ."pivot_filter WHERE id='".$id."'");
-
-  if(!empty($filter[0])) {
-    return $filter[0];
-  }
-
-  return;
+  return $filter;
 }
 
 function pivot_get_filter_groups($page_id) {
   global $wpdb;
 
-  $groups = $wpdb->get_results("SELECT DISTINCT filter_group FROM " .$wpdb->prefix ."pivot_filter WHERE page_id='".$page_id."' AND filter_group IS NOT NULL");
+  $query = $wpdb->prepare("SELECT DISTINCT filter_group FROM {$wpdb->prefix}pivot_filter WHERE page_id = %d AND filter_group IS NOT NULL", $page_id);
+  $groups = $wpdb->get_results($query);
 
   if(!empty($groups[0])) {
     return $groups;
@@ -138,7 +137,7 @@ function pivot_filters_action(){
   global $wpdb;
   // Delete the data if the variable "delete" is set
   if(isset($_GET['delete'])) {
-    $wpdb->query("DELETE FROM " .$wpdb->prefix ."pivot_filter WHERE id=" .$_GET['delete']."");
+    $wpdb->delete($wpdb->prefix.'pivot_filter', array('id' => $_GET['delete']), array('%d'));
   }
 
   // Process the changes in the custom table
@@ -170,17 +169,63 @@ function pivot_filters_action(){
         $pages = pivot_get_pages();
         foreach($pages as $page){
           // Insert data
-          $wpdb->query("INSERT INTO " .$wpdb->prefix ."pivot_filter (page_id,filter_name,filter_title,urn,operator,type,filter_group) VALUES('" .$page->id ."','" .$name ."','" .$title."','" .$urn."','" .$operator."','" .$type."','" .$group."');");
+          $inserted = $wpdb->insert( 
+            $wpdb->prefix.'pivot_filter', 
+            array( 
+              'page_id' => $page->id, 
+              'filter_name' => $name,
+              'filter_title' => $title,
+              'urn' => $urn,
+              'operator' => $operator,
+              'type' => $type,
+              'filter_group' => $group
+            ), 
+            array('%d','%s','%s','%s','%s','%s','%s') 
+          );
         }
       }else{
         // Insert data
-        $wpdb->query("INSERT INTO " .$wpdb->prefix ."pivot_filter (page_id,filter_name,filter_title,urn,operator,type,filter_group) VALUES('" .$_POST['page_id'] ."','" .$name ."','" .$title."','" .$urn."','" .$operator."','" .$type."','" .$group."');");
+        $inserted = $wpdb->insert( 
+          $wpdb->prefix.'pivot_filter', 
+          array( 
+            'page_id' => $_POST['page_id'], 
+            'filter_name' => $name,
+            'filter_title' => $title,
+            'urn' => $urn,
+            'operator' => $operator,
+            'type' => $type,
+            'filter_group' => $group
+          ), 
+          array('%d','%s','%s','%s','%s','%s','%s') 
+        );
       }
     } else {
       // Update data
-      $id = $_POST['id'];
-      $wpdb->query("UPDATE " .$wpdb->prefix. "pivot_filter SET page_id=".$_POST['page_id'].", filter_name='" .$name ."', filter_title='" .$title ."', urn='" .$urn ."', operator='" .$operator ."', type='" .$type ."', filter_group='" .$group ."' WHERE id='" .$id ."'");
+      $inserted = $wpdb->update( 
+        $wpdb->prefix.'pivot_filter',  
+        array( 
+          'page_id' => $_POST['page_id'], 
+          'filter_name' => $name,
+          'filter_title' => $title,
+          'urn' => $urn,
+          'operator' => $operator,
+          'type' => $type,
+          'filter_group' => $group
+        ), 
+        array('id' => $_POST['id']), 
+        array('%d','%s','%s','%s','%s','%s','%s') ,
+        array('%d') 
+      );
     }
+    // Inform user
+    if($inserted) {
+      $message = __('Record was inserted / updated successfully', 'pivot');
+      echo _show_admin_notice($message, 'info');
+    } else {
+      $message = __('Insertion / Update failed', 'pivot');
+      echo _show_admin_notice($message);
+    }
+    
   }  
 }
 
@@ -366,8 +411,19 @@ function pivot_filter_csv_import($page_id) {
         $group = $value[3];
         
         // Insert data
-        $wpdb->query("INSERT INTO " .$wpdb->prefix ."pivot_filter (page_id,filter_name,filter_title,urn,operator,type,filter_group) VALUES('" .$page_id."','" .$name ."','" .$title."','" .$urn."','" .$operator."','" .$type."','" .$group."');");
-
+        $inserted = $wpdb->insert( 
+          $wpdb->prefix.'pivot_filter', 
+          array( 
+            'page_id' => $page_id, 
+            'filter_name' => $name,
+            'filter_title' => $title,
+            'urn' => $urn,
+            'operator' => $operator,
+            'type' => $type,
+            'filter_group' => $group
+          ), 
+          array('%d','%s','%s','%s','%s','%s','%s') 
+        );
       }
     }
   }

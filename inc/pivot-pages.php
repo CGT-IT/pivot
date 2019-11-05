@@ -7,8 +7,8 @@
  */
 function pivot_get_pages() {
   global $wpdb;
-  
-  $pages = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."pivot_pages ORDER BY id ASC");
+  $query = "SELECT * FROM {$wpdb->prefix}pivot_pages ORDER BY id ASC";
+  $pages = $wpdb->get_results($query);
   
   return $pages;
 }
@@ -21,13 +21,24 @@ function pivot_get_pages() {
  */
 function pivot_get_page_path($path) {
   global $wpdb;
-  
-  $pivot_page = $wpdb->get_results("SELECT * FROM " .$wpdb->prefix ."pivot_pages WHERE path='".$path."'");
-  if(!empty($pivot_page[0])) {
-    return $pivot_page[0];
-  }
+  $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}pivot_pages WHERE path= %s", $path);
+  $pivot_page = $wpdb->get_row($query);
 
-  return;
+  return $pivot_page;
+}
+
+/**
+ * Get a specific row from table wp_pivot based on path
+ * @global Object $wpdb
+ * @param string $path
+ * @return Object
+ */
+function pivot_get_pages_path() {
+  global $wpdb;
+  $query = "SELECT * FROM {$wpdb->prefix}pivot_pages";
+  $pivot_pages_path = $wpdb->get_results($query, ARRAY_A);
+
+  return $pivot_pages_path;
 }
 
 /**
@@ -38,13 +49,10 @@ function pivot_get_page_path($path) {
  */
 function pivot_get_page($id) {
   global $wpdb;
+  $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}pivot_pages WHERE id= %d", $id);
+  $pivot_page = $wpdb->get_row($query);
 
-  $pivot_page = $wpdb->get_results("SELECT * FROM " .$wpdb->prefix ."pivot_pages WHERE id='".$id."'");
-  if(!empty($pivot_page[0])) {
-    return $pivot_page[0];
-  }
-
-  return;
+  return $pivot_page;
 }
 
 function pivot_meta_box() {
@@ -128,9 +136,9 @@ function pivot_action(){
   if(isset($_GET['delete'])) {
       $_GET['delete'] = absint($_GET['delete']);
       // First delete dependencies (filters linked to this page)
-      $wpdb->query("DELETE FROM " .$wpdb->prefix ."pivot_filter WHERE page_id='" .$_GET['delete']."'");
+      $wpdb->delete($wpdb->prefix.'pivot_filter', array('page_id' => $_GET['delete']), array('%d'));
       // Delete the page
-      $wpdb->query("DELETE FROM " .$wpdb->prefix ."pivot_pages WHERE id='" .$_GET['delete']."'");
+      $wpdb->delete($wpdb->prefix.'pivot_pages', array('id' => $_GET['delete']), array('%d'));
   }
 
   // Process the changes in the custom table
@@ -148,11 +156,36 @@ function pivot_action(){
     // Check if path already exist in wordpress or not (to avoid duplicate and conflict)
     if(!$pivot_page = get_page_by_path($path)){
       if(empty($_POST['page_id'])){
-        $wpdb->query("INSERT INTO " .$wpdb->prefix ."pivot_pages(type,query,path,title,map,sortMode,sortField) VALUES('" .$type ."','" .$query."','" .$path."','" .$title."','" .$map."','" .$sortMode."','" .$sortField."');");
+        $inserted = $wpdb->insert( 
+          $wpdb->prefix.'pivot_pages', 
+          array( 
+            'type' => $type, 
+            'query' => $query,
+            'path' => $path,
+            'title' => $title,
+            'map' => $map,
+            'sortMode' => $sortMode,
+            'sortField' => $sortField
+          ), 
+          array('%s','%s','%s','%s','%d','%s','%s') 
+        );
       }else{
         // Update the data
-        $page_id = $_POST['page_id'];
-        $wpdb->query("UPDATE " .$wpdb->prefix. "pivot_pages SET type='" .$type ."', query='" .$query ."', path='" .$path ."', title='" .$title ."', map='" .$map ."', sortMode='" .$sortMode ."', sortField='" .$sortField ."' WHERE id='" .$page_id ."'");
+        $inserted = $wpdb->update( 
+          $wpdb->prefix.'pivot_pages', 
+          array( 
+            'type' => $type, 
+            'query' => $query,
+            'path' => $path,
+            'title' => $title,
+            'map' => $map,
+            'sortMode' => $sortMode,
+            'sortField' => $sortField
+          ), 
+          array('id' => $_POST['page_id']), 
+          array('%s','%s','%s','%s','%d','%s','%s'),
+          array('%d')
+        );
       }
     }else{
       $text = esc_html('This path already exists', 'pivot').': <a href="'.get_permalink( $pivot_page->ID ).'">'.get_permalink( $pivot_page->ID ).'</a>';
