@@ -11,6 +11,7 @@ add_shortcode('pivot_shortcode_offer_details', 'pivot_custom_shortcode_offer_det
  * @return string HTML content
  */
 function pivot_custom_shortcode_offer_details($atts){
+  $output = '';
 	// Attributes
 	$atts = shortcode_atts(
 		array(

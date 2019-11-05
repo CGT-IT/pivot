@@ -72,5 +72,6 @@
 
 </article>
 
-
-<?php get_footer();
+<?php if(!$args): ?>
+  <?php get_footer(); ?>
+<?php endif;?>
