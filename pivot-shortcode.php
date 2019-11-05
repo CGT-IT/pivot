@@ -2,6 +2,39 @@
 
 add_action('add_meta_boxes', 'pivot_build_shortcode_box');
 add_shortcode('pivot_shortcode', 'pivot_custom_shortcode');
+add_shortcode('pivot_shortcode_offer_details', 'pivot_custom_shortcode_offer_details');
+
+/**
+ * Define shortcode content
+ * Should look like this [pivot_shortcode_offer_details offerid='CGT_0002_000000A3']
+ * @param array $atts attributes 
+ * @return string HTML content
+ */
+function pivot_custom_shortcode_offer_details($atts){
+	// Attributes
+	$atts = shortcode_atts(
+		array(
+      'offerid' => ''
+		),
+		$atts,
+		'pivot_shortcode_offer_details'
+	);
+
+  // Check if attribute "query" is not empty
+  if(empty($atts['offerid'])){
+    $text = __('The <strong>offerid</strong> argument is missing', 'pivot');
+    print _show_warning($text, 'danger');
+  }else{
+    $offre = _get_offer_details($atts['offerid']);
+    $type = pivot_get_offer_type(null, $offre->typeOffre->label->value->__toString());
+    // Get template name depending of offer type
+    $template_name = 'pivot-'.$type->parent.'-details-template';
+
+    // Add main HTML content in output
+    $output .= pivot_template($template_name, $offre);
+  }
+  return $output;
+}
 
 /**
  * Define shortcode content
