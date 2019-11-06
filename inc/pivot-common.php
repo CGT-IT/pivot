@@ -578,11 +578,11 @@ function _get_ot_details(){
   return $xml_object;
 }*/
 
-function _get_offer_details($offer_id = NULL){
+function _get_offer_details($offer_id = NULL, $details = 3){
   if($offer_id){
     $params['offer_code'] = $offer_id;
     $params['type'] = 'offer';
-    $xml_object = _pivot_request('offer-details', 3, $params);
+    $xml_object = _pivot_request('offer-details', $details, $params);
     $offre = $xml_object->offre;
   }else{
     $path = $_SERVER['REQUEST_URI'];
@@ -590,7 +590,7 @@ function _get_offer_details($offer_id = NULL){
       if (preg_match('/\/(.*?)&type=/', $path, $match) == 1) {
         $params['offer_code'] = substr($match[1], strrpos($match[1], '/' )+1);
         $params['type'] = 'offer';
-        $xml_object = _pivot_request('offer-details', 3, $params);
+        $xml_object = _pivot_request('offer-details', $details, $params);
         $offre = $xml_object->offre;
       }
     }
