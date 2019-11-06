@@ -35,6 +35,8 @@
       var urn = $('#edit-pivot-urn');
       var operator = $('#edit-pivot-operator');
       var value = $('#edit-pivot-filter-value');
+      var sortMode = $('#edit-pivot-sortMode');
+      var sortField = $('#edit-pivot-sortField');
       
       // Init shortcode string
       var shortcode = "[pivot_shortcode ";
@@ -61,6 +63,14 @@
             }
             if(value.val() != ''){
               shortcode += "filtervalue='"+value.val()+"' ";
+            }
+          }
+          if(sortMode.val() != ''){
+            shortcode += "sortMode='"+sortMode.val()+"' ";
+            if(sortMode.val() != 'shuffle'){
+              if(sortField.val() != ''){
+                shortcode += "sortField='"+sortField.val()+"' ";
+              }
             }
           }
           shortcode += "]";

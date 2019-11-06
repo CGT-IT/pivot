@@ -57,7 +57,8 @@ function pivot_custom_shortcode($atts) {
       'filterurn' => '',
       'operator' => '',
       'filtervalue' => '',
-      'sort' => '',
+      'sortmode' => '',
+      'sortfield' => '',
 		),
 		$atts,
 		'pivot_shortcode'
@@ -142,9 +143,12 @@ function pivot_custom_shortcode($atts) {
         }
         $field_params = _construct_filters_array($field_params,$filter);
       }
-      if(!empty($atts['sort']) && $atts['sort'] == 'shuffle'){
-        $field_params['sortMode'] = 'shuffle';
-        $field_params['sortField'] = 'urn:fld:codecgt';
+      // Check sorting
+      if(!empty($atts['sortmode'])){
+        $field_params['sortMode'] = $atts['sortmode'];
+        if(!empty($atts['sortfield']) && $atts['sortmode'] != 'shuffle'){
+          $field_params['sortField'] = $atts['sortfield'];
+        }
       }
       if($atts['type'] == 'activite'){
         $field_params['page_type'] = 'activite';
@@ -206,7 +210,7 @@ function pivot_build_shortcode_box_html(){
   <div class="form-item form-type-textfield form-item-pivot-type">
     <label for="edit-pivot-type"><?php esc_html_e('Type', 'pivot') ?> </label>
     <select id="edit-pivot-type" name="type">
-      <?php print _get_offer_types($edit_page); ?>
+      <?php print _get_offer_types(); ?>
     </select>
     <p class="description"><?php esc_html_e('Type of query', 'pivot') ?></p>
   </div>
@@ -229,12 +233,12 @@ function pivot_build_shortcode_box_html(){
       <label for="edit-pivot-operator"><?php esc_html_e('Operator', 'pivot')?> </label>
       <select id="edit-pivot-operator" name="operator">
         <option selected disabled hidden><?php esc_html_e('Choose an operator', 'pivot')?></option>
-        <option <?php if(isset($edit_page) && $edit_page->operator == 'exist') echo 'selected="selected"';?>value="exist"><?php esc_html_e('Exist', 'pivot')?></option>
-        <option <?php if(isset($edit_page) && $edit_page->operator == 'equal') echo 'selected="selected"';?>value="equal"><?php esc_html_e('Equal', 'pivot')?></option>
-        <option <?php if(isset($edit_page) && $edit_page->operator == 'like') echo 'selected="selected"';?>value="like"><?php esc_html_e('Like', 'pivot')?></option>
-        <option <?php if(isset($edit_page) && $edit_page->operator == 'greaterequal') echo 'selected="selected"';?>value="greaterequal"><?php esc_html_e('Greater or equal', 'pivot')?></option>
-        <option <?php if(isset($edit_page) && $edit_page->operator == 'between') echo 'selected="selected"';?>value="between"><?php esc_html_e('Between', 'pivot')?></option>
-        <option <?php if(isset($edit_page) && $edit_page->operator == 'in') echo 'selected="selected"';?>value="in"><?php esc_html_e('in', 'pivot')?></option>
+        <option value="exist"><?php esc_html_e('Exist', 'pivot')?></option>
+        <option value="equal"><?php esc_html_e('Equal', 'pivot')?></option>
+        <option value="like"><?php esc_html_e('Like', 'pivot')?></option>
+        <option value="greaterequal"><?php esc_html_e('Greater or equal', 'pivot')?></option>
+        <option value="between"><?php esc_html_e('Between', 'pivot')?></option>
+        <option value="in"><?php esc_html_e('in', 'pivot')?></option>
       </select>
       <p class="description"><?php esc_html_e('Type of comparison', 'pivot') ?></p>
     </div>
@@ -243,6 +247,22 @@ function pivot_build_shortcode_box_html(){
       <input type="text" id="edit-pivot-filter-value" name="value" maxlength="128" class="form-text">
       <p class="description"><?php esc_html_e('Searched value', 'pivot')?></p>
     </div>
+  </div>
+
+  <div class="form-item form-type-textfield form-item-pivot-sortMode">
+    <label for="edit-pivot-sortMode"><?php esc_html_e('Sort mode', 'pivot') ?> </label>
+    <select id="edit-pivot-sortMode" name="sortMode">
+      <option selected value=""><?php esc_html_e('Choose an order', 'pivot') ?></option>
+      <option value="ASC"><?php esc_html_e('Ascending', 'pivot') ?></option>
+      <option value="DESC"><?php esc_html_e('Descending', 'pivot') ?></option>
+      <option value="shuffle"><?php esc_html_e('Shuffle', 'pivot') ?></option>
+    </select>
+    <p class="description"><?php esc_html_e('Choose the sort mode for the query', 'pivot') ?></p>
+  </div>
+  <div class="form-item form-type-textfield form-item-pivot-sortField">
+    <label for="edit-pivot-sortField"><?php esc_html_e('Sort Field', 'pivot') ?> </label>
+    <input type="text" id="edit-pivot-sortField" name="sortField" maxlength="128" class="form-text">
+    <p class="description"><?php esc_html_e('Define the field on which the sort mode will apply', 'pivot') ?></p>
   </div>
 
   <div><input id="build-shortcode" type="button" class="button" value="<?php esc_html_e('Build shortcode', 'pivot')?>"> </button></div>
