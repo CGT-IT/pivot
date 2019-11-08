@@ -447,38 +447,28 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL){
     $queryValueElement = $domDocument->createElement('value', $query_id);
     $criteriaQueryElement->appendChild($queryValueElement);
     $criteriaGroupElement->appendChild($criteriaQueryElement);
-
+    
+    // For event check only those where "date fin publication" is between now and +6month
+    if(isset($field_params['page_type']) && $field_params['page_type'] == 'activite'){
+      $field_params['filters']['datefinmax']['name'] = 'urn:fld:datefinvalid';
+      $field_params['filters']['datefinmax']['operator'] = 'lesserequal';
+      $field_params['filters']['datefinmax']['searched_value'][] = date("d/m/Y", strtotime('+6 month'));
+      $field_params['filters']['datefinmin']['name'] = 'urn:fld:datefinvalid';
+      $field_params['filters']['datefinmin']['operator'] = 'greaterequal';
+      $field_params['filters']['datefinmin']['searched_value'][] = date("d/m/Y", strtotime('now'));
+    }
+    
     if(isset($field_params['filters'])){
       foreach ($field_params['filters'] as $filter){
         $criteriaFieldElement = _create_dom_criteria_field_element($domDocument, $filter);
         $criteriaGroupElement->appendChild($criteriaFieldElement);
       }
     }
-
-    if(isset($field_params['page_type']) && $field_params['page_type'] == 'activite'){
-      // Creation of a <CriteriaObjectDate>
-      $criteriaObjectDateElement = $domDocument->createElement('CriteriaObjectDate');
-      // If defined by visitor
-      if(isset($field_params['filters_object_date']['startDate'])){
-        $criteriadateDebElement = $domDocument->createElement('dateDeb', $field_params['filters_object_date']['startDate']);
-      }else{
-        // Otherwise default value
-        $criteriadateDebElement = $domDocument->createElement('dateDeb', date("d/m/Y", strtotime('now')));
-      }
-      $criteriaObjectDateElement->appendChild($criteriadateDebElement);
-      if(isset($field_params['filters_object_date']['endDate'])){
-        $criteriadateDebElement = $domDocument->createElement('dateFin', $field_params['filters_object_date']['endDate']);
-      }else{
-        $criteriadateFinElement = $domDocument->createElement('dateFin', date("d/m/Y", strtotime('+6 month')));
-      }
-      $criteriaObjectDateElement->appendChild($criteriadateFinElement);
-      $criteriaGroupElement->appendChild($criteriaObjectDateElement);
-    }
   }
   
   $queryElement->appendChild($criteriaGroupElement);
   $domDocument->appendChild($queryElement);
-	
+
   return $domDocument->saveXML();
 }
 
