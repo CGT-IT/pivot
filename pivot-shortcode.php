@@ -29,7 +29,7 @@ function pivot_custom_shortcode_offer_details($atts){
     $offre = _get_offer_details($atts['offerid']);
     $type = pivot_get_offer_type(null, $offre->typeOffre->label->value->__toString());
     // Get template name depending of offer type
-    $template_name = 'pivot-'.$type->parent.'-details-template';
+    $template_name = 'pivot-'.(isset($type->parent)?$type->parent:'default').'-details-template';
 
     // Add main HTML content in output
     $output .= pivot_template($template_name, $offre);
