@@ -8,7 +8,7 @@
           $('#maparea').toggleClass("col-9");
           $("#carte").toggleClass("fa-map-marked-alt");
           $("#carte").toggleClass("fa-list");
-          $('#offers-area').toggleClass("col-3");
+          $('#offers-area').toggleClass("col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-3");
           $('#offers-area').toggleClass("col-12");
           $('#offers-area').toggleClass("pivot-offer-list");
           $('.offers-area-col').each(function(){
