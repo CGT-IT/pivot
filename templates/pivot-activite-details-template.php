@@ -1,7 +1,7 @@
 
 <?php global $offre_meta_data; ?>
 <!--if offer comes from url or bu arguments-->
-<?php if($args): ?>
+<?php if(isset($args)): ?>>
   <?php $offre = $args; ?>
 <?php else: ?>
   <?php $offre = _get_offer_details(); ?>
@@ -72,6 +72,6 @@
 
 </article>
 
-<?php if(!$args): ?>
+<?php if(!isset($args)): ?>
   <?php get_footer(); ?>
 <?php endif;?>
