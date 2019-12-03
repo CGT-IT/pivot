@@ -69,20 +69,15 @@
               <?php switch ($specification->type->__toString()): 
                 case 'EMail': ?>
                   <a class="<?php print $specification->type->__toString(); ?>" href="mailto:<?php print $specification->value->__toString(); ?>"><?php print $specification->value->__toString(); ?></a>
-                  <?php break ?>
                 <?php case 'URL': ?>
                   <a class="<?php print $specification->type->__toString(); ?>" target="_blank" href="<?php print $specification->value->__toString(); ?>"><?php print $specification->value->__toString(); ?></a>
-                  <?php break ?>
                 <?php case 'GSM': ?>
                   <a class="<?php print $specification->type->__toString(); ?>" href="tel:<?php print $specification->value->__toString(); ?>"><?php print $specification->value->__toString(); ?></a>
-                  <?php break ?>
                 <?php case 'Phone': ?>
                   <a class="<?php print $specification->type->__toString(); ?>" href="tel:<?php print $specification->value->__toString(); ?>"><?php print $specification->value->__toString(); ?></a>
-                  <?php break ?>
                 <?php default: ?>
                   <?php print $specification->value->__toString(); ?>
-                  <?php break ?>  
-              <?php endswitch ?>
+              <?php endswitch; ?>
             </dd>
           <?php endif; ?>
         <?php endforeach; ?>
