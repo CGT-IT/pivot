@@ -34,21 +34,22 @@
               <?php if($spec->value->__toString() == "urn:val:typmed:photo"): ?>
                 <div class="carousel-item <?php if($i == 0) {print 'active';}?>">
                   <?php foreach($relation as $specification): ?>
+                    <?php $media_name = _get_urn_value($specification, 'urn:fld:nomofr'); ?>
                     <?php if(strpos(_get_urn_value($specification, 'urn:fld:url'), 'pivotmedia')): ?>
                       <figure>
-                        <img alt="<?php print _get_urn_value($specification, 'urn:fld:nomofr');?>" class="pivot-img pivot-img-details" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $relation->offre->attributes()->codeCgt->__toString(); ?>;w=1300;h=600"/>
+                        <img alt="<?php print $media_name;?>" class="pivot-img pivot-img-details" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $relation->offre->attributes()->codeCgt->__toString(); ?>;h=600"/>
                         <?php if($copyright = _get_urn_value($specification, 'urn:fld:copyr')): ?>
-                          <footer><small><?php print _construct_media_copyright(_get_urn_value($specification, 'urn:fld:copyr'), _get_urn_value($specification, 'urn:fld:date'));?></small></footer>
+                          <footer><small><?php print _construct_media_copyright($copyright, _get_urn_value($specification, 'urn:fld:date'));?></small></footer>
                         <?php endif; ?>
-                        <figcaption><?php print _get_urn_value($specification, 'urn:fld:nomofr');?></figcaption>
+                        <figcaption><?php print $media_name;?></figcaption>
                       </figure>
                     <?php else: ?>
                       <figure>
-                        <img alt="<?php print _get_urn_value($specification, 'urn:fld:nomofr');?>" class="pivot-img pivot-img-details" src="<?php print _get_urn_value($specification, 'urn:fld:url'); ?>"/>
+                        <img alt="<?php print $media_name;?>" class="pivot-img pivot-img-details" src="<?php print _get_urn_value($specification, 'urn:fld:url'); ?>"/>
                         <?php if($copyright = _get_urn_value($specification, 'urn:fld:copyr')): ?>
-                          <footer><small><?php print _construct_media_copyright(_get_urn_value($specification, 'urn:fld:copyr'), _get_urn_value($specification, 'urn:fld:date'));?></small></footer>
+                          <footer><small><?php print _construct_media_copyright($copyright, _get_urn_value($specification, 'urn:fld:date'));?></small></footer>
                         <?php endif; ?>
-                        <figcaption><?php print _get_urn_value($specification, 'urn:fld:nomofr');?></figcaption>
+                        <figcaption><?php print $media_name;?></figcaption>
                       </figure>
                     <?php endif; ?>  
                   <?php endforeach; ?>
