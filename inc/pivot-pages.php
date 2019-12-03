@@ -1,5 +1,286 @@
 <?php
 
+if ( ! class_exists( 'WP_List_Table' ) ) {
+	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
+}
+
+class Pivot_Pages_List extends WP_List_Table {
+
+	/** Class constructor */
+	public function __construct() {
+
+		parent::__construct( [
+			'singular' => __( 'Page' ), //singular name of the listed records
+			'plural'   => __( 'Pages' ), //plural name of the listed records
+			'ajax'     => false //does this table support ajax?
+		] );
+
+	}
+
+
+	/**
+	 * Retrieve pages data from the database
+	 * @param int $per_page
+	 * @param int $page_number
+	 * @return mixed
+	 */
+	public static function get_pages( $per_page = 20, $page_number = 1 , $user_search_key) {
+
+		global $wpdb;
+
+		$sql = "SELECT * FROM {$wpdb->prefix}pivot_pages";
+    if($user_search_key != NULL){
+      $sql .= ' WHERE title LIKE "%%%s%%"';
+    }
+
+		if ( ! empty( $_REQUEST['orderby'] ) ) {
+			$sql .= ' ORDER BY ' . esc_sql( $_REQUEST['orderby'] );
+			$sql .= ! empty( $_REQUEST['order'] ) ? ' ' . esc_sql( $_REQUEST['order'] ) : ' ASC';
+		}
+
+		$sql .= " LIMIT $per_page";
+		$sql .= ' OFFSET ' . ( $page_number - 1 ) * $per_page;
+
+
+		$result = $wpdb->get_results($wpdb->prepare($sql, $user_search_key), 'ARRAY_A' );
+
+		return $result;
+	}
+
+
+	/**
+	 * Delete a page record.
+	 *
+	 * @param int $id page ID
+	 */
+	public static function delete_page( $id ) {
+		global $wpdb;
+
+		$wpdb->delete(
+			"{$wpdb->prefix}pivot_pages",
+			[ 'id' => $id ],
+			[ '%d' ]
+		);
+	}
+
+
+	/**
+	 * Returns the count of records in the database.
+	 *
+	 * @return null|string
+	 */
+	public static function record_count() {
+		global $wpdb;
+
+		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}pivot_pages";
+
+		return $wpdb->get_var( $sql );
+	}
+
+
+	/** Text displayed when no page data is available */
+	public function no_items() {
+		_e( 'No page avaliable.', 'sp' );
+	}
+
+
+	/**
+	 * Render a column when no column specific method exist.
+	 *
+	 * @param array $item
+	 * @param string $column_name
+	 *
+	 * @return mixed
+	 */
+	public function column_default( $item, $column_name ) {
+		switch ( $column_name ) {
+      case 'query':
+        return $item[ $column_name ];
+      case 'type':
+        return $item[ $column_name ];
+      case 'path':
+        return '<a target="_blank" href="'.get_bloginfo('wpurl').'/'.$item[ $column_name ].'">'.$item[ $column_name ].'</a>';
+      case 'title':
+        return $item[ $column_name ];
+      case 'map':
+        return ($item[ $column_name ] == 1)?'&#10004;':'&#10008;';
+			case 'sortMode':
+        if($item[ $column_name ] != ''){
+          $r = $item[ $column_name ];
+          if($item['sortField'] != ''){
+            $r .= ' on '.$item['sortField'];
+          }
+        }else{
+            $r = '-';
+        }
+				return $r;
+      case 'filters':
+        $val = '<input type="button" class="button-secondary" value="'.esc_html__('View filter(s)', 'pivot').'" onclick="window.location=\'?page=pivot-filters&amp;page_id='.$item['id'].'\'"/>';
+        $val .= '<input type="button" class="button-secondary" value="'.esc_html__('Add a filter', 'pivot').'" onclick="window.location=\'?page=pivot-filters&amp;page_id='.$item['id'].'&amp;edit=true\'" />';
+        return $val;
+			default:
+    		return print_r( $item, true ); //Show the whole array for troubleshooting purposes
+		}
+	}
+
+	/**
+	 * Render the bulk edit checkbox
+	 *
+	 * @param array $item
+	 *
+	 * @return string
+	 */
+	function column_cb( $item ) {
+		return sprintf(
+			'<input type="checkbox" name="bulk-delete[]" value="%s" />', $item['id']
+		);
+	}
+
+
+	/**
+	 * Method for name column
+	 *
+	 * @param array $item an array of DB data
+	 *
+	 * @return string
+	 */
+	function column_query( $item ) {
+
+		$delete_nonce = wp_create_nonce( 'pivot_delete_pages' );
+
+		$title = '<strong>' . $item['query'] . '</strong>';
+
+		$actions['edit'] = sprintf('<a href="?page=pivot-pages&amp;id=%d&amp;edit=true">'.esc_html__('Edit').'</a>', absint( $item['id'] ));
+		$actions['delete'] = sprintf( '<a href="?page=pivot-pages&amp;delete=%d">'.esc_html__('Delete').'</a>', absint( $item['id'] ));
+
+
+		return $title . $this->row_actions( $actions );
+	}
+
+  /**
+	 *  Associative array of columns
+	 *
+	 * @return array
+	 */
+	function get_columns() {
+		$columns = [
+			'cb'      => '<input type="checkbox" />',
+			'query'    => __( 'Query', 'pivot' ),
+			'type' => __( 'Type', 'pivot' ),
+			'path'    => __( 'Path', 'pivot' ),
+      'title'    => __( 'Page Title', 'pivot' ),
+      'map'    => __( 'Map ?', 'pivot' ),
+      'sortMode'    => __( 'Sorting', 'pivot' ),
+      'filters'    => __( 'Filters', 'pivot' ),
+		];
+
+		return $columns;
+	}
+
+
+	/**
+	 * Columns to make sortable.
+	 *
+	 * @return array
+	 */
+	public function get_sortable_columns() {
+		$sortable_columns = array(
+			'query' => array( 'query', true ),
+      'type' => array( 'type', false ),
+      'path' => array( 'path', false ),
+      'title' => array( 'title', false ),
+      'map' => array( 'map', false ),
+      'sortMode' => array( 'sortMode', false )
+		);
+
+		return $sortable_columns;
+	}
+
+	/**
+	 * Returns an associative array containing the bulk action
+	 *
+	 * @return array
+	 */
+	public function get_bulk_actions() {
+		$actions = [
+			'bulk-delete' => 'Delete'
+		];
+
+		return $actions;
+	}
+
+	/**
+	 * Handles data query and filter, sorting, and pagination.
+	 */
+	public function prepare_items() {
+    // check if a search was performed.
+    $user_search_key = isset( $_REQUEST['s'] ) ? wp_unslash( trim( $_REQUEST['s'] ) ) : '';
+    
+    $columns = $this->get_columns();
+    $hidden = array();
+    $sortable = $this->get_sortable_columns();
+        
+    $this->_column_headers = array($columns, $hidden, $sortable);
+
+		/** Process bulk action */
+		$this->process_bulk_action();
+
+		$per_page     = $this->get_items_per_page( 'pages_per_page', 5 );
+		$current_page = $this->get_pagenum();
+		$total_items  = self::record_count();
+
+		$this->set_pagination_args( [
+			'total_items' => $total_items, //WE have to calculate the total number of items
+			'per_page'    => $per_page //WE have to determine how many items to show on a page
+		] );
+
+		$this->items = self::get_pages( $per_page, $current_page, $user_search_key );
+	}
+
+	public function process_bulk_action() {
+
+		//Detect when a bulk action is being triggered...
+		if ( 'delete' === $this->current_action() ) {
+
+			// In our file that handles the request, verify the nonce.
+			$nonce = esc_attr( $_REQUEST['_wpnonce'] );
+
+			if ( ! wp_verify_nonce( $nonce, 'pivot_delete_pages' ) ) {
+				die( 'Go get a life script kiddies' );
+			}
+			else {
+				self::delete_page( absint( $_GET['pages'] ) );
+
+		                // esc_url_raw() is used to prevent converting ampersand in url to "#038;"
+		                // add_query_arg() return the current url
+		                wp_redirect( esc_url_raw(add_query_arg()) );
+				exit;
+			}
+
+		}
+
+		// If the delete bulk action is triggered
+		if ( ( isset( $_POST['action'] ) && $_POST['action'] == 'bulk-delete' )
+		     || ( isset( $_POST['action2'] ) && $_POST['action2'] == 'bulk-delete' )
+		) {
+
+			$delete_ids = esc_sql( $_POST['bulk-delete'] );
+
+			// loop over the array of record IDs and delete them
+			foreach ( $delete_ids as $id ) {
+				self::delete_page( $id );
+
+			}
+
+			// esc_url_raw() is used to prevent converting ampersand in url to "#038;"
+		        // add_query_arg() return the current url
+		        wp_redirect( esc_url_raw(add_query_arg()) );
+			exit;
+		}
+	}
+
+}
+
 /**
  * Get all the data from table wp_pivot
  * @global Object $wpdb
@@ -110,6 +391,23 @@ function pivot_meta_box() {
 }
 
 /**
+ * Add "Wordpress" options to the page
+ */
+function pivot_page_screen_option() {
+
+  $option = 'per_page';
+  $args   = [
+    'label'   => 'Pages',
+    'default' => 5,
+    'option'  => 'pages_per_page'
+  ];
+
+  add_screen_option( $option, $args );
+
+  $table = new Pivot_Pages_List();
+}
+
+/**
  * Define plugin options edit & delete VS add
  */    
 function pivot_pages_settings(){
@@ -117,7 +415,29 @@ function pivot_pages_settings(){
   pivot_action();
   if (empty($_GET['edit'])) {
     // Display the data into the Dashboard
-    pivot_manage_page();
+    ?>
+    <div class="wrap">
+      <h2><?php _e("Pivot Plugin Pages", "pivot"); ?>
+        <a href="<?php echo get_site_url(); ?>/wp-admin/admin.php?page=pivot-pages&edit=true" class="page-title-action"><?php _e('Add New'); ?></a>
+      </h2>
+
+      <div id="poststuff">
+          <div id="post-body-content">
+            <div class="meta-box-sortables ui-sortable">
+              <form method="post">
+                <?php
+                $table = new Pivot_Pages_List();
+                $table->prepare_items();
+                $table->search_box( 'search', 'search_id' ); 
+                $table->display(); ?>
+              </form>
+            </div>
+          </div>
+        </div>
+        <br class="clear">
+      </div>
+    </div>
+  <?php
   } else {
     // Display a form to add or update the data
     pivot_add_page();   
@@ -242,87 +562,5 @@ function pivot_add_page(){
       </form>
     </div>
   </div>
-<?php
-}
-
-function pivot_manage_page(){
-?>
-<div class="wrap">
-  <div class="icon32" id="icon-edit"><br></div>
-  <h2><?php esc_html_e('Pivot Plugin Pages', 'pivot') ?></h2>
-  <form method="post" action="?page=pivot-pages" id="pivot_form_action">
-    <p>
-      <input type="button" class="button-secondary" value="<?php esc_attr_e('Add a new page', 'pivot')?>" onclick="window.location='?page=pivot-pages&amp;edit=true'" />
-    </p>
-    <table class="widefat page fixed" cellpadding="0">
-      <thead>
-        <tr>
-        <th id="cb" class="manage-column column-cb check-column" style="" scope="col">
-          <input type="hidden"/>
-        </th>
-          <th class="manage-column"><?php esc_html_e('Query', 'pivot')?></th>
-          <th class="manage-column"><?php esc_html_e('Type', 'pivot')?></th>
-          <th class="manage-column"><?php esc_html_e('Path', 'pivot')?></th>
-          <th class="manage-column"><?php esc_html_e('Page title', 'pivot')?></th>
-          <th class="manage-column"><?php esc_html_e('Map ?', 'pivot')?></th>
-          <th class="manage-column"><?php esc_html_e('Sorting', 'pivot')?></th>
-          <th class="manage-column"><?php esc_html_e('Filters', 'pivot')?></th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <?php
-          $table = pivot_get_pages();
-          if($table){
-           $i=0;
-           foreach($table as $pivot_page) { 
-               $i++;
-        ?>
-      <tr class="<?php echo (ceil($i/2) == ($i/2)) ? "" : "alternate"; ?>">
-        <th class="check-column" scope="row">
-          <input type="hidden" value="<?php echo $pivot_page->id?>" name="page_id[]" />
-        </th>
-          <td>
-            <strong><?php echo $pivot_page->query?></strong>
-            <div class="row-actions-visible">
-              <span class="edit"><a href="?page=pivot-pages&amp;id=<?php echo $pivot_page->id?>&amp;edit=true"><?php esc_html_e('Edit', 'pivot')?></a> | </span>
-              <span class="delete"><a href="?page=pivot-pages&amp;delete=<?php echo $pivot_page->id?>" onclick="return confirm(__('Are you sure you want to delete this page?', 'pivot'));"><?php esc_html_e('Delete', 'pivot')?></a></span>
-            </div>
-          </td>
-          <td><?php echo $pivot_page->type?></td>
-          <td><?php echo '<a href="'.get_bloginfo('wpurl').'/'.$pivot_page->path.'">'.$pivot_page->path.'</a>';?></td>
-          <td><?php echo $pivot_page->title?></td>
-                    <td><?php echo ($pivot_page->map == 1)?'&#10004;':'&#10008;';?></td>
-          <td>
-            <?php if($pivot_page->sortMode != ''){
-                    echo $pivot_page->sortMode;
-                    if($pivot_page->sortField != ''){
-                      echo ' on '.$pivot_page->sortField;
-                    }
-                  }else{
-                    echo 'none';
-                  }
-            ?>
-          </td>
-          <td class="manage-column">
-            <input type="button" class="button-secondary" value="<?php esc_html_e('View filter(s)', 'pivot')?>" onclick="window.location='?page=pivot-filters&amp;page_id=<?php echo $pivot_page->id; ?>'" />
-            <input type="button" class="button-secondary" value="<?php esc_html_e('Add a filter', 'pivot')?>" onclick="window.location='?page=pivot-filters&amp;page_id=<?php echo $pivot_page->id; ?>&amp;edit=true'" />
-          </td>
-        </tr>
-        <?php
-           }
-        }
-        else{   
-      ?>
-        <tr><td colspan="4"><?php esc_html_e('There is no data.', 'pivot')?></td></tr>   
-        <?php
-      }
-        ?>   
-      </tbody>
-    </table>
-
-
-  </form>
-</div>
 <?php
 }
