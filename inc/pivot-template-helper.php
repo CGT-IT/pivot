@@ -12,7 +12,7 @@
  * @return string
  */
 function _add_section($offre, $urnCat, $title, $faIcon='', $urnSubCat=0){
-  $excludedUrn = array('urn:fld:dateech', 'urn:fld:idaccessi', 'urn:fld:accessi', 'urn:fld:accessi:url', 'urn:fld:accessi:perfautroul', 'urn:fld:accessi:permardif', 'urn:fld:accessi:perave', 'urn:fld:accessi:permalvoy', 'urn:fld:accessi:persou', 'urn:fld:accessi:permalent', 'urn:fld:accessi:perdifcomp');
+  $excludedUrn = array('urn:cat:accueil:attest','urn:val:attestincendie:asi','urn:val:attestincendie:acs','urn:val:attestincendie:defaut','urn:fld:attestincendie:dateech','urn:fld:dateech', 'urn:fld:idaccessi', 'urn:fld:accessi', 'urn:fld:accessi:url', 'urn:fld:accessi:perfautroul', 'urn:fld:accessi:permardif', 'urn:fld:accessi:perave', 'urn:fld:accessi:permalvoy', 'urn:fld:accessi:persou', 'urn:fld:accessi:permalent', 'urn:fld:accessi:perdifcomp');
   // Define if sub category or category
   $cat_or_subcat = ($urnSubCat?'urnSubCat':'urnCat');
   // Get 2 letter language code
@@ -164,7 +164,7 @@ function _add_section_contact($offre){
             
   $output .= '<ul class="adr list-unstyled lis-line-height-2 m-0">'
           .    '<li class="street-address"><i class="fas fa-map"></i> '.$offre->adresse1->rue->__toString().', '.$offre->adresse1->numero->__toString().'</li>'
-          .      '<span class="postal-code">'.$offre->adresse1->cp->__toString().'</span>'
+          .      '<span class="postal-code">'.$offre->adresse1->cp->__toString().' </span>'
           .      '<span class="locality">'.(isset($offre->adresse1->commune)?$offre->adresse1->commune->value->__toString():'').'</span>'
           .    '<li class="country-name">'.$offre->adresse1->pays->__toString().'</li>'
           .    '<li class="pivot-latitude d-none">'.$offre->adresse1->latitude->__toString().'</li>'
@@ -298,39 +298,104 @@ function _add_section_linked_offers($offre){
   return '';
 }
 
-/**
- * Return a list of related titles offers
- * @param Object $offre complete offer object
- * @return string
- *//*
-function _add_section_related_offers($offre){
-  $output = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-paperclip"></i>'.__('Related offer(s)', 'pivot').'</h5>'
-           .'<section class="card lis-brd-light mb-4">'
-           .'<div class="card-body p-4">'
-           .'<ul class="list-unstyled lis-line-height-2 m-0">';
-  $i= 0;
+function _add_section_mice_rooms($offre, $title, $faIcon=''){
+  $output = '';
+
+  $open_balise = '<link href="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.css" rel="stylesheet">'
+                . '<script src="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.js"></script>'
+                . '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 f0fc '.$faIcon.'"></i>'. __($title, 'pivot') .'</h5>'
+                . '<div class="table-responsive-xl">'
+                  . '<table  data-toggle="table" data-sort-name="name" data-sort-order="asc" data-pagination="true" data-page-size="25" data-toggle="table" data-search="true"class="table table-striped">';
+                    
+  $close_balise = '</tbody></table></div>';
+  // Construction of rooms array to be able to check if an attribute is not present
+  $i = 0;
   foreach($offre->relOffre as $relation){
-    // The linked offer shouldn't be a contact or a media
-    if($relation->attributes()->urn->__toString() == 'urn:lnk:offre:voiraussi'){
-      $i++;
-      // The linked offer type should exist in "pivot offer type" otherwise no template will be used
-      $type_offre = $relation->offre->typeOffre->attributes()->idTypeOffre->__toString();
-      if(pivot_get_offer_type($type_offre)){
-        $url = get_bloginfo('wpurl').'/details/'.$relation->offre->attributes()->codeCgt->__toString().'&type='.$type_offre;
-        $output .= '<li class="">'
-                .    '<a class="text-dark" title="'.esc_attr('Link to', 'pivot').' '.$relation->offre->nom.'" href="'.$url.'">'
-                .  '</li>';
+    if((in_array($relation->offre->typeOffre->attributes()->idTypeOffre->__toString(), array('24')))){
+      $offer_id = $relation->offre->attributes()->codeCgt->__toString();
+      $rooms[$i]['name'] = $relation->offre->nom->__toString();
+      $rooms[$i]['lumjour'] = (_get_urn_value($relation->offre, 'urn:fld:eqsrvsalle:lumjour')?'&#10004;':'&#10008;');
+      foreach($relation->offre->spec as $spec_relation){
+        switch($spec_relation->attributes()->urn->__toString()){
+          case 'urn:fld:ident:superf':
+            $rooms[$i]['superf'] = $spec_relation->value->__toString();
+            break;
+          case 'urn:fld:ident:captheat':
+            $rooms[$i]['captheat'] = $spec_relation->value->__toString();
+            break;
+          case 'urn:fld:ident:capcockt':
+            $rooms[$i]['capcockt'] = $spec_relation->value->__toString();
+            break;
+          case 'urn:fld:ident:capbanq':
+            $rooms[$i]['capbanq'] = $spec_relation->value->__toString();
+            break;
+          case 'urn:fld:ident:capaudit':
+            $rooms[$i]['capaudit'] = $spec_relation->value->__toString();
+            break;
+          case 'urn:fld:ident:capsemin':
+            $rooms[$i]['capsemin'] = $spec_relation->value->__toString();
+            break;
+        }
       }
     }
+    $i++;
   }
   
-  // There is minimum one offer
-  if($i > 0){
+  if(isset($rooms)){
+    $content = '<thead>'
+              . '<tr>'
+              .'<th data-field="name" data-sortable="true">'.__('Names of Rooms', 'pivot').'</th>'
+              .'<th data-field="daylight" data-sortable="true" class="text-center" scope="col">'.__('Day light', 'pivot').'</th>';
+    // Check if attribute is present or not
+    if(_multiKeyExists($rooms, 'superf')){
+      $content .= '<th data-field="surface" data-sortable="true" class="text-center" scope="col">'.__('Surface', 'pivot').'</th>';
+    }
+    if(_multiKeyExists($rooms, 'captheat')){
+      $content .= '<th data-field="theater" data-sortable="true" class="text-center" scope="col">'.__('Theater', 'pivot').'</th>';
+    }
+    if(_multiKeyExists($rooms, 'capcockt')){
+      $content .= '<th data-field="reception"data-sortable="true"  class="text-center" scope="col">'.__('Reception', 'pivot').'</th>';
+    }
+    if(_multiKeyExists($rooms, 'capbanq')){
+      $content .= '<th data-field="banquet" data-sortable="true" class="text-center" scope="col">'.__('Banquet', 'pivot').'</th>';
+    }
+    if(_multiKeyExists($rooms, 'capaudit')){
+      $content .= '<th data-field="auditorium" data-sortable="true" class="text-center" scope="col">'.__('Auditorium', 'pivot').'</th>';
+    }
+    if(_multiKeyExists($rooms, 'capsemin')){
+      $content .= '<th data-field="classroom" data-sortable="true" class="text-center" scope="col">'.__('Classroom', 'pivot').'</th>';
+    }
+    $content .= '</tr></thead><tbody>';
+
+    foreach($rooms as $room){
+      $content.= '<tr>';
+      $content.= '<td class="name">'.$room['name'].'</td>';
+      $content.= '<td class="lumjour text-center">'.(isset($room['lumjour'])?$room['lumjour']:'').'</td>';
+      if(_multiKeyExists($rooms, 'superf')){
+        $content .= '<td class="superf text-center">'.(isset($room['superf'])?$room['superf']:'').'</td>';
+      }
+      if(_multiKeyExists($rooms, 'captheat')){
+        $content .= '<td class="captheat text-center">'.(isset($room['captheat'])?$room['captheat']:'').'</td>';
+      }
+      if(_multiKeyExists($rooms, 'capcockt')){
+        $content .= '<td class="capcockt text-center">'.(isset($room['capcockt'])?$room['capcockt']:'').'</td>';
+      }
+      if(_multiKeyExists($rooms, 'capbanq')){
+        $content .= '<td class="capbanq text-center">'.(isset($room['capbanq'])?$room['capbanq']:'').'</td>';
+      }
+      if(_multiKeyExists($rooms, 'capaudit')){
+        $content .= '<td class="capaudit text-center">'.(isset($room['capaudit'])?$room['capaudit']:'').'</td>';
+      }
+      if(_multiKeyExists($rooms, 'capsemin')){
+        $content .= '<td class="capsemin text-center">'.(isset($room['capsemin'])?$room['capsemin']:'').'</td>';
+      }
+      $content.= '</tr>';
+    }
+    return $open_balise.$content.$close_balise;
+  }else{
     return $output;
   }
-  
-  return '';
-}*/
+}
 
 /**
  * Return HTML with date detail based on an activity Pivot offer
@@ -446,6 +511,25 @@ function _add_section_accessi($offre){
                   </a>
                 </section>';
   }
+  
+  return $output;
+}
+
+function _add_pivot_map($map, $nb_col){
+  $output = '<div id="maparea" class="'.(($map==1)?'col-'.$nb_col.' d-none d-md-block':'').'">';
+  // Include leaflet css for map
+  $output .= ' <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+                   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+                   crossorigin=""/>';
+  // Include leaflet js for map
+  $output .= '<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+                     integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+                     crossorigin=""></script>';
+  // Create Map element
+  $output .= '<div id="mapid" style="height: 600px;width: 600px;z-index:0;"></div>';
+  // Include map custom js
+  $output .= '<script src="'.plugins_url('js/map.js', dirname(__FILE__)).'"></script>';
+  $output .= '</div>';
   
   return $output;
 }
