@@ -201,7 +201,7 @@ class Pivot_Filters_List extends WP_List_Table {
 	 */
 	public function get_bulk_actions() {
 		$actions = [
-			'bulk-delete' => 'Delete'
+			'bulk-delete' => __('Delete')
 		];
 
 		return $actions;
