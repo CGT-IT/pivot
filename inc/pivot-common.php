@@ -183,10 +183,11 @@ function _get_ranking_picto($offre){
       $urn = $specification->value->__toString();
       // add specific class to allow overriding. Replace : by -
       $output = '<span class="pivot-ranking">';
+      $urn_doc = _get_urn_documentation($urn);
       // prepare img title attribute
-      $title_attribute = 'title="'._get_urn_documentation($urn).'"';
+      $title_attribute = 'title="'.$urn_doc.'"';
       // prepare img alt attribute
-      $alt_attribute = 'alt="image '._get_urn_documentation($urn).'"';
+      $alt_attribute = 'alt="image '.$urn_doc.'"';
       $height = 20;
       // Construct <img/> tag
       $img = '<img '.$title_attribute.' '.$alt_attribute.' class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$urn.';h='.$height;
@@ -310,17 +311,25 @@ function _get_commune_from_pivot($type, $value, $selected_value = NULL){
 
   // Init vars
   $commune_list = array();
-  $output = '<option '.(isset($selected_value)?'':'selected').' disabled hidden>Choisir une commune</option>';
+  $output = '<option '.(isset($selected_value)?'':'selected').' disabled hidden>'.esc_html__('Choose a town', 'pivot').'</option>';
 
+  // Construct list
   foreach($communes as $commune){
-    if(!in_array(_get_translated_value($commune->commune), $commune_list)){
-      $commune_list[] = _get_translated_value($commune->commune);
-      $output .= '<option value="'._get_translated_value($commune->commune).'" ';
-      if($selected_value == _get_translated_value($commune->commune)){
-        $output .= 'selected';
-      }
-      $output .= '>'._get_translated_value($commune->commune).'</option>';
+    $commune_translated = _get_translated_value($commune->commune);
+    if(!in_array($commune_translated, $commune_list)){
+      $commune_list[] = $commune_translated;
     }
+  }
+  // Sort list
+  asort($commune_list);
+
+  // Construct HTML options
+  foreach($commune_list as $commune){
+    $output .= '<option value="'.$commune.'" ';
+    if($selected_value == $commune){
+      $output .= 'selected';
+    }
+    $output .= '>'.$commune.'</option>';
   }
   return $output;
 }
@@ -330,7 +339,7 @@ function _get_offer_types($edit_page){
 
   // Init vars
   $types_list = array();
-  $output = '<option selected disabled hidden>'.esc_html('Choose a type', 'pivot').'</option>';
+  $output = '<option selected disabled hidden>'.esc_html__('Choose a type', 'pivot').'</option>';
 
   foreach($types as $type){
     if(!in_array($type->parent, $types_list)){
@@ -555,28 +564,6 @@ function _get_path(){
 
   return $path;
 }
-/*
-function _get_ot_details(){
-  $field_params['criterafield'] = TRUE;
-  $field_params['filters']['status']['name'] = 'urn:fld:etatedit';
-  $field_params['filters']['status']['operator'] = 'equal';
-  $field_params['filters']['status']['searched_value'][] = 'urn:val:etatedit:30';
-
-  // Hebergements
-  $field_params['filters']['typeofr']['name'] = 'urn:fld:typeofr';
-  $field_params['filters']['typeofr']['operator'] = 'equal';
-  $field_params['filters']['typeofr']['searched_value'] = 14;
-
-  // Hebergements
-  $field_params['filters']['typeofr']['name'] = 'urn:fld:adrot';
-  $field_params['filters']['typeofr']['operator'] = 'equal';
-  $field_params['filters']['typeofr']['searched_value'] = 'Ourthe Vesdre Amblève';
-
-  $xml_query = _xml_query_construction(NULL, $field_params);
-  $xml_object = _pivot_request('offer-search', 2, $field_params, $xml_query);
-//  $offer = pivot_construct_output('offer-search', 1, $xml_query);
-  return $xml_object;
-}*/
 
 function _get_offer_details($offer_id = NULL, $details = 3){
   if($offer_id){
@@ -680,4 +667,25 @@ function _get_urnValue_translated($offre, $specification){
       break;
   }
   return $output;
+}
+
+/**
+ * Check if a key exist in a multidimensional array
+ * @param array $array
+ * @param type $key
+ * @return boolean
+ */
+function _multiKeyExists( Array $array, $key ) {
+    if (array_key_exists($key, $array)) {
+        return true;
+    }
+    foreach ($array as $k=>$v) {
+        if (!is_array($v)) {
+            continue;
+        }
+        if (array_key_exists($key, $v)) {
+            return true;
+        }
+    }
+    return false;
 }
