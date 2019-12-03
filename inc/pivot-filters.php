@@ -459,7 +459,7 @@ function pivot_filters_settings(){
                 <?php
                 $table = new Pivot_Filters_List();
                 $table->prepare_items();
-                $table->search_box( 'search', 'search_id' ); 
+                $table->search_box( __('Search'), 'search_id' ); 
                 $table->display(); ?>
               </form>
             </div>
