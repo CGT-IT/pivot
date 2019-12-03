@@ -155,8 +155,6 @@ aside.pivot-contacts.col-md-4{
 
 .pivot-offer .container-img{
     overflow: hidden;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
 }
 
 .zoom {
@@ -173,4 +171,52 @@ aside.pivot-contacts.col-md-4{
 
 #quadmenu .quadmenu-navbar-nav li.quadmenu-item>a {
     height: inherit !important;
+}
+.card .card-horizontal{
+    transition: transform 0.7s;
+}
+.card .card-horizontal:hover{
+    box-shadow: 0 0 40px rgba(0,0,0,0.25);
+    z-index: 50;
+}
+.card-horizontal {
+    display: flex;
+    flex: 1 1 auto;
+}
+.leaflet-popup-close-button{
+    z-index: 10000000;
+    top: -15px !important;
+    right: -15px !important;
+    width: 30px !important;
+    height: 30px !important;
+    background: white !important;
+    opacity: 1;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    -webkit-transition: all .3s ease;
+    -moz-transition: all .3s ease;
+    -o-transition: all .3s ease;
+    transition: all .3s ease;
+    font-size: x-large !important;
+    padding: 8px 0 0 0 !important;
+}
+.leaflet-popup-close-button:hover {
+    background: #E5E5E5 !important;
+}
+.leaflet-popup-content-wrapper{
+    border-radius: 0 !important;
+    padding: 0 !important;
+}
+.leaflet-popup-content{
+    margin: 0 !important;
+}
+#pivot-filter-form input[type=email],
+#pivot-filter-form input[type=number],
+#pivot-filter-form input[type=password],
+#pivot-filter-form input[type=reset],
+#pivot-filter-form input[type=search],
+#pivot-filter-form input[type=tel],
+#pivot-filter-form input[type=text],
+#pivot-filter-form input[type=url]{
+    min-width: 160px;
 }
