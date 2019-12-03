@@ -72,4 +72,4 @@
 </div>
     
 <!--Include footer-->
-<?php get_footer('pivot');
+<?php get_footer();

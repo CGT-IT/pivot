@@ -2,7 +2,7 @@
 <?php $pivot_page = pivot_get_page_path(_get_path());?>
 <title><?php print $pivot_page->title .' - '. get_bloginfo('name');?></title>
 <!--Include header-->
-<?php get_header('pivot'); ?>
+<?php get_header(); ?>
 
 <!--Get filters-->
 <?php $filters = pivot_add_filters(); ?>
@@ -72,4 +72,4 @@
 </div>
     
 <!--Include footer-->
-<?php get_footer('pivot');
+<?php get_footer();
