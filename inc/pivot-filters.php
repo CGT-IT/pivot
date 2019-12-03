@@ -400,7 +400,7 @@ function pivot_filters_meta_box() {
           <?php if($key === key($groups)): ?>
             <?php print '<strong>'.$group->filter_group.'</strong>'; ?>
           <?php else: ?>
-            <?php print '<strong>'.$group->filter_group.'</strong>' . ', '; ?>
+            <?php print '<strong>'.$group->filter_group.'</strong>, '; ?>
           <?php endif; ?>
         <?php endforeach; ?>
       <?php endif; ?>
