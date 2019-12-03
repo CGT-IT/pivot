@@ -1,13 +1,15 @@
 <?php
 /*
- * Plugin Name: pivot
+ * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 0.1
+ * Version: 1.0
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
  * Domain Path: /languages
  */
+
+defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
 add_action( 'wpseo_opengraph', 'change_yoast_seo_og_meta' );
 
@@ -81,6 +83,22 @@ add_action('init', 'pivot_load_textdomain');
 function pivot_load_textdomain() {
 	load_plugin_textdomain('pivot', false, basename( dirname( __FILE__ ) ) . '/languages' );
 }
+
+function set_plugin_meta($links, $file){
+	$plugin = plugin_basename(__FILE__);
+	
+  // create link
+	if($file == $plugin){
+		return array_merge(
+			$links,
+			array(sprintf( '<a target="_blank" href="https://github.com/CGT-IT/pivot">GitHub</a>' ),
+            sprintf( '<a target="_blank" href="https://github.com/CGT-IT/pivot/wiki">Documentation</a>' ))
+    );
+  }
+  
+	return $links;
+}
+add_filter( 'plugin_row_meta', 'set_plugin_meta', 10, 2 );
 
 /**
  * Creation of Pivot Tables to store configuration settings
@@ -202,8 +220,10 @@ function pivot_menu() {
   add_menu_page('Pivot administration', 'Pivot', 'delete_others_pages', 'pivot-admin', 'pivot_options');
   add_submenu_page('pivot-admin', 'Pivot administration', 'Pivot', 'delete_others_pages', 'pivot-admin');
   add_submenu_page('pivot-admin', 'Offer types', 'Manage offer type', 'manage_options', 'pivot-offer-types', 'pivot_offer_type_settings');
-  add_submenu_page('pivot-admin', 'Pages', 'Manage pages', 'delete_others_pages', 'pivot-pages', 'pivot_pages_settings');
-  add_submenu_page('pivot-admin', 'Filters', 'Manage filters', 'delete_others_pages', 'pivot-filters', 'pivot_filters_settings');
+  $pivot_page_submenu = add_submenu_page('pivot-admin', 'Pages', 'Manage pages', 'delete_others_pages', 'pivot-pages', 'pivot_pages_settings');
+  add_action( "load-$pivot_page_submenu", 'pivot_page_screen_option');
+  $pivot_filters_submenu = add_submenu_page('pivot-admin', 'Filters', 'Manage filters', 'delete_others_pages', 'pivot-filters', 'pivot_filters_settings');
+  add_action( "load-$pivot_filters_submenu", 'pivot_filter_screen_option');
 }
 
 function init() {
