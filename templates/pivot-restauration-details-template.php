@@ -6,7 +6,7 @@
 <?php else: ?>
   <?php $offre = _get_offer_details(); ?>
   <?php _add_meta_data($offre, 'details'); ?>
-  <?php get_header('pivot'); ?>
+  <?php get_header(); ?>
 <?php endif;?>
 
 <article class="pivot-offer row m-3">

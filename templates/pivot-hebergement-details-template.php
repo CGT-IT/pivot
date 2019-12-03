@@ -6,7 +6,7 @@
 <?php else: ?>
   <?php $offre = _get_offer_details(); ?>
   <?php _add_meta_data($offre, 'details'); ?>
-  <?php get_header('pivot'); ?>
+  <?php get_header(); ?>
 <?php endif;?>
 
 <article class="pivot-offer row m-3">
@@ -67,7 +67,7 @@
           <div class="card-body p-4">
             <ul id="pivot-extra-infos" class="list-unstyled lis-line-height-2 mb-0 ">
               <?php foreach($offre->spec as $specification): ?>
-                <?php if($specification->urnCat->__toString() == 'urn:cat:accueil' && $specification->urnSubCat->__toString() != 'urn:cat:accueil:langpar' && $specification->attributes()->urn->__toString() != 'urn:fld:attestincend'): ?>
+                <?php if($specification->urnCat->__toString() == 'urn:cat:accueil' && $specification->urnSubCat->__toString() != 'urn:cat:accueil:langpar' && $specification->urnSubCat->__toString() != 'urn:cat:accueil:attest'): ?>
                   <li class="list-group-item list-group-item-action pivot-details <?php print str_replace(":", "-", $specification->attributes()->urn->__toString()); ?>">
                     <span>
                       <?php print _get_urn_documentation($specification->attributes()->urn->__toString()); ?>
