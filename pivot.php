@@ -11,6 +11,17 @@
 
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
+/*
+ * Helper to check if there is an update for the plugin.
+ * Will allow user to update this plugin via the "wordpress way"
+ */
+require 'plugin-update-checker/plugin-update-checker.php';
+$myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
+	'https://github.com/CGT-IT/pivot',
+	__FILE__,
+	'pivot'
+);
+
 add_action( 'wpseo_opengraph', 'change_yoast_seo_og_meta' );
 
 /**
@@ -109,7 +120,7 @@ function pivot_install() {
   global $wpdb;
   require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
   $charset_collate = $wpdb->get_charset_collate();
-  
+
   // Set the custom table name with the wp prefix "pivot"
   $table_name = $wpdb->prefix . "pivot_pages";
   // Define sql statement to create the table
