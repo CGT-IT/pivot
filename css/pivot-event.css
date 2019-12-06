@@ -1,0 +1,119 @@
+.event-list .time span{
+    color: white;
+}
+
+.event-list .pivot-offer{
+    margin-bottom: 15px;
+}
+
+.event-list .add-to-calendar span{
+    margin-right: 5px;
+    border-right: 1px solid grey;
+    padding-right: 5px;
+}
+.event-list .add-to-calendar:last-child {
+    border: none;
+}
+
+.event-list .add-to-calendar a{
+    color: lightgrey;
+}
+
+.event-list .top-left-corner .time-start{
+    position: absolute;
+    background-color: #454545;
+    color: white;
+    top: -5px;
+    left: 10%;
+    width: 15%;
+    padding-left: 8px;
+     padding-right: 8px;
+    padding-bottom: 10px;
+}
+
+.event-list .time.time-end i {
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+}
+
+.event-list .time.time-end .arrow-right {
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+    top: 50%;
+    position: absolute;
+    left: -15px;
+}
+
+.event-list .top-left-corner .time-end{
+    position: absolute;
+    background-color: #454545;
+    color: white;
+    top: -5px;
+    left: 25%;
+    width: 12%;
+    padding-right: 0px;
+    padding-bottom: 10px;
+}
+.event-list .top-right-corner{
+    position: absolute;
+    background-color: #454545;
+    color: white;
+    top: 0px;
+    right: 10%;
+    width: auto;
+}
+
+.event-list .time ul {
+    list-style: none;
+}
+.event-list .time .day{
+    font-size: 2em;
+    font-weight: 900;
+    padding-bottom: 3px;
+    border-bottom: 1px solid white;
+}
+.event-list .time .month{
+    font-size: 1em;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.event-list .bottom{
+    position: absolute;
+    bottom: 15px;
+    background: #000;
+    opacity: 0.5;
+    width: 93%;
+    margin-right: 15px;
+    padding-left: 15px;
+    z-index:1;
+}
+.event-list .bottom h4 a{
+    color: white;
+    font-weight: bold;
+    font-size: 10pt;
+    z-index:10;
+    opacity: 1;
+}
+
+.facebook a,
+.twitter a{
+    display: block;
+    width: 100%;
+    color: rgb(75, 110, 168) !important;
+}
+.twitter a {
+    color: rgb(79, 213, 248) !important;
+}
+.facebook:hover a {
+    color: rgb(255, 255, 255) !important;
+    background-color: rgb(75, 110, 168) !important;
+}
+.twitter:hover a {
+    color: rgb(255, 255, 255) !important;
+    background-color: rgb(79, 213, 248) !important;
+}

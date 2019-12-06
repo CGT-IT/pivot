@@ -1,0 +1,222 @@
+h1,h2,h3,h4,h5,h6{
+    text-transform:uppercase;
+    margin-bottom:25px;
+    color:#32313b;
+    font-family:Raleway,sans-serif;
+    text-rendering:optimizelegibility;
+    font-style:normal;
+}
+h5 .no-transform{
+    text-transform:none;
+}
+h1{
+    font-size:58px;
+    font-weight:300;
+}
+h2{
+    font-size:36px;
+    font-weight:300;
+}
+h3{
+    color:rgb(112,108,107);
+    font-size:26px;
+}
+h4{
+    font-size:18px;
+    text-transform:none;
+}
+h5{
+}
+h6{
+}
+body{
+    line-height:1.4;
+    color:rgb(112,108,107);
+    font-size:15px !important;
+}
+.error404 .ast-container{
+    max-width: 100%;
+}  
+#mapid {
+    width: 100%!important;
+}
+.pivot-offer-list{
+    max-height: 600px;
+    overflow-y: scroll;
+}
+
+.pivot-row article{
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border: 1px solid #E6E6E6;
+    margin-bottom: 10px;
+}
+
+.pivot-row a h4.pivot-title:hover,
+.pivot-row a h4.pivot-title:focus{
+    text-decoration: none;
+}
+
+.pivot-row .pivot-title a{
+
+}
+
+.pivot-row .item{
+    margin-bottom: 1rem;
+}
+
+.pivot-row .pivot-img{
+    display: block;
+    width: 100%;
+}
+
+@media screen and (max-width: 500px){
+    #pivot-equipments{
+        column-count:1 !important;
+    }
+}
+@media screen and (min-width: 500px) and (max-width: 900px){
+    #pivot-equipments{
+        column-count:2 !important;
+    }
+}
+@media screen and (max-width: 900px){
+    #pivot-extra-infos{
+        column-count:1 !important;
+    }
+}
+
+#pivot-equipments{
+    column-count:3;
+    column-gap:40px;
+    column-rule-width:1px;
+    column-rule-style:outset;
+    column-rule-color:#ccc;
+}
+#pivot-extra-infos{
+    column-count:2;
+    column-gap:40px;
+    column-rule-width:1px;
+    column-rule-style:outset;
+    column-rule-color:#ccc;
+}
+#pivotCarousel .carousel-indicators li{
+    position: relative;
+    -webkit-box-flex: 0;
+    -ms-flex: 0 1 auto;
+    flex: 0 1 auto;
+    width: 30px;
+    height: 3px;
+    margin-right: 3px;
+    margin-left: 3px;
+    text-indent: -999px;
+    background-color: rgba(255,255,255,.5);
+}
+
+#pivotCarousel .carousel-indicators .active {
+    background-color: #fff;
+}
+
+#pivotCarousel img.pivot-img.pivot-img-details {
+    max-height: 600px;
+    width: auto;
+}
+#pivotCarousel .carousel-item{
+    background-color: #000;
+    text-align: center;
+}
+
+section.pivot-equipments.col-md-4,
+aside.pivot-contacts.col-md-4{
+    float: right;
+}
+
+.pivot-equipments .table > tbody > tr > td {
+    border-top: none;
+}
+
+.plo-list-even>li {
+    width: 50%;
+    float: left;
+    padding-right: 15px;
+    list-style: none;
+}
+
+.top-right-corner {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 5;
+    background-color: rgba(0,0,0,.5);
+}
+.top-right-corner .item-service{
+    padding: 5px;
+}
+
+.pivot-offer .container-img{
+    overflow: hidden;
+}
+
+.zoom {
+    transition: transform 0.7s;
+}
+
+.zoom:hover {
+    transform: scale(1.1);
+}
+
+#secondary{
+    float: left;
+}
+
+#quadmenu .quadmenu-navbar-nav li.quadmenu-item>a {
+    height: inherit !important;
+}
+.card .card-horizontal{
+    transition: transform 0.7s;
+}
+.card .card-horizontal:hover{
+    box-shadow: 0 0 40px rgba(0,0,0,0.25);
+    z-index: 50;
+}
+.card-horizontal {
+    display: flex;
+    flex: 1 1 auto;
+}
+.leaflet-popup-close-button{
+    z-index: 10000000;
+    top: -15px !important;
+    right: -15px !important;
+    width: 30px !important;
+    height: 30px !important;
+    background: white !important;
+    opacity: 1;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    -webkit-transition: all .3s ease;
+    -moz-transition: all .3s ease;
+    -o-transition: all .3s ease;
+    transition: all .3s ease;
+    font-size: x-large !important;
+    padding: 8px 0 0 0 !important;
+}
+.leaflet-popup-close-button:hover {
+    background: #E5E5E5 !important;
+}
+.leaflet-popup-content-wrapper{
+    border-radius: 0 !important;
+    padding: 0 !important;
+}
+.leaflet-popup-content{
+    margin: 0 !important;
+}
+#pivot-filter-form input[type=email],
+#pivot-filter-form input[type=number],
+#pivot-filter-form input[type=password],
+#pivot-filter-form input[type=reset],
+#pivot-filter-form input[type=search],
+#pivot-filter-form input[type=tel],
+#pivot-filter-form input[type=text],
+#pivot-filter-form input[type=url]{
+    min-width: 160px;
+}
