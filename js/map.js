@@ -5,27 +5,22 @@
     if($('#maparea').length){
       if($("#carte").length){
         $("#carte").click(function() {
-          $('#maparea').toggleClass("col-7");
+          $('#maparea').toggleClass("col-9");
           $("#carte").toggleClass("fa-map-marked-alt");
           $("#carte").toggleClass("fa-list");
-          $('#offers-area').toggleClass("col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-5");
+          $('#offers-area').toggleClass("col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-3");
           $('#offers-area').toggleClass("col-12");
           $('#offers-area').toggleClass("pivot-offer-list");
           $('.offers-area-col').each(function(){
             $(this).toggleClass("col-12");
             $(this).toggleClass("col-xl-3 col-lg-4 col-md-6 col-sm-6 col-xs-12");
-            $(this).find(".card-orientation").toggleClass("card-horizontal");
-            $(this).find(".container-img").toggleClass("col-5 p-0 my-auto");
-            $(this).find(".card-body").toggleClass("col-7 pt-2 pb-0");
-            $(this).find(".title-header").toggle();
-            $(this).find(".title-no-header").toggle();
           });
           
-          if($("#maparea.col-7").length){
+          if($("#maparea.col-9").length){
             map_call();
           }
         });
-        if($("#maparea.col-7").length){
+        if($("#maparea.col-9").length){
           map_call();
         }
       }
@@ -60,13 +55,8 @@ function map_call(){
       // Construction of a point
       var point = [latitude,longitude];
       // Get offer details
-      var offerTitle = $(this).find('h6').text();
-      var contentString = "<div class='card' style='width: 13rem;'>"
-                +"<img src='https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/"+$(this).find('.pivot-code-cgt').text()+";w=193;h=128' class='card-img-top'>"
-                +"<div class='card-body text-center'>"
-                  +"<a target='_blank' href='"+$(this).find('a').attr("href")+"'><h6 class='card-title'>"+$(this).find('h6').text()+"</h6></a>"
-                +"</div>"
-            +"</div>";
+      var offerTitle = $(this).find('.card-header').text();
+      var contentString = $(this).html();
 
       // Add the point to an array
       arrayOfLatLngs.push(point);
