@@ -24,12 +24,12 @@ class Pivot_Pages_List extends WP_List_Table {
 	 * @param int $page_number
 	 * @return mixed
 	 */
-	public static function get_pages( $per_page = 20, $page_number = 1 , $user_search_key) {
+	public static function get_pages( $per_page = 20, $page_number = 1 , $user_search_key=' ') {
 
 		global $wpdb;
 
 		$sql = "SELECT * FROM {$wpdb->prefix}pivot_pages";
-    if($user_search_key != NULL){
+    if($user_search_key != ' '){
       $sql .= ' WHERE title LIKE "%%%s%%"';
     }
 

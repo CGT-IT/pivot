@@ -23,7 +23,7 @@ class Pivot_Filters_List extends WP_List_Table {
 	 * @param int $page_number
 	 * @return mixed
 	 */
-	public static function get_filters( $per_page = 20, $page_number = 1 , $user_search_key, $page_id = NULL) {
+	public static function get_filters( $per_page = 20, $page_number = 1 , $user_search_key = ' ', $page_id = NULL) {
 
 		global $wpdb;
 
@@ -31,10 +31,10 @@ class Pivot_Filters_List extends WP_List_Table {
     if($page_id != NULL){
       $sql .= ' WHERE page_id = %d';
     }
-    if($page_id != NULL && $user_search_key != NULL){
+    if($page_id != NULL && $user_search_key != ' '){
       $sql .= ' AND filter_title LIKE "%%%s%%"';
     }
-    if($page_id == NULL && $user_search_key != NULL){
+    if($page_id == NULL && $user_search_key != ' '){
       $sql .= ' WHERE filter_title LIKE "%%%s%%"';
     }
 
@@ -46,10 +46,10 @@ class Pivot_Filters_List extends WP_List_Table {
 		$sql .= " LIMIT $per_page";
 		$sql .= ' OFFSET ' . ( $page_number - 1 ) * $per_page;
 
-    if($page_id != NULL && $user_search_key != NULL){
+    if($page_id != NULL && $user_search_key != ' '){
   		return $result = $wpdb->get_results($wpdb->prepare($sql, $page_id, $user_search_key), 'ARRAY_A' );
     }else{
-      if($page_id != NULL && $user_search_key == NULL){
+      if($page_id != NULL && $user_search_key == ' '){
         return $result = $wpdb->get_results($wpdb->prepare($sql, $page_id), 'ARRAY_A' );
       }else{
     		return $result = $wpdb->get_results($wpdb->prepare($sql, $user_search_key), 'ARRAY_A' );
