@@ -31,7 +31,7 @@
           </div>
         </div>
         <div class="row">
-          <div id="offers-area" class="<?php print ($pivot_page->map==1)?'col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-3 pivot-offer-list':'col-12';?>">
+          <div id="offers-area" class="<?php print ($pivot_page->map==1)?'col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-5 pivot-offer-list':'col-12';?>">
             <div class="row">
               <?php foreach($offres as $offre): ?>
                 <?php $name = 'pivot-'.$pivot_page->type.'-details-part-template'; ?>
@@ -41,22 +41,8 @@
               <?php endforeach; ?>
             </div>
           </div>
-
-          <div id="maparea" class="<?php print ($pivot_page->map==1)?'col-9 d-none d-md-block':'';?>">
-            <!--Include leaflet css for map-->
-             <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
-                   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
-                   crossorigin=""/>
-            <!--Include leaflet js for map-->
-             <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
-                     integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
-                     crossorigin=""></script>
-
-            <!--Create Map element-->  
-            <div id="mapid" style="height: 600px;width: 600px;z-index:0;"></div>
-            <!--Include map custom js-->
-            <script src="<?php echo plugins_url('js/map.js', dirname(__FILE__)) ?>"></script>
-          </div>
+            
+          <?php print _add_pivot_map($pivot_page->map, 7); ?>  
 
         </div>
         <div class="row mt-3">
@@ -67,9 +53,8 @@
           </div>
         </div>
       </div>
-    </div>
   </div>
 </div>
     
 <!--Include footer-->
-<?php get_footer('pivot');
+<?php get_footer();
