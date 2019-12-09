@@ -528,7 +528,7 @@ function _add_pivot_map($map, $nb_col){
   // Create Map element
   $output .= '<div id="mapid" style="height: 600px;width: 600px;z-index:0;"></div>';
   // Include map custom js
-  $output .= '<script src="'.plugins_url('js/map.js', dirname(__FILE__)).'"></script>';
+  $output .= '<script src="'.plugins_url('js/mapcardorientation.js', dirname(__FILE__)).'"></script>';
   $output .= '</div>';
   
   return $output;
