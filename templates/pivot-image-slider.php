@@ -37,7 +37,7 @@
                     <?php $media_name = _get_urn_value($specification, 'urn:fld:nomofr'); ?>
                     <?php if(strpos(_get_urn_value($specification, 'urn:fld:url'), 'pivotmedia')): ?>
                       <figure>
-                        <img alt="<?php print $media_name;?>" class="pivot-img pivot-img-details" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $relation->offre->attributes()->codeCgt->__toString(); ?>;h=600"/>
+                        <img class="pivot-img pivot-img-details" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $relation->offre->attributes()->codeCgt->__toString(); ?>;h=600"/>
                         <?php if($copyright = _get_urn_value($specification, 'urn:fld:copyr')): ?>
                           <footer><small><?php print _construct_media_copyright($copyright, _get_urn_value($specification, 'urn:fld:date'));?></small></footer>
                         <?php endif; ?>
@@ -45,7 +45,7 @@
                       </figure>
                     <?php else: ?>
                       <figure>
-                        <img alt="<?php print $media_name;?>" class="pivot-img pivot-img-details" src="<?php print _get_urn_value($specification, 'urn:fld:url'); ?>"/>
+                        <img class="pivot-img pivot-img-details" src="<?php print _get_urn_value($specification, 'urn:fld:url'); ?>"/>
                         <?php if($copyright = _get_urn_value($specification, 'urn:fld:copyr')): ?>
                           <footer><small><?php print _construct_media_copyright($copyright, _get_urn_value($specification, 'urn:fld:date'));?></small></footer>
                         <?php endif; ?>
