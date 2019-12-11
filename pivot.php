@@ -18,14 +18,12 @@ define('MY_PLUGIN_URL', plugin_dir_url(__FILE__));
  * Helper to check if there is an update for the plugin.
  * Will allow user to update this plugin via the "wordpress way"
  */
-if(file_exists(stream_resolve_include_path(MY_PLUGIN_PATH. 'plugin-update-checker/plugin-update-checker.php'))){
-  require_once(MY_PLUGIN_PATH. 'plugin-update-checker/plugin-update-checker.php');
-  $myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
-    'https://github.com/CGT-IT/pivot.git',
-    __FILE__,
-    'pivot'
-  ); 
-}
+require_once('inc/external/plugin-update-checker/plugin-update-checker.php');
+$myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
+  'https://github.com/CGT-IT/pivot/',
+  __FILE__,
+  'pivot'
+); 
 
 add_action( 'wpseo_opengraph', 'change_yoast_seo_og_meta' );
 
