@@ -3,12 +3,10 @@ Plugin Wordpress qui fait une connexion à la DB PIVOT du CGT et qui permet un a
 et de détails des différentes offres touristiques disponibles.
 Il est également possible d'ajouter des filtres 
 
-**Pour cloner, utiliser la commande suivante étant donné la dépendance à un sous module**
- ```
- git clone --recursive git@github.com:CGT-IT/pivot.git
- ```
+## Documentation
 
-
+Disponible dans le [wiki](https://github.com/CGT-IT/pivot/wiki)
+Infos pour l'installation et test disponible [ici](https://github.com/CGT-IT/pivot/wiki/Installer-&-configurer#informations-de-test)
 
 ## à savoir:
 
