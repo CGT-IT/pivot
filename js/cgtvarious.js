@@ -15,6 +15,7 @@
     if(isInIFrame==true){
         $("#header").hide();
         $("#footer").hide();
+        $("#wpadminbar").hide();
     }
 
   });
