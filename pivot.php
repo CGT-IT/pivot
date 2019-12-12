@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 1.0
+ * Version: 1.1
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot

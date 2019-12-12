@@ -72,7 +72,7 @@ function pivot_enqueue_script(){
   wp_enqueue_style('event_style');
   // Add only if Boostrap is set.
   if(get_option('pivot_bootstrap') == 'on'){
-    wp_enqueue_script('pivot_config_test', MY_PLUGIN_URL.'js/'.'cgtvarious.js',array('jquery'), '2.0', true);
+    wp_enqueue_script('pivot_config_test', MY_PLUGIN_URL.'js/'.'cgtvarious.js',array('jquery'), '2.1', true);
     wp_enqueue_style('fontawesome');
     wp_enqueue_style('bootstrapexternal');
 //    wp_enqueue_script('slimmin');
