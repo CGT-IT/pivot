@@ -14,7 +14,7 @@
     var isInIFrame = (window.location != window.parent.location);
     if(isInIFrame==true){
         $("#header").hide();
-        $("#footer").hide();
+        $(".footer-elementor").hide();
         $("#wpadminbar").hide();
     }
 
