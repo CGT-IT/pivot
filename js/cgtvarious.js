@@ -16,6 +16,7 @@
         $("#header").hide();
         $(".footer-elementor").hide();
         $("#wpadminbar").hide();
+        $("h1").hide();
     }
 
   });
