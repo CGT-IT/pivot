@@ -13,10 +13,12 @@
 
     var isInIFrame = (window.location != window.parent.location);
     if(isInIFrame==true){
-        $("#header").hide();
-        $(".footer-elementor").hide();
-        $("#wpadminbar").hide();
-        $("h1").hide();
+        if($('.elementor-editor-active').length == 0){
+            $("#header").hide();
+            $(".footer-elementor").hide();
+            $("#wpadminbar").hide();
+            $("h1").hide();
+        }
     }
 
   });
