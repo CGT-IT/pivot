@@ -3,7 +3,7 @@
   $().ready(function(){
     if($('#gpx-map').length){
       // URL of GPX file
-      var gpx = 'https://pivotwebstg.tourismewallonie.be/PivotWeb-3.1/media/'+$('#gpx-file-id').text();
+      var gpx = 'https://pivotweb.tourismewallonie.be/PivotWeb-3.1/media/'+$('#gpx-file-id').text();
 
       // Init map
       var routeMap = L.map('gpx-map');
