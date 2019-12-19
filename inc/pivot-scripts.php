@@ -34,7 +34,7 @@ function pivot_enqueue_admin_script($hook) {
   if(isset($_GET['page']) && $_GET['page'] === "pivot-filters" && isset($_GET['edit']) && $_GET['edit'] === 'true'){
     wp_enqueue_script('pivot_filters_script', MY_PLUGIN_URL.'js/'.'filters.js',array('jquery'), '3.1', true);
   }
-  if($hook == 'post-new.php' || (isset($_GET['action']) && $_GET['action'] === 'edit')){
+  if($hook == 'post-new.php' || $_GET['page'] === "pivot-shortcode" || (isset($_GET['action']) && $_GET['action'] === 'edit')){
     wp_enqueue_script('clipboard_script', MY_PLUGIN_URL.'js/'.'clipboard.min.js',array('jquery'), '1.0', true);
     wp_enqueue_script('pivot_shortcode_script', MY_PLUGIN_URL.'js/'.'shortcode.js',array('jquery'), '2.0', true);
   }
@@ -53,7 +53,7 @@ function pivot_enqueue_admin_script($hook) {
  * Register Scripts
  */
 function pivot_register_script() {
-  wp_register_style('lodging_style', MY_PLUGIN_URL.'css/'.'pivot-lodging.css', array(), '4.2', false);
+  wp_register_style('lodging_style', MY_PLUGIN_URL.'css/'.'pivot-lodging.css', array(), '2.0', false);
   wp_register_style('event_style', MY_PLUGIN_URL.'css/'.'pivot-event.css', array(), '2.0', false);
   wp_register_style('fontawesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.1/css/all.min.css', array(), '1.0.0', false);
   wp_register_style('bootstrapexternal', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', array(), '1.0.0', false);

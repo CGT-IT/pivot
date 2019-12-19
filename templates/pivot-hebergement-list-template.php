@@ -27,7 +27,7 @@
             <h5><?php echo __('There are', 'pivot') .' '. $_SESSION['pivot'][$pivot_page->id]['nb_offres'] .' '.  __('offers', 'pivot'); ?></h5>
           </div>
           <div class="d-none d-md-block col-1" role="button">
-            <i id="carte" class="float-right fas <?php print ($pivot_page->map==1)?'fa-list':'fa-map-marked-alt';?> fa-4x" role="button"></i>
+            <i id="carte" class="float-right fas <?php print ($pivot_page->map==1)?'fa-list':'fa-map-marked-alt';?> fa-2x" role="button"></i>
           </div>
         </div>
         <div class="row">
