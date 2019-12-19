@@ -1,7 +1,7 @@
 
 <?php global $offre_meta_data; ?>
-<!--if offer comes from url or bu arguments-->
-<?php if(isset($args)): ?>>
+<!--if offer comes from url or by arguments-->
+<?php if(isset($args)): ?>
   <?php $offre = $args; ?>
 <?php else: ?>
   <?php $offre = _get_offer_details(); ?>

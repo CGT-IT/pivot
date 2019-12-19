@@ -100,29 +100,15 @@ body{
     column-rule-style:outset;
     column-rule-color:#ccc;
 }
-#pivotCarousel .carousel-indicators li{
-    position: relative;
-    -webkit-box-flex: 0;
-    -ms-flex: 0 1 auto;
-    flex: 0 1 auto;
-    width: 30px;
-    height: 3px;
-    margin-right: 3px;
-    margin-left: 3px;
-    text-indent: -999px;
-    background-color: rgba(255,255,255,.5);
-}
-
-#pivotCarousel .carousel-indicators .active {
-    background-color: #fff;
+#pivotCarousel .carousel-indicators{
+    bottom: 15px !important;
 }
 
 #pivotCarousel img.pivot-img.pivot-img-details {
-    max-height: 600px;
-    width: auto;
+    max-height: 500px;
+    width: 900px;
 }
 #pivotCarousel .carousel-item{
-    background-color: #000;
     text-align: center;
 }
 
@@ -130,7 +116,18 @@ section.pivot-equipments.col-md-4,
 aside.pivot-contacts.col-md-4{
     float: right;
 }
-
+figure {
+    position: relative;
+}
+figure figcaption {
+    color: white;
+    position: absolute;
+    bottom: 0;
+    left: 15%;
+    padding: 3px;
+    font-style: oblique;
+    background: black;
+}
 .pivot-equipments .table > tbody > tr > td {
     border-top: none;
 }
@@ -219,4 +216,9 @@ aside.pivot-contacts.col-md-4{
 #pivot-filter-form input[type=text],
 #pivot-filter-form input[type=url]{
     min-width: 160px;
+}
+
+i#carte {
+    border: 3px solid;
+    padding: 15px;
 }

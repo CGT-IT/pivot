@@ -1,6 +1,6 @@
 <?php $offre = $args; ?>
 
-<div class="col-12">
+<div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 col-12 offset-xl-2 offset-lg-2 offset-md-2">
   <!--Image carousel-->
   <div id="pivotCarousel" class="carousel slide" data-ride="carousel">
     <!-- Indicators -->
@@ -37,19 +37,17 @@
                     <?php $media_name = _get_urn_value($specification, 'urn:fld:nomofr'); ?>
                     <?php if(strpos(_get_urn_value($specification, 'urn:fld:url'), 'pivotmedia')): ?>
                       <figure>
-                        <img class="pivot-img pivot-img-details" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $relation->offre->attributes()->codeCgt->__toString(); ?>;h=600"/>
+                        <img class="pivot-img pivot-img-details" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $relation->offre->attributes()->codeCgt->__toString(); ?>;w=900"/>
                         <?php if($copyright = _get_urn_value($specification, 'urn:fld:copyr')): ?>
-                          <footer><small><?php print _construct_media_copyright($copyright, _get_urn_value($specification, 'urn:fld:date'));?></small></footer>
+                          <figcaption><small><?php print _construct_media_copyright($copyright, _get_urn_value($specification, 'urn:fld:date'));?></small></figcaption>
                         <?php endif; ?>
-                        <figcaption><?php print $media_name;?></figcaption>
                       </figure>
                     <?php else: ?>
                       <figure>
                         <img class="pivot-img pivot-img-details" src="<?php print _get_urn_value($specification, 'urn:fld:url'); ?>"/>
                         <?php if($copyright = _get_urn_value($specification, 'urn:fld:copyr')): ?>
-                          <footer><small><?php print _construct_media_copyright($copyright, _get_urn_value($specification, 'urn:fld:date'));?></small></footer>
+                          <figcaption><small><?php print _construct_media_copyright($copyright, _get_urn_value($specification, 'urn:fld:date'));?></small></figcaption>
                         <?php endif; ?>
-                        <figcaption><?php print $media_name;?></figcaption>
                       </figure>
                     <?php endif; ?>  
                   <?php endforeach; ?>
