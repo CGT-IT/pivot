@@ -147,8 +147,6 @@ class Pivot_Filters_List extends WP_List_Table {
 
 		$actions['edit'] = sprintf('<a href="?page=pivot-filters&id=%d&page_id=%d&edit=true">'.esc_html__('Edit').'</a>', absint( $item['id'] ), absint( $item['page_id'] ));
     $actions['delete'] = sprintf( '<a href="?page=%s&action=%s&delete=%d&_wpnonce=%s">'.esc_html__('Delete').'</a>', $_REQUEST['page'],'bulk-delete', absint( $item['id'] ),$delete_nonce);
-//		$actions['delete'] = sprintf( '<a href="?page=pivot-filters&amp;page_id=%d&amp;delete=%d">'.esc_html__('Delete').'</a>', absint( $item['page_id'] ), absint( $item['id'] ));
-
 
 		return $title . $this->row_actions( $actions );
 	}
