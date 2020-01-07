@@ -1,6 +1,6 @@
 
 <?php $pivot_page = pivot_get_page_path(_get_path());?>
-<title><?php print $pivot_page->title .' - '. get_bloginfo('name');?></title>
+<title><?php _e($pivot_page->title, 'pivot') .' - '. get_bloginfo('name');?></title>
 <!--Include header-->
 <?php get_header(); ?>
 
@@ -11,7 +11,7 @@
   
 <div class="container-fluid pivot-list">
   <div class="row m-4">
-    <div class="col-12"><h1 class="text-center"><?php print $pivot_page->title;?></h1></div>
+    <div class="col-12"><h1 class="text-center"><?php _e($pivot_page->title, 'pivot');?></h1></div>
   </div>
   <div class="row">
     <?php if(!(empty($filters))): ?>
