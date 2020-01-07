@@ -116,10 +116,10 @@ section.pivot-equipments.col-md-4,
 aside.pivot-contacts.col-md-4{
     float: right;
 }
-figure {
+#pivotCarousel figure {
     position: relative;
 }
-figure figcaption {
+#pivotCarousel figure figcaption {
     color: white;
     position: absolute;
     bottom: 0;

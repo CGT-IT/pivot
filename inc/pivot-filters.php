@@ -18,7 +18,7 @@ class Pivot_Filters_List extends WP_List_Table {
 	}
 
 	/**
-	 * Retrieve pages data from the database
+	 * Retrieve filters data from the database
 	 * @param int $per_page
 	 * @param int $page_number
 	 * @return mixed
@@ -55,29 +55,26 @@ class Pivot_Filters_List extends WP_List_Table {
     		return $result = $wpdb->get_results($wpdb->prepare($sql, $user_search_key), 'ARRAY_A' );
       }
     }
-
 	}
 
-
 	/**
-	 * Delete a page record.
-	 *
-	 * @param int $id page ID
+	 * Delete a filter record.
+	 * @param int $id filter ID
 	 */
 	public static function delete_filter( $id ) {
 		global $wpdb;
 
-		$wpdb->delete(
-			"{$wpdb->prefix}pivot_filter",
-			[ 'id' => $id ],
-			[ '%d' ]
-		);
+    // IF WPML is active unregister title from translatable string
+    if(is_plugin_active('wpml-string-translation/plugin.php')){
+      $filter_details = pivot_get_filter($id);
+      icl_unregister_string('pivot', 'filter-title-'.$filter_details->urn.'-'.$filter_details->page_id);
+    }
+    
+    $wpdb->delete($wpdb->prefix.'pivot_filter', array('id' => $id), array('%d'));
 	}
-
 
 	/**
 	 * Returns the count of records in the database.
-	 *
 	 * @return null|string
 	 */
 	public static function record_count() {
@@ -148,16 +145,14 @@ class Pivot_Filters_List extends WP_List_Table {
 
 		$title = '<strong>' . $item['filter_name'] . '</strong>';
 
-		$actions['edit'] = sprintf('<a href="?page=pivot-filters&amp;id=%d&&amp;page_id=%d&amp;edit=true">'.esc_html__('Edit').'</a>', absint( $item['id'] ), absint( $item['page_id'] ));
-		$actions['delete'] = sprintf( '<a href="?page=pivot-filters&amp;page_id=%d&amp;delete=%d">'.esc_html__('Delete').'</a>', absint( $item['page_id'] ), absint( $item['id'] ));
-
+		$actions['edit'] = sprintf('<a href="?page=pivot-filters&id=%d&page_id=%d&edit=true">'.esc_html__('Edit').'</a>', absint( $item['id'] ), absint( $item['page_id'] ));
+    $actions['delete'] = sprintf( '<a href="?page=%s&action=%s&delete=%d&_wpnonce=%s">'.esc_html__('Delete').'</a>', $_REQUEST['page'],'bulk-delete', absint( $item['id'] ),$delete_nonce);
 
 		return $title . $this->row_actions( $actions );
 	}
 
   /**
-	 *  Associative array of columns
-	 *
+	 * Associative array of columns
 	 * @return array
 	 */
 	function get_columns() {
@@ -174,10 +169,8 @@ class Pivot_Filters_List extends WP_List_Table {
 		return $columns;
 	}
 
-
 	/**
 	 * Columns to make sortable.
-	 *
 	 * @return array
 	 */
 	public function get_sortable_columns() {
@@ -236,46 +229,135 @@ class Pivot_Filters_List extends WP_List_Table {
 	}
 
 	public function process_bulk_action() {
-
 		//Detect when a bulk action is being triggered...
 		if ( 'delete' === $this->current_action() ) {
-
 			// In our file that handles the request, verify the nonce.
 			$nonce = esc_attr( $_REQUEST['_wpnonce'] );
 
-			if ( ! wp_verify_nonce( $nonce, 'pivot_delete_filters' ) ) {
+			if(!wp_verify_nonce( $nonce, 'pivot_delete_filters')){
 				die( 'Go get a life script kiddies' );
 			}
-			else {
-				self::delete_filter( absint( $_GET['filters'] ) );
-
-		                // esc_url_raw() is used to prevent converting ampersand in url to "#038;"
-		                // add_query_arg() return the current url
-		                wp_redirect( esc_url_raw(add_query_arg()) );
-				exit;
+			else{
+				self::delete_filter(absint($_GET['filters']));
 			}
 
 		}
 
 		// If the delete bulk action is triggered
-		if ( ( isset( $_POST['action'] ) && $_POST['action'] == 'bulk-delete' )
-		     || ( isset( $_POST['action2'] ) && $_POST['action2'] == 'bulk-delete' )
-		) {
-
-			$delete_ids = esc_sql( $_POST['bulk-delete'] );
+		if((isset($_POST['action']) && $_POST['action'] == 'bulk-delete') || (isset($_POST['action2']) && $_POST['action2'] == 'bulk-delete')){
+			$delete_ids = esc_sql($_POST['bulk-delete']);
 
 			// loop over the array of record IDs and delete them
 			foreach ( $delete_ids as $id ) {
 				self::delete_filter( $id );
-
 			}
-
-			// esc_url_raw() is used to prevent converting ampersand in url to "#038;"
-		        // add_query_arg() return the current url
-		        wp_redirect( esc_url_raw(add_query_arg()) );
-			exit;
 		}
 	}
+  
+  /**
+   * Define plugin actions
+   * action of a CRUD
+   * @global Object $wpdb
+   */
+  public function pivot_filters_action(){
+   global $wpdb;
+   // Delete the data if the variable "delete" is set
+   if(isset($_GET['delete'])) {
+     self::delete_filter($_GET['delete']);
+   }
+
+   // Process the changes in the custom table
+   if(isset($_POST['pivot_add_filter']) && isset($_POST['title']) && isset($_POST['urn'])) {
+     // Add new row in the custom table
+     $urn = $_POST['urn'];
+     $urnDoc= _get_urn_documentation_full_spec($urn);
+     $type = $urnDoc->spec->type->__toString();
+     switch($type){
+       case 'Boolean':
+         $operator = 'exist';
+         break;
+       case 'Type':
+       case 'Value':
+         $operator = 'in';
+         break;
+       default:
+         $operator = $_POST['operator'];
+         break;
+     }
+
+     $name = substr(strrchr($urn, ":"), 1);
+     $title = $_POST['title'];
+     $group = $_POST['filter_group'];
+
+     if(empty($_POST['id'])) {
+       // If we add the filter to all pages
+       if(isset($_POST['allpages'])){
+         $pages = pivot_get_pages();
+         foreach($pages as $page){
+           // Insert data
+           $inserted = $wpdb->insert( 
+             $wpdb->prefix.'pivot_filter', 
+             array( 
+               'page_id' => $page->id, 
+               'filter_name' => $name,
+               'filter_title' => $title,
+               'urn' => $urn,
+               'operator' => $operator,
+               'type' => $type,
+               'filter_group' => $group
+             ), 
+             array('%d','%s','%s','%s','%s','%s','%s') 
+           );
+         }
+       }else{
+         // Insert data
+         $inserted = $wpdb->insert( 
+           $wpdb->prefix.'pivot_filter', 
+           array( 
+             'page_id' => $_POST['page_id'], 
+             'filter_name' => $name,
+             'filter_title' => $title,
+             'urn' => $urn,
+             'operator' => $operator,
+             'type' => $type,
+             'filter_group' => $group
+           ), 
+           array('%d','%s','%s','%s','%s','%s','%s') 
+         );
+       }
+     } else {
+       // Update data
+       $inserted = $wpdb->update( 
+         $wpdb->prefix.'pivot_filter',  
+         array( 
+           'page_id' => $_POST['page_id'], 
+           'filter_name' => $name,
+           'filter_title' => $title,
+           'urn' => $urn,
+           'operator' => $operator,
+           'type' => $type,
+           'filter_group' => $group
+         ), 
+         array('id' => $_POST['id']), 
+         array('%d','%s','%s','%s','%s','%s','%s') ,
+         array('%d') 
+       );
+     }
+     // Inform user
+     if($inserted) {
+       // IF WPML is active add title in translatable string
+       if(is_plugin_active('wpml-string-translation/plugin.php')){
+         icl_register_string('pivot', 'filter-title-'.$urn.'-'.$_POST['page_id'], $title, false, substr(get_locale(), 0, 2 ));
+       }
+       $message = __('Record was inserted / updated successfully', 'pivot');
+       echo _show_admin_notice($message, 'info');
+     } else {
+       $message = __('Insertion / Update failed', 'pivot');
+       echo _show_admin_notice($message);
+     }
+
+   }  
+ }
 
 }
 
@@ -297,6 +379,20 @@ function pivot_filter_screen_option() {
 }
 
 /**
+ * Get a specific row from table wp_pivot_filter
+ * @global Object $wpdb
+ * @param string $id page id
+ * @return string
+ */
+function pivot_get_filter($id) {
+  global $wpdb;
+  
+  $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}pivot_filter WHERE id = %d", $id);
+  $filter = $wpdb->get_row($query);
+
+  return $filter;
+}
+/**
  * Get all the data from table wp_pivot_filter
  * @global Object $wpdb
  * @return Object
@@ -311,21 +407,6 @@ function pivot_get_filters($page_id = NULL) {
   $filters = $wpdb->get_results($query);
   
   return $filters;
-}
-
-/**
- * Get a specific row from table wp_pivot_filter
- * @global Object $wpdb
- * @param string $id page id
- * @return string
- */
-function pivot_get_filter($id) {
-  global $wpdb;
-  
-  $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}pivot_filter WHERE id = %d", $id);
-  $filter = $wpdb->get_row($query);
-
-  return $filter;
 }
 
 function pivot_get_filter_groups($page_id) {
@@ -410,11 +491,11 @@ function pivot_filters_meta_box() {
 }
 
 /**
- * Define plugin options edit & delete VS add
+ * Define options edit & delete VS add
  */
 function pivot_filters_settings(){
   // Manipulate data of the custom table
-  pivot_filters_action();
+  Pivot_Filters_List::pivot_filters_action();
   if (empty($_GET['edit'])) {
     // Display the data into the Dashboard
     ?>
@@ -474,109 +555,8 @@ function pivot_filters_settings(){
   <?php
   } else {
     // Display a form to add or update the data
-    pivot_add_filter();   
+    pivot_add_filter();
   }
-}
-
-/**
- * Define plugin actions
- * action of a CRUD
- * @global Object $wpdb
- */
-function pivot_filters_action(){
-  global $wpdb;
-  // Delete the data if the variable "delete" is set
-  if(isset($_GET['delete'])) {
-    $wpdb->delete($wpdb->prefix.'pivot_filter', array('id' => $_GET['delete']), array('%d'));
-  }
-
-  // Process the changes in the custom table
-  if(isset($_POST['pivot_add_filter']) && isset($_POST['title']) && isset($_POST['urn'])) {
-    // Add new row in the custom table
-    $urn = $_POST['urn'];
-    $urnDoc= _get_urn_documentation_full_spec($urn);
-    $type = $urnDoc->spec->type->__toString();
-    switch($type){
-      case 'Boolean':
-        $operator = 'exist';
-        break;
-      case 'Type':
-      case 'Value':
-        $operator = 'in';
-        break;
-      default:
-        $operator = $_POST['operator'];
-        break;
-    }
-
-    $name = substr(strrchr($urn, ":"), 1);
-    $title = $_POST['title'];
-    $group = $_POST['filter_group'];
-
-    if(empty($_POST['id'])) {
-      // If we add the filter to all pages
-      if(isset($_POST['allpages'])){
-        $pages = pivot_get_pages();
-        foreach($pages as $page){
-          // Insert data
-          $inserted = $wpdb->insert( 
-            $wpdb->prefix.'pivot_filter', 
-            array( 
-              'page_id' => $page->id, 
-              'filter_name' => $name,
-              'filter_title' => $title,
-              'urn' => $urn,
-              'operator' => $operator,
-              'type' => $type,
-              'filter_group' => $group
-            ), 
-            array('%d','%s','%s','%s','%s','%s','%s') 
-          );
-        }
-      }else{
-        // Insert data
-        $inserted = $wpdb->insert( 
-          $wpdb->prefix.'pivot_filter', 
-          array( 
-            'page_id' => $_POST['page_id'], 
-            'filter_name' => $name,
-            'filter_title' => $title,
-            'urn' => $urn,
-            'operator' => $operator,
-            'type' => $type,
-            'filter_group' => $group
-          ), 
-          array('%d','%s','%s','%s','%s','%s','%s') 
-        );
-      }
-    } else {
-      // Update data
-      $inserted = $wpdb->update( 
-        $wpdb->prefix.'pivot_filter',  
-        array( 
-          'page_id' => $_POST['page_id'], 
-          'filter_name' => $name,
-          'filter_title' => $title,
-          'urn' => $urn,
-          'operator' => $operator,
-          'type' => $type,
-          'filter_group' => $group
-        ), 
-        array('id' => $_POST['id']), 
-        array('%d','%s','%s','%s','%s','%s','%s') ,
-        array('%d') 
-      );
-    }
-    // Inform user
-    if($inserted) {
-      $message = __('Record was inserted / updated successfully', 'pivot');
-      echo _show_admin_notice($message, 'info');
-    } else {
-      $message = __('Insertion / Update failed', 'pivot');
-      echo _show_admin_notice($message);
-    }
-    
-  }  
 }
 
 /**

@@ -101,7 +101,7 @@ class Pivot_Pages_List extends WP_List_Table {
       case 'path':
         return '<a target="_blank" href="'.get_bloginfo('wpurl').'/'.$item[ $column_name ].'">'.$item[ $column_name ].'</a>';
       case 'title':
-        return $item[ $column_name ];
+        return stripslashes($item[ $column_name ]);
       case 'map':
         return ($item[ $column_name ] == 1)?'&#10004;':'&#10008;';
 			case 'sortMode':
@@ -251,9 +251,9 @@ class Pivot_Pages_List extends WP_List_Table {
 			else {
 				self::delete_page( absint( $_GET['pages'] ) );
 
-		                // esc_url_raw() is used to prevent converting ampersand in url to "#038;"
-		                // add_query_arg() return the current url
-		                wp_redirect( esc_url_raw(add_query_arg()) );
+        // esc_url_raw() is used to prevent converting ampersand in url to "#038;"
+        // add_query_arg() return the current url
+        wp_redirect( esc_url_raw(add_query_arg()) );
 				exit;
 			}
 
@@ -269,12 +269,11 @@ class Pivot_Pages_List extends WP_List_Table {
 			// loop over the array of record IDs and delete them
 			foreach ( $delete_ids as $id ) {
 				self::delete_page( $id );
-
 			}
 
 			// esc_url_raw() is used to prevent converting ampersand in url to "#038;"
-		        // add_query_arg() return the current url
-		        wp_redirect( esc_url_raw(add_query_arg()) );
+      // add_query_arg() return the current url
+      wp_redirect( esc_url_raw(add_query_arg()) );
 			exit;
 		}
 	}
@@ -304,6 +303,13 @@ function pivot_get_page_path($path) {
   global $wpdb;
   $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}pivot_pages WHERE path= %s", $path);
   $pivot_page = $wpdb->get_row($query);
+  if(isset($pivot_page)){
+    // Unscape String
+    foreach($pivot_page as &$field){
+    if(is_string($field))
+      $field = stripslashes( $field );
+    }
+  }
 
   return $pivot_page;
 }
@@ -318,6 +324,14 @@ function pivot_get_pages_path() {
   global $wpdb;
   $query = "SELECT * FROM {$wpdb->prefix}pivot_pages";
   $pivot_pages_path = $wpdb->get_results($query, ARRAY_A);
+  
+  // Unscape String
+  foreach($pivot_pages_path as &$pivot_page_path){
+    foreach($pivot_page_path as &$field){
+    if(is_string($field))
+      $field = stripslashes( $field );
+    }
+  }
 
   return $pivot_pages_path;
 }
@@ -455,7 +469,12 @@ function pivot_action(){
   // Delete the data if the variable "delete" is set
   if(isset($_GET['delete'])) {
       $_GET['delete'] = absint($_GET['delete']);
-      // First delete dependencies (filters linked to this page)
+      // IF WPML is active unregister title from translatable string
+      if(is_plugin_active('wpml-string-translation/plugin.php')){
+        $page_details = pivot_get_page($_GET['delete']);
+        icl_unregister_string('pivot', 'title-for-'.$page_details->query);
+      }
+        // First delete dependencies (filters linked to this page)
       $wpdb->delete($wpdb->prefix.'pivot_filter', array('page_id' => $_GET['delete']), array('%d'));
       // Delete the page
       $wpdb->delete($wpdb->prefix.'pivot_pages', array('id' => $_GET['delete']), array('%d'));
@@ -507,26 +526,30 @@ function pivot_action(){
           array('%d')
         );
       }
+      // IF WPML is active add title in translatable string
+      if(is_plugin_active('wpml-string-translation/plugin.php')){
+        icl_register_string('pivot', 'title-for-'.$query, $title, false, substr(get_locale(), 0, 2 ));
+      }
     }else{
-      $text = esc_html('This path already exists', 'pivot').': <a href="'.get_permalink( $pivot_page->ID ).'">'.get_permalink( $pivot_page->ID ).'</a>';
+      $text = esc_html__('This path already exists', 'pivot').': <a href="'.get_permalink( $pivot_page->ID ).'">'.get_permalink( $pivot_page->ID ).'</a>';
       print _show_admin_notice($text);
     }
     flush_rewrite_rules();
   }else{
     if(isset($_POST['pivot_add_page']) && (!isset($_POST['query']) || $_POST['query'] == '')){
-      $text = esc_html('Query is required', 'pivot');
+      $text = esc_html__('Query is required', 'pivot');
       print _show_admin_notice($text);
     }
     if(isset($_POST['pivot_add_page']) && (!isset($_POST['type']) || $_POST['type'] == '')){
-      $text = esc_html('Type is required', 'pivot');
+      $text = esc_html__('Type is required', 'pivot');
       print _show_admin_notice($text);
     }
     if(isset($_POST['pivot_add_page']) && (!isset($_POST['path']) || $_POST['path'] == '')){
-      $text = esc_html('Path is required', 'pivot');
+      $text = esc_html__('Path is required', 'pivot');
       print _show_admin_notice($text);
     }
     if(isset($_POST['pivot_add_page']) && (!isset($_POST['title']) || $_POST['title'] == '')){
-      $text = esc_html('Page title is required', 'pivot');
+      $text = esc_html__('Page title is required', 'pivot');
       print _show_admin_notice($text);
     }
     
