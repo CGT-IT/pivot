@@ -1,6 +1,6 @@
 
 <?php $pivot_page = pivot_get_page_path(_get_path());?>
-<title><?php _e($pivot_page->title, 'pivot') .' - '. get_bloginfo('name');?></title>
+<title><?php print __($pivot_page->title, 'pivot') .' - '. get_bloginfo('name');?></title>
 <!--Include header-->
 <?php get_header(); ?>
 
