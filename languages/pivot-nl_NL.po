@@ -1,546 +1,803 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"POT-Creation-Date: 2019-02-13 16:56+0100\n"
-"PO-Revision-Date: 2019-02-13 16:56+0100\n"
+"Project-Id-Version: Pivot\n"
+"POT-Creation-Date: 2020-01-07 14:41+0100\n"
+"PO-Revision-Date: 2020-01-08 09:46+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: nl\n"
+"Language: nl_BE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.2.1\n"
+"X-Generator: Poedit 2.2.4\n"
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-KeywordsList: esc_attr_e;esc_attr;__;_;_e;esc_html_e;esc_html;"
-"esc_attr__;esc_html__\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: pivot.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.min.js\n"
 
-#: inc/pivot-common.php:316
+#: inc/external/plugin-update-checker/Puc/v4p8/Plugin/Ui.php:54
+msgid "View details"
+msgstr "Details bekijken"
+
+#: inc/external/plugin-update-checker/Puc/v4p8/Plugin/Ui.php:77
+#, php-format
+msgid "More information about %s"
+msgstr "Meer informatie over %s"
+
+#: inc/external/plugin-update-checker/Puc/v4p8/Plugin/Ui.php:128
+msgid "Check for updates"
+msgstr "Controleer op updates"
+
+#: inc/external/plugin-update-checker/Puc/v4p8/Plugin/Ui.php:213
+#, php-format
+msgctxt "the plugin title"
+msgid "The %s plugin is up to date."
+msgstr "De %s plugin is up-to-date."
+
+#: inc/external/plugin-update-checker/Puc/v4p8/Plugin/Ui.php:215
+#, php-format
+msgctxt "the plugin title"
+msgid "A new version of the %s plugin is available."
+msgstr "Een nieuwe versie van de %s plugin is beschikbaar."
+
+#: inc/external/plugin-update-checker/Puc/v4p8/Plugin/Ui.php:217
+#, php-format
+msgctxt "the plugin title"
+msgid "Could not determine if updates are available for %s."
+msgstr "Kon niet bepalen of er updates beschikbaar zijn voor %s."
+
+#: inc/external/plugin-update-checker/Puc/v4p8/Plugin/Ui.php:223
+#, php-format
+msgid "Unknown update checker status \"%s\""
+msgstr "Onbekende update checker status \"%s\""
+
+#: inc/external/plugin-update-checker/Puc/v4p8/Vcs/PluginUpdateChecker.php:98
+msgid "There is no changelog available."
+msgstr "Er is geen changelog beschikbaar."
+
+#: inc/pivot-common.php:314
+msgid "Choose a town"
+msgstr "Kies een stad"
+
+#: inc/pivot-common.php:342
 msgid "Choose a type"
-msgstr ""
+msgstr "Kies een knop type"
 
-#: inc/pivot-filters.php:53 inc/pivot-filters.php:214
-msgid "URN"
-msgstr ""
+#: inc/pivot-common.php:588
+msgid "This offer doesn't exist or is not publishable anymore"
+msgstr "Dit aanbod bestaat niet meer of is niet meer publiceerbaar"
 
-#: inc/pivot-filters.php:55 pivot-shortcode.php:210
-msgid "Load URN Infos"
-msgstr ""
+#: inc/pivot-filters.php:13
+msgid "Filter"
+msgstr "Filter"
 
-#: inc/pivot-filters.php:56 pivot-shortcode.php:211
-msgid "URN or ID of the field you want to filter"
-msgstr ""
-
-#: inc/pivot-filters.php:61 inc/pivot-filters.php:213
-msgid "Filter title"
-msgstr ""
-
-#: inc/pivot-filters.php:63
-msgid "Title used in frontend (to display to the user)"
-msgstr ""
-
-#: inc/pivot-filters.php:66 inc/pivot-filters.php:215 pivot-shortcode.php:216
-msgid "Operator"
-msgstr ""
-
-#: inc/pivot-filters.php:68 pivot-shortcode.php:218
-msgid "Choose an operator"
-msgstr ""
-
-#: inc/pivot-filters.php:69 pivot-shortcode.php:219
-msgid "Exist"
-msgstr ""
-
-#: inc/pivot-filters.php:70 pivot-shortcode.php:220
-msgid "Equal"
-msgstr ""
-
-#: inc/pivot-filters.php:71 pivot-shortcode.php:221
-msgid "Like"
-msgstr ""
-
-#: inc/pivot-filters.php:72 pivot-shortcode.php:222
-msgid "Greater or equal"
-msgstr ""
-
-#: inc/pivot-filters.php:73 pivot-shortcode.php:223
-msgid "Between"
-msgstr ""
-
-#: inc/pivot-filters.php:74 pivot-shortcode.php:224
-msgid "in"
-msgstr ""
-
-#: inc/pivot-filters.php:76 pivot-shortcode.php:226
-msgid "Type of comparison"
-msgstr ""
-
-#: inc/pivot-filters.php:81
-msgid "Grouping filters"
-msgstr ""
-
-#: inc/pivot-filters.php:85
-msgid "If you want to group filters"
-msgstr ""
-
-#: inc/pivot-filters.php:86
-msgid "Member of group"
-msgstr ""
+#: inc/pivot-filters.php:14 inc/pivot-filters.php:371 inc/pivot-pages.php:174
+msgid "Filters"
+msgstr "Filters"
 
 #: inc/pivot-filters.php:91
-msgid "Existing groups: "
-msgstr ""
+msgid "No filter avaliable."
+msgstr "Geen filter beschikbaar."
 
-#: inc/pivot-filters.php:180
-msgid "Pivot filter"
-msgstr ""
-
-#: inc/pivot-filters.php:187
-msgid "Add filter"
-msgstr ""
-
-#: inc/pivot-filters.php:187
-msgid "Edit filter"
-msgstr ""
-
-#: inc/pivot-filters.php:204 inc/pivot-pages.php:219
-msgid "Pivot Plugin Pages"
-msgstr ""
-
-#: inc/pivot-filters.php:212
-msgid "Filter name"
-msgstr ""
-
-#: inc/pivot-filters.php:216 inc/pivot-offer-type.php:77
-#: inc/pivot-offer-type.php:198 inc/pivot-pages.php:59 inc/pivot-pages.php:231
-#: pivot-shortcode.php:194
-msgid "Type"
-msgstr ""
-
-#: inc/pivot-filters.php:217
-msgid "Linked to query"
-msgstr ""
-
-#: inc/pivot-filters.php:218
-msgid "In group"
-msgstr ""
-
-#: inc/pivot-filters.php:238 inc/pivot-offer-type.php:219
-#: inc/pivot-pages.php:255
+#: inc/pivot-filters.php:148 inc/pivot-offer-type.php:234
+#: inc/pivot-pages.php:153
 msgid "Edit"
-msgstr ""
+msgstr "Bewerk"
 
-#: inc/pivot-filters.php:239 inc/pivot-offer-type.php:220
-#: inc/pivot-pages.php:256
+#: inc/pivot-filters.php:149 inc/pivot-filters.php:197
+#: inc/pivot-offer-type.php:235 inc/pivot-pages.php:154 inc/pivot-pages.php:206
 msgid "Delete"
-msgstr ""
+msgstr "Verwijder"
 
-#: inc/pivot-filters.php:257
-msgid "There are no data."
-msgstr ""
+#: inc/pivot-filters.php:161
+msgid "Filter name"
+msgstr "Filternaam"
+
+#: inc/pivot-filters.php:162 inc/pivot-filters.php:437
+msgid "Filter title"
+msgstr "Filtertitel"
+
+#: inc/pivot-filters.php:163 inc/pivot-filters.php:429
+msgid "URN"
+msgstr "URN"
+
+#: inc/pivot-filters.php:164 inc/pivot-filters.php:442 pivot-shortcode.php:233
+msgid "Operator"
+msgstr "Operator"
+
+#: inc/pivot-filters.php:165 inc/pivot-offer-type.php:77
+#: inc/pivot-offer-type.php:213 inc/pivot-pages.php:169 inc/pivot-pages.php:362
+#: pivot-shortcode.php:211
+msgid "Type"
+msgstr "Type"
+
+#: inc/pivot-filters.php:166
+msgid "Linked to query"
+msgstr "Gekoppeld aan query"
+
+#: inc/pivot-filters.php:167
+msgid "In group"
+msgstr "In groep"
+
+#: inc/pivot-filters.php:352
+msgid "Record was inserted / updated successfully"
+msgstr "Record is succesvol ingevoegd / geüpdatet"
+
+#: inc/pivot-filters.php:355
+msgid "Insertion / Update failed"
+msgstr "Toevoeging / Update mislukt"
+
+#: inc/pivot-filters.php:431 pivot-shortcode.php:227
+msgid "Load URN Infos"
+msgstr "Laad URN-info's"
+
+#: inc/pivot-filters.php:432 pivot-shortcode.php:228
+msgid "URN or ID of the field you want to filter"
+msgstr "URN of ID van het veld dat u wilt filteren"
+
+#: inc/pivot-filters.php:439
+msgid "Title used in frontend (to display to the user)"
+msgstr "Titel gebruikt in frontend (om aan de gebruiker te tonen)"
+
+#: inc/pivot-filters.php:444 pivot-shortcode.php:235
+msgid "Choose an operator"
+msgstr "Kies een operator"
+
+#: inc/pivot-filters.php:445 pivot-shortcode.php:236
+msgid "Exist"
+msgstr "Bestaan"
+
+#: inc/pivot-filters.php:446 pivot-shortcode.php:237
+msgid "Equal"
+msgstr "Gelijk"
+
+#: inc/pivot-filters.php:447 pivot-shortcode.php:238
+msgid "Like"
+msgstr "Like"
+
+#: inc/pivot-filters.php:448 pivot-shortcode.php:239
+msgid "Greater or equal"
+msgstr "Groter of gelijk"
+
+#: inc/pivot-filters.php:449
+msgid "Lesser or equal"
+msgstr "Minder of gelijk"
+
+#: inc/pivot-filters.php:450 pivot-shortcode.php:240
+msgid "Between"
+msgstr "Tussen"
+
+#: inc/pivot-filters.php:451 pivot-shortcode.php:241
+msgid "in"
+msgstr "in"
+
+#: inc/pivot-filters.php:454 pivot-shortcode.php:243
+msgid "Type of comparison"
+msgstr "Type vergelijking"
+
+#: inc/pivot-filters.php:462
+msgid "Add this filter to all Pivot pages"
+msgstr "Voeg deze filter toe aan alle Pivot-pagina's"
+
+#: inc/pivot-filters.php:463
+msgid "If you want to add this filter to all other pages"
+msgstr "Als u dit filter wilt toevoegen aan alle andere pagina's"
+
+#: inc/pivot-filters.php:468
+msgid "Grouping filters"
+msgstr "Gegroepeerde filters"
+
+#: inc/pivot-filters.php:472
+msgid "If you want to group filters"
+msgstr "Als u filters wilt groeperen"
+
+#: inc/pivot-filters.php:473
+msgid "Member of group"
+msgstr "Lid van de groep"
+
+#: inc/pivot-filters.php:478
+msgid "Existing groups: "
+msgstr "Bestaande groepen"
+
+#: inc/pivot-filters.php:503
+msgid "Pivot Plugin filters"
+msgstr "Pivot Plugin-filters"
+
+#: inc/pivot-filters.php:505 inc/pivot-pages.php:435
+msgid "Add New"
+msgstr "Voeg toe"
+
+#: inc/pivot-filters.php:516
+msgid "Toggle panel: Import filters"
+msgstr "Schakelpaneel: Importfilters"
+
+#: inc/pivot-filters.php:519
+msgid "Import filters"
+msgstr "Importfilters"
+
+#: inc/pivot-filters.php:526
+msgid "Submit"
+msgstr "Verzenden"
+
+#: inc/pivot-filters.php:543 inc/pivot-pages.php:445 pivot-filter-widget.php:93
+#: pivot-filter-widget.php:146
+msgid "Search"
+msgstr "Zoeken"
+
+#: inc/pivot-filters.php:551
+msgid "Export filters"
+msgstr "Filters exporteren"
+
+#: inc/pivot-filters.php:575
+msgid "Pivot filter"
+msgstr "Pivot filter"
+
+#: inc/pivot-filters.php:582
+msgid "Add filter"
+msgstr "Voeg filter toe"
+
+#: inc/pivot-filters.php:582
+msgid "Edit filter"
+msgstr "Filter bewerken"
+
+#: inc/pivot-filters.php:612
+msgid "The CSV file doesn't respect the format"
+msgstr "Het CSV-bestand respecteert het formaat niet"
+
+#: inc/pivot-filters.php:697
+msgid "URN is invalid on line "
+msgstr "URN is ongeldig on line "
+
+#: inc/pivot-filters.php:704
+msgid "Operator is invalid on line "
+msgstr "Exploitant is ongeldig on line "
 
 #: inc/pivot-offer-type.php:65
 msgid "Type of offer"
-msgstr ""
+msgstr "Offer type"
 
 #: inc/pivot-offer-type.php:67
 msgid "Choose a type of offer"
-msgstr ""
+msgstr "Kies een aanbodtype"
 
-#: inc/pivot-offer-type.php:72 inc/pivot-offer-type.php:200
+#: inc/pivot-offer-type.php:72 inc/pivot-offer-type.php:215
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: inc/pivot-offer-type.php:74
 msgid "Pivot ID of the offer type"
-msgstr ""
+msgstr "Pivot ID van het aanbodtype"
 
 #: inc/pivot-offer-type.php:79
 msgid "Pivot Name of the offer type"
-msgstr ""
+msgstr "Pivot Naam van het aanbiedingstype"
 
 #: inc/pivot-offer-type.php:82
 msgid "Parent category"
-msgstr ""
+msgstr "Parent Categorie"
 
 #: inc/pivot-offer-type.php:86
 msgid "Existing categories: "
-msgstr ""
+msgstr "Bestaande categorieën"
 
-#: inc/pivot-offer-type.php:145
-msgid "Category is required"
-msgstr ""
-
-#: inc/pivot-offer-type.php:171 inc/pivot-offer-type.php:190
-msgid "Add type"
-msgstr ""
-
-#: inc/pivot-offer-type.php:171
-msgid "Edit type"
-msgstr ""
-
-#: inc/pivot-offer-type.php:187
+#: inc/pivot-offer-type.php:202
 msgid "Pivot Offer Types"
-msgstr ""
+msgstr "Pivot aanbiedingstypes"
 
-#: inc/pivot-offer-type.php:199
+#: inc/pivot-offer-type.php:205
+msgid "Add type"
+msgstr "Type toevoegen"
+
+#: inc/pivot-offer-type.php:214
 msgid "Parent Category"
-msgstr ""
+msgstr "Bovenliggende categorie"
 
-#: inc/pivot-offer-type.php:231 inc/pivot-pages.php:284
+#: inc/pivot-offer-type.php:246
 msgid "There is no data."
-msgstr ""
+msgstr "Er is geen gegevens."
 
-#: inc/pivot-pages.php:54 inc/pivot-pages.php:230 pivot-shortcode.php:188
-msgid "Query"
-msgstr ""
+#: inc/pivot-pages.php:13
+msgid "Page"
+msgstr "Pagina"
 
-#: inc/pivot-pages.php:56 pivot-shortcode.php:190
-msgid "Pivot predefined query"
-msgstr ""
-
-#: inc/pivot-pages.php:63 pivot-shortcode.php:198
-msgid "Type of query"
-msgstr ""
-
-#: inc/pivot-pages.php:66 inc/pivot-pages.php:232
-msgid "Path"
-msgstr ""
-
-#: inc/pivot-pages.php:68
-msgid "Path to access results"
-msgstr ""
-
-#: inc/pivot-pages.php:71
-msgid "Title"
-msgstr ""
-
-#: inc/pivot-pages.php:73 inc/pivot-pages.php:233
-msgid "Page title"
-msgstr ""
-
-#: inc/pivot-pages.php:77
-msgid "Show map"
-msgstr ""
-
-#: inc/pivot-pages.php:79
-msgid "Define if you want to show a map on this page or not"
-msgstr ""
+#: inc/pivot-pages.php:14
+msgid "Pages"
+msgstr "Pagina's"
 
 #: inc/pivot-pages.php:83
-msgid "Query sorting"
-msgstr ""
+msgid "No page avaliable."
+msgstr "Geen pagina beschikbaar."
 
-#: inc/pivot-pages.php:87
-msgid "Sort mode"
-msgstr ""
+#: inc/pivot-pages.php:118
+msgid "View filter(s)"
+msgstr "Bekijk filter(s)"
 
-#: inc/pivot-pages.php:89
-msgid "Choose an order"
-msgstr ""
+#: inc/pivot-pages.php:119
+msgid "Add a filter"
+msgstr "Voeg een filter toe"
 
-#: inc/pivot-pages.php:90
-msgid "Ascending"
-msgstr ""
+#: inc/pivot-pages.php:168 inc/pivot-pages.php:357 pivot-shortcode.php:205
+msgid "Query"
+msgstr "Vraag"
 
-#: inc/pivot-pages.php:91
-msgid "Descending"
-msgstr ""
+#: inc/pivot-pages.php:170 inc/pivot-pages.php:375
+msgid "Path"
+msgstr "Pad"
 
-#: inc/pivot-pages.php:92
-msgid "Shuffle"
-msgstr ""
-
-#: inc/pivot-pages.php:94
-msgid "Choose the sort mode for the query"
-msgstr ""
-
-#: inc/pivot-pages.php:97
-msgid "Sort Field"
-msgstr ""
-
-#: inc/pivot-pages.php:99
-msgid "Define the field on which the sort mode will apply"
-msgstr ""
-
-#: inc/pivot-pages.php:158
-msgid "This path already exists"
-msgstr ""
-
-#: inc/pivot-pages.php:164
-msgid "Query is required"
-msgstr ""
-
-#: inc/pivot-pages.php:168
-msgid "Type is required"
-msgstr ""
+#: inc/pivot-pages.php:171
+msgid "Page Title"
+msgstr "Pagina titel"
 
 #: inc/pivot-pages.php:172
-msgid "Path is required"
-msgstr ""
-
-#: inc/pivot-pages.php:176
-msgid "Page title is required"
-msgstr ""
-
-#: inc/pivot-pages.php:203
-msgid "Add page"
-msgstr ""
-
-#: inc/pivot-pages.php:203
-msgid "Edit page"
-msgstr ""
-
-#: inc/pivot-pages.php:222
-msgid "Add a new page"
-msgstr ""
-
-#: inc/pivot-pages.php:234
 msgid "Map ?"
-msgstr ""
+msgstr "Kaart ?"
 
-#: inc/pivot-pages.php:235
+#: inc/pivot-pages.php:173
 msgid "Sorting"
-msgstr ""
+msgstr "Sorteren"
 
-#: inc/pivot-pages.php:236
-msgid "Filters"
-msgstr ""
+#: inc/pivot-pages.php:359 pivot-shortcode.php:207
+msgid "Pivot predefined query"
+msgstr "Voorgedefinieerde Pivot query"
 
-#: inc/pivot-pages.php:275
-msgid "View filter(s)"
-msgstr ""
+#: inc/pivot-pages.php:366 pivot-shortcode.php:215
+msgid "Type of query"
+msgstr "Type query"
 
-#: inc/pivot-pages.php:276
-msgid "Add a filter"
-msgstr ""
+#: inc/pivot-pages.php:370
+msgid "Show map"
+msgstr "Toon kaart"
 
-#: inc/pivot-template-helper.php:73
-msgid "Share"
-msgstr ""
+#: inc/pivot-pages.php:372
+msgid "Define if you want to show a map on this page or not"
+msgstr "Definieer of u een kaart wilt tonen op deze pagina of niet"
 
-#: inc/pivot-template-helper.php:76 inc/pivot-template-helper.php:77
+#: inc/pivot-pages.php:377
+msgid "Path to access results"
+msgstr "Path tot de pagina"
+
+#: inc/pivot-pages.php:380
+msgid "Title"
+msgstr "Titel"
+
+#: inc/pivot-pages.php:382
+msgid "Page title"
+msgstr "Titel van de pagina"
+
+#: inc/pivot-pages.php:386
+msgid "Query sorting"
+msgstr "Sorteren query"
+
+#: inc/pivot-pages.php:390 pivot-shortcode.php:253
+msgid "Sort mode"
+msgstr "Sorteermodus"
+
+#: inc/pivot-pages.php:392 pivot-shortcode.php:255
+#, fuzzy
+msgid "Choose an order"
+msgstr "Kies een bestelling"
+
+#: inc/pivot-pages.php:393 pivot-shortcode.php:256
+msgid "Ascending"
+msgstr "Oplopend"
+
+#: inc/pivot-pages.php:394 pivot-shortcode.php:257
+msgid "Descending"
+msgstr "Aflopend"
+
+#: inc/pivot-pages.php:395 pivot-shortcode.php:258
+msgid "Shuffle"
+msgstr "Shuffle"
+
+#: inc/pivot-pages.php:397 pivot-shortcode.php:260
+msgid "Choose the sort mode for the query"
+msgstr "Kies de sorteermodus voor de query"
+
+#: inc/pivot-pages.php:400 pivot-shortcode.php:263
+msgid "Sort Field"
+msgstr "Sorteerveld"
+
+#: inc/pivot-pages.php:402 pivot-shortcode.php:265
+msgid "Define the field on which the sort mode will apply"
+msgstr "Definieer het veld waarop de sorteermodus van toepassing is"
+
+#: inc/pivot-pages.php:434
+msgid "Pivot Plugin Pages"
+msgstr "Pivot Plugin-pagina's"
+
+#: inc/pivot-pages.php:534
+msgid "This path already exists"
+msgstr "Deze path bestaat al"
+
+#: inc/pivot-pages.php:540
+msgid "Query is required"
+msgstr "Query is vereist"
+
+#: inc/pivot-pages.php:544
+msgid "Type is required"
+msgstr "Type is vereist"
+
+#: inc/pivot-pages.php:548
+msgid "Path is required"
+msgstr "Path is vereist"
+
+#: inc/pivot-pages.php:552
+msgid "Page title is required"
+msgstr "De titel van de pagina is verplicht"
+
+#: inc/pivot-template-helper.php:116 inc/pivot-template-helper.php:117
 msgid "Share button"
-msgstr ""
+msgstr "Deelknop"
 
-#: inc/pivot-template-helper.php:90
-msgid "Contact"
-msgstr ""
-
-#: inc/pivot-template-helper.php:139 templates/pivot-linked-offers.php:3
+#: inc/pivot-template-helper.php:243 templates/pivot-linked-offers.php:3
 msgid "Linked offers"
-msgstr ""
+msgstr "Gelinkte aanbiedingen"
 
-#: inc/pivot-template-helper.php:154
-#: templates/pivot-activite-details-part-template.php:12
-#: templates/pivot-default-details-part-template.php:12
-#: templates/pivot-hebergement-details-part-template.php:12
-#: templates/pivot-linked-offers.php:16
-msgid "Link to"
-msgstr ""
+#: inc/pivot-template-helper.php:347
+msgid "Names of Rooms"
+msgstr "Namen van de kamers"
 
-#: inc/pivot-template.php:127 inc/pivot-template.php:154
+#: inc/pivot-template-helper.php:348
+msgid "Day light"
+msgstr "Daglicht"
+
+#: inc/pivot-template-helper.php:351
+msgid "Surface"
+msgstr "Oppervlakte"
+
+#: inc/pivot-template-helper.php:354
+msgid "Theater"
+msgstr "Theater"
+
+#: inc/pivot-template-helper.php:357
+msgid "Reception"
+msgstr "Ontvangst"
+
+#: inc/pivot-template-helper.php:360
+msgid "Banquet"
+msgstr "Banket"
+
+#: inc/pivot-template-helper.php:363
+msgid "Auditorium"
+msgstr "Auditorium"
+
+#: inc/pivot-template-helper.php:366
+msgid "Classroom"
+msgstr "Klaslokaal"
+
+#: inc/pivot-template.php:126 inc/pivot-template.php:153
+#, fuzzy
 msgid "The required template"
-msgstr ""
+msgstr "Het benodigde sjabloon"
 
-#: inc/pivot-template.php:129 inc/pivot-template.php:156
+#: inc/pivot-template.php:128 inc/pivot-template.php:155
 msgid "was not found!"
-msgstr ""
+msgstr "werd niet gevonden!"
 
-#: pivot-filter-widget.php:80
-msgid "Search"
-msgstr ""
+#: pivot-filter-widget.php:42
+msgid "Referenced Page ID"
+msgstr "Gerefereerde Pagina ID"
 
-#: pivot-shortcode.php:34
+#: pivot-filter-widget.php:44
+msgid "Choose a page"
+msgstr "Kies een pagina"
+
+#: pivot-filter-widget.php:149
+msgid "Reset"
+msgstr "Terugzetten"
+
+#: pivot-shortcode.php:26
+msgid "The <strong>offerid</strong> argument is missing"
+msgstr "Het <strong>offerid-argument</strong> ontbreekt"
+
+#: pivot-shortcode.php:69
 msgid "The <strong>query</strong> argument is missing"
-msgstr ""
+msgstr "Het <strong>query</strong> ontbreekt"
 
-#: pivot-shortcode.php:64
+#: pivot-shortcode.php:99
 msgid "It's not possible to add this type of filter: "
-msgstr ""
+msgstr "Het is niet mogelijk om dit type filter toe te voegen"
 
-#: pivot-shortcode.php:80
+#: pivot-shortcode.php:115
 msgid "The attribute \"operator\" is required for this kind of filter"
-msgstr ""
+msgstr "Het attribuut \"operator\" is vereist voor dit soort filter"
 
-#: pivot-shortcode.php:94
+#: pivot-shortcode.php:129
 msgid "The attribute \"operator\" is not valid, it should be one of these: "
 msgstr ""
+"Het attribuut \"operator\" is niet geldig, het zou een van deze moeten zijn"
 
-#: pivot-shortcode.php:102
+#: pivot-shortcode.php:137
 msgid "The attribute \"filtervalue\" is required for this kind of filter"
-msgstr ""
+msgstr "Het attribuut \"filtervalue\" is vereist voor dit soort filter"
 
-#: pivot-shortcode.php:159
+#: pivot-shortcode.php:176
 msgid "The <strong>type</strong> attributes for the query is wrong or missing "
 msgstr ""
+"De <strong>type</strong> attribute voor de query is foutief of ontbreekt "
 
-#: pivot-shortcode.php:175
+#: pivot-shortcode.php:192
 msgid "Build Pivot Shortcode"
-msgstr ""
+msgstr "Bouw Pivot Shortcode"
 
-#: pivot-shortcode.php:202
+#: pivot-shortcode.php:219
 msgid "Define number of offers"
-msgstr ""
+msgstr "Bepaal het aantal aanbiedingen"
 
-#: pivot-shortcode.php:204
+#: pivot-shortcode.php:221
 msgid "It will be 3 by default"
-msgstr ""
+msgstr "Het zal standaard 3 zijn"
 
-#: pivot-shortcode.php:208
+#: pivot-shortcode.php:225
 msgid "Filter URN"
-msgstr ""
+msgstr "Filter URN"
 
-#: pivot-shortcode.php:229
+#: pivot-shortcode.php:246
 msgid "Filter value"
-msgstr ""
+msgstr "Filterwaarde"
 
-#: pivot-shortcode.php:231
+#: pivot-shortcode.php:248
 msgid "Searched value"
-msgstr ""
+msgstr "Gezochte waarde"
 
-#: pivot-shortcode.php:235
+#: pivot-shortcode.php:268
 msgid "Build shortcode"
-msgstr ""
+msgstr "Bouw shortcode"
 
-#: pivot-shortcode.php:238
+#: pivot-shortcode.php:271
 msgid "Shortcode to insert"
-msgstr ""
+msgstr "In te voegen shortcode"
 
-#: pivot-shortcode.php:241
+#: pivot-shortcode.php:274
 msgid "Copy and paste this text in your post, page, ... body"
-msgstr ""
+msgstr "Kopieer en plak deze tekst in je post, pagina, ... lichaam"
 
-#: pivot.php:182
+#: pivot.php:265
 msgid "You do not have sufficient permissions to access this page."
-msgstr ""
+msgstr "U hebt niet voldoende machtigingen om deze pagina te openen."
 
-#: pivot.php:203
+#: pivot.php:286
 msgid "Base Uri"
-msgstr ""
+msgstr "Basis Uri"
 
-#: pivot.php:203 pivot.php:208 pivot.php:230
+#: pivot.php:286 pivot.php:291 pivot.php:313 pivot.php:318
 msgid "This field is required"
-msgstr ""
+msgstr "Dit veld is verplicht"
 
-#: pivot.php:205
+#: pivot.php:288
 msgid "Uri to access Pivot Database."
-msgstr ""
+msgstr "Uri om toegang te krijgen tot Pivot Database."
 
-#: pivot.php:205
+#: pivot.php:288
 msgid "End / is required !"
-msgstr ""
+msgstr "Einde / is vereist !"
 
-#: pivot.php:210
+#: pivot.php:293
 msgid ""
 "Personnal Key to access Pivot webservices, take contact with <a href="
 "\"http://pivot.tourismewallonie.be/index.php/2015-05-05-10-23-26/flux-de-"
 "donnees-3-1\" target=\"_blank\">Pivot</a>"
 msgstr ""
+"Persoonlijke sleutel om toegang te krijgen tot Pivot webservices, neem "
+"contact op met <a href=\"http://pivot.tourismewallonie.be/index."
+"php/2015-05-05-10-23-26/flux-de-donnees-3-1\" target=\"_blank\">Pivot</a>"
 
-#: pivot.php:213
+#: pivot.php:296
 msgid "Check Pivot config"
-msgstr ""
+msgstr "Controleer Pivot-configuratie"
 
-#: pivot.php:218
+#: pivot.php:301
+#, fuzzy
 msgid "Votre maison de tourisme"
-msgstr ""
+msgstr "Votre maison de tourisme"
 
-#: pivot.php:220
+#: pivot.php:303
+#, fuzzy
 msgid "Choisir une maison de tourisme"
-msgstr ""
+msgstr "Koor une maison de tourisme"
 
-#: pivot.php:226
+#: pivot.php:309
+#, fuzzy
 msgid "Include Bootstrap"
-msgstr ""
+msgstr "Inclusief Bootstrap"
 
-#: pivot.php:227
+#: pivot.php:310
 msgid "required for default templates"
-msgstr ""
+msgstr "vereist voor standaard templates"
 
-#: pivot.php:232
+#: pivot.php:315
 msgid ""
 "Personnal Key to access bitly webservices, signin <a href=\"https://bitly."
 "com/\" target=\"_blank\">bitly.com</a> and get you access token"
 msgstr ""
+"Persoonlijke sleutel voor toegang tot bitly webservices, signin <a href="
+"\"https://bitly.com/\" target=\"_blank\">bitly.com</a> en krijg je toegang "
+"tot token"
 
-#: templates/pivot-activite-details-part-template.php:42
-#: templates/pivot-default-details-part-template.php:38
-#: templates/pivot-hebergement-details-part-template.php:43
-msgid "Website"
+#: pivot.php:318
+msgid "MapBox access token"
+msgstr "MapBox access token"
+
+#: pivot.php:320
+#, fuzzy
+msgid ""
+"Personnal Key to access MapBox services, signin <a href=\"https://account."
+"mapbox.com/\" target=\"_blank\">mapbox.com</a> and get you access token"
 msgstr ""
+"Persoonlijke sleutel voor toegang tot MapBox-diensten, signin <a href="
+"\"https://account.mapbox.com/\" target=\"_blank\">mapbox.com</a> en krijg je "
+"toegang tot token"
 
-#: templates/pivot-activite-details-template.php:16
-#: templates/pivot-default-details-template.php:17
-#: templates/pivot-hebergement-details-template.php:16
+#: templates/map-orthodromic.php:19
+#, fuzzy
+msgid "Se loger"
+msgstr "Se loger"
+
+#: templates/map-orthodromic.php:20
+#, fuzzy
+msgid "Se balader"
+msgstr "Se balenpers"
+
+#: templates/map-orthodromic.php:21
+#, fuzzy
+msgid "Découvrir"
+msgstr "Découvrir"
+
+#: templates/map-orthodromic.php:22
+#, fuzzy
+msgid "Savourer"
+msgstr "Snijder"
+
+#: templates/pivot-activite-details-part-template.php:34
+#: templates/pivot-default-details-part-template.php:29
+#: templates/pivot-hebergement-details-part-template.php:58
+#: templates/pivot-itinerary-details-part-template.php:26
+#: templates/pivot-mice-details-part-template.php:29
+#: templates/pivot-restauration-details-part-template.php:44
+msgid "Link to"
+msgstr "Link naar"
+
+#: templates/pivot-activite-details-template.php:32
+#: templates/pivot-default-details-template.php:32
+#: templates/pivot-hebergement-details-template.php:37
+#: templates/pivot-itinerary-details-template.php:31
+#: templates/pivot-mice-details-template.php:32
+#: templates/pivot-restauration-details-template.php:37
 msgid "Description"
-msgstr ""
+msgstr "Beschrijving"
 
-#: templates/pivot-activite-details-template.php:23
-#: templates/pivot-default-details-template.php:24
-#: templates/pivot-hebergement-details-template.php:44
-msgid "Extra infos"
-msgstr ""
-
-#: templates/pivot-activite-details-template.php:33
-msgid "Dates"
-msgstr ""
-
-#: templates/pivot-activite-details-template.php:72
-msgid "Theme(s)"
-msgstr ""
-
-#: templates/pivot-activite-details-template.php:75
-msgid "Add to calendar"
-msgstr ""
-
-#: templates/pivot-activite-list-template.php:15
-#: templates/pivot-default-list-template.php:15
-#: templates/pivot-hebergement-list-template.php:15
-msgid "There are"
-msgstr ""
-
-#: templates/pivot-activite-list-template.php:15
-#: templates/pivot-default-list-template.php:15
-#: templates/pivot-hebergement-list-template.php:15
-msgid "offers"
-msgstr ""
-
-#: templates/pivot-default-details-template.php:34
-#: templates/pivot-hebergement-details-template.php:75
-msgid "Language(s)"
-msgstr ""
-
-#: templates/pivot-default-details-template.php:35
-msgid "Product(s)"
-msgstr ""
-
-#: templates/pivot-default-details-template.php:36
-msgid "Price(s)"
-msgstr ""
-
-#: templates/pivot-default-details-template.php:37
-msgid "Visit"
-msgstr ""
-
-#: templates/pivot-default-details-template.php:38
-msgid "Equipments & services"
-msgstr ""
-
+#: templates/pivot-activite-details-template.php:39
 #: templates/pivot-default-details-template.php:39
-#: templates/pivot-hebergement-details-template.php:76
+#: templates/pivot-hebergement-details-template.php:65
+#: templates/pivot-itinerary-details-template.php:38
+#: templates/pivot-mice-details-template.php:39
+#: templates/pivot-restauration-details-template.php:73
+msgid "Extra infos"
+msgstr "Extra informatie"
+
+#: templates/pivot-activite-details-template.php:49
+msgid "Dates"
+msgstr "Data"
+
+#: templates/pivot-activite-details-template.php:56
+msgid "Theme(s)"
+msgstr "Thema('s)"
+
+#: templates/pivot-activite-details-template.php:58
+msgid "Add to calendar"
+msgstr "Toevoegen aan kalender"
+
+#: templates/pivot-activite-list-template.php:27
+#: templates/pivot-default-list-template.php:27
+#: templates/pivot-hebergement-list-template.php:27
+#: templates/pivot-itinerary-list-template.php:27
+#: templates/pivot-mice-list-template.php:27
+#: templates/pivot-restauration-list-template.php:27
+msgid "There are"
+msgstr "Er zijn"
+
+#: templates/pivot-activite-list-template.php:27
+#: templates/pivot-default-list-template.php:27
+#: templates/pivot-hebergement-list-template.php:27
+#: templates/pivot-itinerary-list-template.php:27
+#: templates/pivot-mice-list-template.php:27
+#: templates/pivot-restauration-list-template.php:27
+msgid "offers"
+msgstr "aanbiedingen"
+
+#: templates/pivot-default-details-template.php:49
+#: templates/pivot-hebergement-details-template.php:97
+#: templates/pivot-mice-details-template.php:50
+msgid "Language(s)"
+msgstr "Taal/talen"
+
+#: templates/pivot-default-details-template.php:50
+#: templates/pivot-mice-details-template.php:51
+msgid "Product(s)"
+msgstr "Product(en)"
+
+#: templates/pivot-default-details-template.php:51
+#: templates/pivot-mice-details-template.php:52
+msgid "Price(s)"
+msgstr "Prijs(en)"
+
+#: templates/pivot-default-details-template.php:52
+#: templates/pivot-mice-details-template.php:53
+msgid "Visit"
+msgstr "Bezoek"
+
+#: templates/pivot-default-details-template.php:53
+#: templates/pivot-mice-details-template.php:54
+#, fuzzy
+msgid "Equipments & services"
+msgstr "Uitrusting & diensten"
+
+#: templates/pivot-default-details-template.php:54
+#: templates/pivot-hebergement-details-template.php:98
+#: templates/pivot-itinerary-details-template.php:76
+#: templates/pivot-mice-details-template.php:55
 msgid "Themes"
-msgstr ""
+msgstr "Thema’s"
 
-#: templates/pivot-hebergement-details-template.php:23
+#: templates/pivot-hebergement-details-part-template.php:36
+#, fuzzy
+msgid "à"
+msgstr "à"
+
+#: templates/pivot-hebergement-details-part-template.php:43
+#, fuzzy
+msgid "à partir de "
+msgstr "à partir de"
+
+#: templates/pivot-hebergement-details-template.php:44
+#: templates/pivot-restauration-details-template.php:44
+#, fuzzy
 msgid "Equipments"
-msgstr ""
+msgstr "Uitrusting"
 
-#: templates/pivot-image-slider.php:53
+#: templates/pivot-image-slider.php:66 templates/pivot-linked-offers.php:47
 msgid "Previous"
-msgstr ""
+msgstr "Vorige"
 
-#: templates/pivot-image-slider.php:57
+#: templates/pivot-image-slider.php:70 templates/pivot-linked-offers.php:51
 msgid "Next"
+msgstr "Volgende"
+
+#: templates/pivot-itinerary-details-template.php:59
+msgid "Download GPX file"
+msgstr "GPX-bestand downloaden"
+
+#: templates/pivot-itinerary-details-template.php:77
+msgid "Route details"
+msgstr "Routebeschrijving"
+
+#: templates/pivot-mice-details-template.php:40
+msgid "Rooms"
+msgstr "Kamers"
+
+#: templates/pivot-organisme-details-part-template.php:21
+msgid "Website"
+msgstr "Website"
+
+#. Plugin Name of the plugin/theme
+msgid "Pivot"
+msgstr "Pivot"
+
+#. Description of the plugin/theme
+#, fuzzy
+msgid ""
+"Un plugin pour l'affichage et la recherche (via webservice) des offres "
+"touristiques disponibles dans la DB Pivot"
 msgstr ""
+"Un plugin pour l'affichage et la recherche (via webservice) des offres "
+"touristiques disponibles dans la DB Pivot"
+
+#. Author of the plugin/theme
+msgid "Maxime Degembe"
+msgstr "Maxime Degembe"

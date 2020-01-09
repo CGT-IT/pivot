@@ -146,7 +146,7 @@ class Pivot_Filters_List extends WP_List_Table {
 		$title = '<strong>' . $item['filter_name'] . '</strong>';
 
 		$actions['edit'] = sprintf('<a href="?page=pivot-filters&id=%d&page_id=%d&edit=true">'.esc_html__('Edit').'</a>', absint( $item['id'] ), absint( $item['page_id'] ));
-    $actions['delete'] = sprintf( '<a href="?page=%s&action=%s&delete=%d&_wpnonce=%s">'.esc_html__('Delete').'</a>', $_REQUEST['page'],'bulk-delete', absint( $item['id'] ),$delete_nonce);
+    $actions['delete'] = sprintf( '<a href="?page=%s&page_id=%d&action=%s&delete=%d&_wpnonce=%s">'.esc_html__('Delete').'</a>', $_REQUEST['page'],absint( $item['page_id'] ),'bulk-delete', absint( $item['id'] ),$delete_nonce);
 
 		return $title . $this->row_actions( $actions );
 	}
@@ -259,7 +259,7 @@ class Pivot_Filters_List extends WP_List_Table {
    * action of a CRUD
    * @global Object $wpdb
    */
-  public function pivot_filters_action(){
+  public static function pivot_filters_action(){
    global $wpdb;
    // Delete the data if the variable "delete" is set
    if(isset($_GET['delete'])) {
