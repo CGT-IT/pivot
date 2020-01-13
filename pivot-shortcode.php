@@ -54,6 +54,7 @@ function pivot_custom_shortcode($atts) {
       'query' => '',
       'type' => '',
       'nboffers' => '3',
+      'nbcol' => '4',
       'filterurn' => '',
       'operator' => '',
       'filtervalue' => '',
@@ -162,11 +163,12 @@ function pivot_custom_shortcode($atts) {
       $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query);
       
       $output = '<div class="container-fluid pivot-list">'
-                 .'<div class="row row-eq-height pivot-row">';
+                 .'<div class="row row-eq-height pivot-row d-flex flex-wrap">';
 
       // Add main HTML content in output
       foreach($offres as $offre){
         $offre->path = 'details';
+        $offre->nb_per_row = $atts['nbcol'];
         $output.= pivot_template($template_name, $offre);
       }
 
@@ -219,6 +221,12 @@ function pivot_build_shortcode_box_html(){
     <label for="edit-pivot-nb-offers"><?php esc_html_e('Define number of offers', 'pivot') ?> </label>
     <input type="number" id="edit-pivot-nb-offers" name="nb-offers" min="1" max="30">
     <p class="description"><?php esc_html_e('It will be 3 by default', 'pivot')?></p>
+  </div>
+
+  <div class="form-item form-item-pivot-nb-col">
+    <label for="edit-pivot-nb-col"><?php esc_html_e('Define number of offers per line', 'pivot') ?> </label>
+    <input type="number" id="edit-pivot-nb-col" name="nb-col" min="2" max="6">
+    <p class="description"><?php esc_html_e('It will be 4 by default', 'pivot')?></p>
   </div>
 
   <div class="form-item form-type-textfield form-item-pivot-urn">

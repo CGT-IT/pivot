@@ -1,6 +1,6 @@
 <?php $offre = $args; ?>
 
-<div class="offers-area-col <?php print ($offre->map==1)?'col-12':'col-xl-3 col-lg-4 col-md-6 col-sm-6 col-xs-12';?>  mb-3">
+<div class="offers-area-col <?php print _set_nb_col($offre->map, $offre->nb_per_row); ?> mb-3">
   <?php $codeCGT = $offre->attributes()->codeCgt->__toString(); ?>
   <?php $lang = substr(get_locale(), 0, 2 ); ?>
   <?php $url = get_bloginfo('wpurl').(($lang=='fr')?'':'/'.$lang).'/'.$offre->path.'/'.$codeCGT.'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString(); ?>
@@ -23,7 +23,7 @@
         </span>
         <h6 class="title-no-header" <?php print ($offre->map!=1||wp_is_mobile()==1)?'style="display:none"':'';?>><?php print $offerTitle; ?></h6>
         <div class="card-text text-uppercase dates"><?php print _add_section_event_dates($offre); ?></div>
-        <p class="card-text text-muted city"><i class="fas fa-map-marker-alt"></i> <?php print $offre->adresse1->commune->value->__toString(); ?></p>
+        <p class="card-text text-muted city"><i class="fas fa-map-marker-alt"></i> <?php print $offre->adresse1->localite->value->__toString(); ?></p>
         <p class="card-text"><p class="pivot-desc item mb-0"><?php print wp_trim_words(_get_urn_value($offre, 'urn:fld:descmarket'), 20, '...' );?></p></p>
         <span class="pivot-id-type-offre d-none item"><?php print $offre->typeOffre->attributes()->idTypeOffre->__toString(); ?></span>
         <span class="pivot-code-cgt d-none item"><?php print $codeCGT; ?></span>

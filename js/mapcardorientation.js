@@ -12,8 +12,26 @@
           $('#offers-area').toggleClass("col-12");
           $('#offers-area').toggleClass("pivot-offer-list");
           $('.offers-area-col').each(function(){
-            $(this).toggleClass("col-12");
-            $(this).toggleClass("col-xl-3 col-lg-4 col-md-6 col-sm-6 col-xs-12");
+            if($(this).hasClass('nb-col-2')){
+              $(this).toggleClass("col-12");
+              $(this).toggleClass("col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12");  
+            }
+            if($(this).hasClass('nb-col-3')){
+              $(this).toggleClass("col-12");
+              $(this).toggleClass("col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12");  
+            }
+            if($(this).hasClass('nb-col-4')){
+              $(this).toggleClass("col-12");
+              $(this).toggleClass("col-xl-3 col-lg-4 col-md-6 col-sm-6 col-xs-12");  
+            }
+            if($(this).hasClass('nb-col-5')){
+              $(this).toggleClass("col-12");
+              $(this).toggleClass("w-xl-20 w-lg-20 col-md-6 col-sm-6 col-xs-12");  
+            }
+            if($(this).hasClass('nb-col-6')){
+              $(this).toggleClass("col-12");
+              $(this).toggleClass("col-xl-2 col-lg-2 col-md-6 col-sm-6 col-xs-12");  
+            }
             $(this).find(".card-orientation").toggleClass("card-horizontal");
             $(this).find(".container-img").toggleClass("col-5 p-0 my-auto");
             $(this).find(".card-body").toggleClass("col-7 pt-2 pb-0");

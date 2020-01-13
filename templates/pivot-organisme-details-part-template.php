@@ -13,7 +13,7 @@
         </span>
         <br>
         <?php print $offre->adresse1->cp; ?> 
-        <?php print $offre->adresse1->commune->value->__toString(); ?>
+        <?php print $offre->adresse1->localite->value->__toString(); ?>
       </p>
       <p class="card-text" style="height: 25px;">
         <?php if(_get_urn_value($offre, 'urn:fld:urlweb')): ?>

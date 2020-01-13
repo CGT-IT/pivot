@@ -32,6 +32,7 @@
       var query = $('#edit-pivot-query');
       var type = $('#edit-pivot-type');
       var nbOffers = $('#edit-pivot-nb-offers');
+      var nbCol = $('#edit-pivot-nb-col');
       var urn = $('#edit-pivot-urn');
       var operator = $('#edit-pivot-operator');
       var value = $('#edit-pivot-filter-value');
@@ -55,6 +56,9 @@
           shortcode += "type='"+type.val()+"' ";
           if(nbOffers.val() != ''){
             shortcode += "nboffers='"+nbOffers.val()+"' ";
+          }
+          if(nbCol.val() != ''){
+            shortcode += "nbcol='"+nbCol.val()+"' ";
           }
           if(urn.val() != ''){
             shortcode += "filterurn='"+urn.val()+"' ";

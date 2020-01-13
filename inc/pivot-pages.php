@@ -98,6 +98,8 @@ class Pivot_Pages_List extends WP_List_Table {
         return $item[ $column_name ];
       case 'type':
         return $item[ $column_name ];
+      case 'nbcol':
+        return $item[ $column_name ];
       case 'path':
         return '<a target="_blank" href="'.get_bloginfo('wpurl').'/'.$item[ $column_name ].'">'.$item[ $column_name ].'</a>';
       case 'title':
@@ -167,6 +169,7 @@ class Pivot_Pages_List extends WP_List_Table {
 			'cb'      => '<input type="checkbox" />',
 			'query'    => __( 'Query', 'pivot' ),
 			'type' => __( 'Type', 'pivot' ),
+      'nbcol' => __( 'Nb Col', 'pivot' ),
 			'path'    => __( 'Path', 'pivot' ),
       'title'    => __( 'Page Title', 'pivot' ),
       'map'    => __( 'Map ?', 'pivot' ),
@@ -187,6 +190,7 @@ class Pivot_Pages_List extends WP_List_Table {
 		$sortable_columns = array(
 			'query' => array( 'query', true ),
       'type' => array( 'type', false ),
+      'nbcol' => array( 'nbcol', false ),
       'path' => array( 'path', false ),
       'title' => array( 'title', false ),
       'map' => array( 'map', false ),
@@ -365,6 +369,11 @@ function pivot_meta_box() {
     </select>
     <p class="description"><?php esc_html_e('Type of query', 'pivot') ?></p>
   </div>
+  <div class="form-item form-item-pivot-nb-col">
+    <label for="edit-pivot-nb-col"><?php esc_html_e('Define number of offers per line', 'pivot') ?> </label>
+    <input type="number" id="edit-pivot-nb-col" name="nbcol" min="2" max="6" value="<?php echo (isset($edit_page))?$edit_page->nbcol:'4';?>">
+    <p class="description"><?php esc_html_e('It will be 4 by default', 'pivot')?></p>
+  </div>
   <div class="form-item form-type-textfield form-item-pivot-map">
     <input type="checkbox" id="edit-pivot-map" name="map" class="form-checkbox" <?php echo (isset($edit_page) && $edit_page->map == 1?'checked':'');?>>
     <label for="edit-pivot-map"><?php esc_html_e('Show map', 'pivot') ?> </label>
@@ -412,7 +421,7 @@ function pivot_page_screen_option() {
   $option = 'per_page';
   $args   = [
     'label'   => 'Pages',
-    'default' => 5,
+    'default' => 10,
     'option'  => 'pages_per_page'
   ];
 
@@ -485,7 +494,7 @@ function pivot_action(){
     // Add new row in the custom table
     $type = $_POST['type'];
     $query = preg_replace('/[^A-Za-z0-9\-]/', '', $_POST['query']);
-    //$query = $_POST['query'];
+    $nbcol = $_POST['nbcol'];
     $path = $_POST['path'];
     $title = $_POST['title'];
     $map = isset($_POST['map'])?1:0;
@@ -504,9 +513,10 @@ function pivot_action(){
             'title' => $title,
             'map' => $map,
             'sortMode' => $sortMode,
-            'sortField' => $sortField
+            'sortField' => $sortField,
+            'nbcol' => $nbcol
           ), 
-          array('%s','%s','%s','%s','%d','%s','%s') 
+          array('%s','%s','%s','%s','%d','%s','%d')
         );
       }else{
         // Update the data
@@ -519,10 +529,11 @@ function pivot_action(){
             'title' => $title,
             'map' => $map,
             'sortMode' => $sortMode,
-            'sortField' => $sortField
+            'sortField' => $sortField,
+            'nbcol' => $nbcol
           ), 
           array('id' => $_POST['page_id']), 
-          array('%s','%s','%s','%s','%d','%s','%s'),
+          array('%s','%s','%s','%s','%d','%s','%s','%d'),
           array('%d')
         );
       }
