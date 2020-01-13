@@ -1,7 +1,7 @@
 
 <?php $offre = $args; ?>
 
-<div class="offers-area-col <?php print _set_nb_col($offre->map, $offre->nb_per_row); ?> mb-3">
+<div class="offers-area-col <?php print _set_nb_col($offre->map, $offre->nb_per_row).'nb-col-'.$offre->nb_per_row; ?> mb-3">
   <?php $codeCGT = $offre->attributes()->codeCgt->__toString(); ?>
   <?php $offreName = _get_urn_value($offre, 'urn:fld:nomofr'); ?>
   <?php $lang = substr(get_locale(), 0, 2 ); ?>
