@@ -165,7 +165,7 @@ function _add_section_contact($offre){
   $output .= '<ul class="adr list-unstyled lis-line-height-2 m-0">'
           .    '<li class="street-address"><i class="fas fa-map"></i> '.$offre->adresse1->rue->__toString().', '.$offre->adresse1->numero->__toString().'</li>'
           .      '<span class="postal-code">'.$offre->adresse1->cp->__toString().' </span>'
-          .      '<span class="locality">'.(isset($offre->adresse1->commune)?$offre->adresse1->commune->value->__toString():'').'</span>'
+          .      '<span class="locality">'.(isset($offre->adresse1->localite)?$offre->adresse1->localite->value->__toString():'').'</span>'
           .    '<li class="country-name">'.$offre->adresse1->pays->__toString().'</li>'
           .    '<li class="pivot-latitude d-none">'.$offre->adresse1->latitude->__toString().'</li>'
           .    '<li class="pivot-longitude d-none">'.$offre->adresse1->longitude->__toString().'</li>'
@@ -531,5 +531,32 @@ function _add_pivot_map($map, $nb_col){
   $output .= '<script src="'.plugins_url('js/mapcardorientation.js', dirname(__FILE__)).'"></script>';
   $output .= '</div>';
   
+  return $output;
+}
+
+function _set_nb_col($map, $nb_col){
+  if($map==1){
+    $output = 'col-12 ';
+  }else{
+    switch($nb_col){
+      case 2:
+        $output = 'col-xl-6 col-lg-6 ';
+        break;
+      case 3:
+        $output = 'col-xl-4 col-lg-4 ';
+        break;
+      case 5:
+        $output = 'w-xl-20 w-lg-20 ';
+        break;
+      case 6:
+        $output = 'col-xl-2 col-lg-2 ';
+        break;
+      default:
+        $output = 'col-xl-3 col-lg-4 ';
+        break;
+    }
+    $output .= 'col-md-6 col-sm-6 col-xs-12 nb-col-'.$nb_col;
+  }
+
   return $output;
 }

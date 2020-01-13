@@ -1,6 +1,6 @@
 <?php $offre = $args; ?>
 
-<div class="offers-area-col <?php print ($offre->map==1)?'col-12':'col-xl-3 col-lg-4 col-md-6 col-sm-6 col-xs-12';?>  mb-3">
+<div class="offers-area-col <?php print _set_nb_col($offre->map, $offre->nb_per_row); ?> mb-3">
   <?php $codeCGT = $offre->attributes()->codeCgt->__toString(); ?>
   <?php $lang = substr(get_locale(), 0, 2 ); ?>
   <?php $url = get_bloginfo('wpurl').(($lang=='fr')?'':'/'.$lang).'/'.$offre->path.'/'.$codeCGT.'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString(); ?>
@@ -35,11 +35,19 @@
             <i class="fas fa-phone"></i>
             <?php print $phone; ?>
           </p>
+        <?php else: ?>
+          <?php $mobile = _get_urn_value($offre, 'urn:fld:mobi1'); ?>
+          <?php if($mobile != ''): ?>
+            <p class="card-text">
+              <i class="fas fa-phone"></i>
+              <?php print $mobile; ?>
+            </p>
+          <?php endif; ?>
         <?php endif; ?>
         <p class="card-text">
           <i class="fas fa-map-marker-alt"></i>
           <?php print $offre->adresse1->cp; ?> 
-          <?php print $offre->adresse1->commune->value->__toString(); ?>
+          <?php print $offre->adresse1->localite->value->__toString(); ?>
         </p>
         <a target="_blank" class="text-dark stretched-link" title="<?php echo __('Link to', 'pivot') .' '. $offerTitle; ?>" href="<?php print $url; ?>"></a>
         <span class="pivot-id-type-offre d-none item"><?php print $offre->typeOffre->attributes()->idTypeOffre->__toString(); ?></span>

@@ -32,11 +32,12 @@
         </div>
         <div class="row">
           <div id="offers-area" class="<?php print ($pivot_page->map==1)?'col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-5 pivot-offer-list':'col-12';?>">
-            <div class="row">
+            <div class="row d-flex flex-wrap">
               <?php foreach($offres as $offre): ?>
                 <?php $name = 'pivot-'.$pivot_page->type.'-details-part-template'; ?>
                 <?php $offre->path = $pivot_page->path; ?>
                 <?php $offre->map = $pivot_page->map; ?>
+                <?php $offre->nb_per_row = $pivot_page->nbcol; ?>
                 <?php print pivot_template($name, $offre); ?>
               <?php endforeach; ?>
             </div>
