@@ -49,7 +49,7 @@
         <div class="row mt-3">
           <div class="col-12">
             <div class="float-right">
-              <?php echo _add_pagination($_SESSION['pivot'][$pivot_page->id]['nb_offres']); ?>
+              <?php echo _add_pagination($_SESSION['pivot'][$pivot_page->id]['nb_offres'], $pivot_page->nbcol); ?>
             </div>
           </div>
         </div>
