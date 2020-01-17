@@ -472,13 +472,37 @@ function _get_event_date($offre, $wanted_date){
 }
 
 /**
+ * Define how many offers we display in the page depending on number of column
+ * @param int $nbcol
+ * @return int
+ */
+function _define_nb_offers_per_page($nbcol){
+  switch($nbcol){
+    case 2:
+    case 3:
+    case 4:
+      $offers_per_page = 12;
+      break;
+    case 5:
+      $offers_per_page = 15;
+      break;
+    case 6:
+      $offers_per_page = 18;
+      break;
+    default:
+      $offers_per_page = 12;
+      break;
+  }
+  return $offers_per_page;
+}
+/**
  * 
  * @param int $nb_offres
  * @return string HTML containing pagination
  */
-function _add_pagination($nb_offres){
+function _add_pagination($nb_offres, $nbcol){
   /* Init pagination */
-  $total = ceil($nb_offres/12);
+  $total = ceil($nb_offres/_define_nb_offers_per_page($nbcol));
 
   // Check if we have more than 1 page!
   if($total > 1)  {
