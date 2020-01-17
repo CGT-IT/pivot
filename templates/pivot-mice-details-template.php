@@ -59,6 +59,6 @@
 
 </article>
 
-<?php if(!isset($args)): ?>
+<?php if(!isset($args->estActive)): ?>
   <?php get_footer(); ?>
 <?php endif;?>
