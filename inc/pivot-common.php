@@ -334,7 +334,7 @@ function _get_commune_from_pivot($type, $value, $selected_value = NULL){
   return $output;
 }
 
-function _get_offer_types($edit_page){
+function _get_offer_types($edit_page= null){
   $types = pivot_get_offer_type();
 
   // Init vars
