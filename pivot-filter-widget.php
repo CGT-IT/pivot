@@ -199,7 +199,7 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL){
   }
 
   if(isset($group) && !empty($group)){
-    $output .= '<div class="text-uppercase text-white font-weight-bolder p-3 mb-2 mt-2" style="background-color:#555555;">'.$group.'</div>';
+    $output .= '<div class="text-uppercase font-weight-bolder p-2 mb-2 mt-2" style="background-color:#f5f5f5;">'.$group.'</div>';
   }
   switch($filter->type){
     case 'Boolean':
