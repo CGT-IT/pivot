@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pivot\n"
-"POT-Creation-Date: 2020-01-08 09:38+0100\n"
-"PO-Revision-Date: 2020-01-08 09:44+0100\n"
+"POT-Creation-Date: 2020-01-27 16:27+0100\n"
+"PO-Revision-Date: 2020-01-27 16:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: pivot\n"
 "Language: fr_BE\n"
@@ -41,13 +41,13 @@ msgstr "Il n'y a pas de journal de bord disponible."
 
 #: inc/pivot-common.php:314
 msgid "Choose a town"
-msgstr "Choisir une ville"
+msgstr "Choisir une commune"
 
 #: inc/pivot-common.php:342
 msgid "Choose a type"
 msgstr "Choisir un type"
 
-#: inc/pivot-common.php:588
+#: inc/pivot-common.php:612
 msgid "This offer doesn't exist or is not publishable anymore"
 msgstr "Cette offre n'existe pas ou n'est plus publiable"
 
@@ -55,7 +55,7 @@ msgstr "Cette offre n'existe pas ou n'est plus publiable"
 msgid "Filter"
 msgstr "Filtre"
 
-#: inc/pivot-filters.php:14 inc/pivot-filters.php:371 inc/pivot-pages.php:174
+#: inc/pivot-filters.php:14 inc/pivot-filters.php:371 inc/pivot-pages.php:177
 msgid "Filters"
 msgstr "Filtres"
 
@@ -64,12 +64,12 @@ msgid "No filter avaliable."
 msgstr "Aucun filtre disponible."
 
 #: inc/pivot-filters.php:148 inc/pivot-offer-type.php:234
-#: inc/pivot-pages.php:153
+#: inc/pivot-pages.php:155
 msgid "Edit"
 msgstr "Editer"
 
 #: inc/pivot-filters.php:149 inc/pivot-filters.php:197
-#: inc/pivot-offer-type.php:235 inc/pivot-pages.php:154 inc/pivot-pages.php:206
+#: inc/pivot-offer-type.php:235 inc/pivot-pages.php:156 inc/pivot-pages.php:210
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -85,13 +85,13 @@ msgstr "Titre du filtre"
 msgid "URN"
 msgstr "URN"
 
-#: inc/pivot-filters.php:164 inc/pivot-filters.php:442 pivot-shortcode.php:233
+#: inc/pivot-filters.php:164 inc/pivot-filters.php:442 pivot-shortcode.php:241
 msgid "Operator"
 msgstr "Opérateur"
 
 #: inc/pivot-filters.php:165 inc/pivot-offer-type.php:77
-#: inc/pivot-offer-type.php:213 inc/pivot-pages.php:169 inc/pivot-pages.php:362
-#: pivot-shortcode.php:211
+#: inc/pivot-offer-type.php:213 inc/pivot-pages.php:171 inc/pivot-pages.php:366
+#: pivot-shortcode.php:213
 msgid "Type"
 msgstr "Type"
 
@@ -111,11 +111,11 @@ msgstr "L'enregistrement a été inséré / mis à jour avec succès"
 msgid "Insertion / Update failed"
 msgstr "Insertion / Mise à jour échouée"
 
-#: inc/pivot-filters.php:431 pivot-shortcode.php:227
+#: inc/pivot-filters.php:431 pivot-shortcode.php:235
 msgid "Load URN Infos"
 msgstr "Charger les infos de l'URN"
 
-#: inc/pivot-filters.php:432 pivot-shortcode.php:228
+#: inc/pivot-filters.php:432 pivot-shortcode.php:236
 msgid "URN or ID of the field you want to filter"
 msgstr "URN ou ID du champs sur lequel vous voulez filtrer"
 
@@ -123,23 +123,23 @@ msgstr "URN ou ID du champs sur lequel vous voulez filtrer"
 msgid "Title used in frontend (to display to the user)"
 msgstr "Titre utilisé à l'affichage (pour l'utilisateur final)"
 
-#: inc/pivot-filters.php:444 pivot-shortcode.php:235
+#: inc/pivot-filters.php:444 pivot-shortcode.php:243
 msgid "Choose an operator"
 msgstr "Choisir un opérateur"
 
-#: inc/pivot-filters.php:445 pivot-shortcode.php:236
+#: inc/pivot-filters.php:445 pivot-shortcode.php:244
 msgid "Exist"
 msgstr ""
 
-#: inc/pivot-filters.php:446 pivot-shortcode.php:237
+#: inc/pivot-filters.php:446 pivot-shortcode.php:245
 msgid "Equal"
 msgstr ""
 
-#: inc/pivot-filters.php:447 pivot-shortcode.php:238
+#: inc/pivot-filters.php:447 pivot-shortcode.php:246
 msgid "Like"
 msgstr ""
 
-#: inc/pivot-filters.php:448 pivot-shortcode.php:239
+#: inc/pivot-filters.php:448 pivot-shortcode.php:247
 msgid "Greater or equal"
 msgstr ""
 
@@ -147,15 +147,15 @@ msgstr ""
 msgid "Lesser or equal"
 msgstr ""
 
-#: inc/pivot-filters.php:450 pivot-shortcode.php:240
+#: inc/pivot-filters.php:450 pivot-shortcode.php:248
 msgid "Between"
 msgstr ""
 
-#: inc/pivot-filters.php:451 pivot-shortcode.php:241
+#: inc/pivot-filters.php:451 pivot-shortcode.php:249
 msgid "in"
 msgstr ""
 
-#: inc/pivot-filters.php:454 pivot-shortcode.php:243
+#: inc/pivot-filters.php:454 pivot-shortcode.php:251
 msgid "Type of comparison"
 msgstr "Type de  comparaison"
 
@@ -187,7 +187,7 @@ msgstr "Groupes existants: "
 msgid "Pivot Plugin filters"
 msgstr "Filtres Pivot Plugin"
 
-#: inc/pivot-filters.php:505 inc/pivot-pages.php:435
+#: inc/pivot-filters.php:505 inc/pivot-pages.php:444
 msgid "Add New"
 msgstr "Ajouter nouveau"
 
@@ -203,7 +203,7 @@ msgstr "Importer les filtres"
 msgid "Submit"
 msgstr "Soumettre"
 
-#: inc/pivot-filters.php:543 inc/pivot-pages.php:445 pivot-filter-widget.php:93
+#: inc/pivot-filters.php:543 inc/pivot-pages.php:454 pivot-filter-widget.php:93
 #: pivot-filter-widget.php:146
 msgid "Search"
 msgstr "Chercher"
@@ -230,11 +230,11 @@ msgstr "Le fichier CSV ne respecte pas le format"
 
 #: inc/pivot-filters.php:697
 msgid "URN is invalid on line "
-msgstr "L'URN est invalide en ligne"
+msgstr "L'URN est invalide en ligne "
 
 #: inc/pivot-filters.php:704
 msgid "Operator is invalid on line "
-msgstr "L'opérateur est invalide en ligne"
+msgstr "L'opérateur est invalide en ligne "
 
 #: inc/pivot-offer-type.php:65
 msgid "Type of offer"
@@ -300,133 +300,145 @@ msgstr ""
 msgid "No page avaliable."
 msgstr "Aucune page disponible."
 
-#: inc/pivot-pages.php:118
+#: inc/pivot-pages.php:120
 msgid "View filter(s)"
 msgstr "Voir les filtres"
 
-#: inc/pivot-pages.php:119
+#: inc/pivot-pages.php:121
 msgid "Add a filter"
 msgstr "Ajouter un filtre"
 
-#: inc/pivot-pages.php:168 inc/pivot-pages.php:357 pivot-shortcode.php:205
+#: inc/pivot-pages.php:170 inc/pivot-pages.php:361 pivot-shortcode.php:207
 msgid "Query"
 msgstr "Requête"
 
-#: inc/pivot-pages.php:170 inc/pivot-pages.php:375
+#: inc/pivot-pages.php:172
+msgid "Nb Col"
+msgstr ""
+
+#: inc/pivot-pages.php:173 inc/pivot-pages.php:384
 msgid "Path"
 msgstr "Chemin"
 
-#: inc/pivot-pages.php:171
+#: inc/pivot-pages.php:174
 msgid "Page Title"
 msgstr "Titre de page"
 
-#: inc/pivot-pages.php:172
+#: inc/pivot-pages.php:175
 msgid "Map ?"
 msgstr "Carte ?"
 
-#: inc/pivot-pages.php:173
+#: inc/pivot-pages.php:176
 msgid "Sorting"
 msgstr "Triage"
 
-#: inc/pivot-pages.php:359 pivot-shortcode.php:207
+#: inc/pivot-pages.php:363 pivot-shortcode.php:209
 msgid "Pivot predefined query"
 msgstr "Requête prédéfinie de Pivot"
 
-#: inc/pivot-pages.php:366 pivot-shortcode.php:215
+#: inc/pivot-pages.php:370 pivot-shortcode.php:217
 msgid "Type of query"
 msgstr "Type de requête"
 
-#: inc/pivot-pages.php:370
+#: inc/pivot-pages.php:373 pivot-shortcode.php:227
+msgid "Define number of offers per line"
+msgstr "Définir le nombre d'offres"
+
+#: inc/pivot-pages.php:375 pivot-shortcode.php:229
+msgid "It will be 4 by default"
+msgstr "Ça sera 4 par défaut"
+
+#: inc/pivot-pages.php:379
 msgid "Show map"
 msgstr "Montrer le carte"
 
-#: inc/pivot-pages.php:372
+#: inc/pivot-pages.php:381
 msgid "Define if you want to show a map on this page or not"
 msgstr "Défini si vous voulez ou non montrer une carte sur cette page"
 
-#: inc/pivot-pages.php:377
+#: inc/pivot-pages.php:386
 msgid "Path to access results"
 msgstr "Chemin pour accéder aux résultats"
 
-#: inc/pivot-pages.php:380
+#: inc/pivot-pages.php:389
 msgid "Title"
 msgstr "Titre"
 
-#: inc/pivot-pages.php:382
+#: inc/pivot-pages.php:391
 msgid "Page title"
 msgstr "Titre de page"
 
-#: inc/pivot-pages.php:386
+#: inc/pivot-pages.php:395
 msgid "Query sorting"
 msgstr "Triage de la requête"
 
-#: inc/pivot-pages.php:390 pivot-shortcode.php:253
+#: inc/pivot-pages.php:399 pivot-shortcode.php:261
 msgid "Sort mode"
 msgstr "Mode de triage"
 
-#: inc/pivot-pages.php:392 pivot-shortcode.php:255
+#: inc/pivot-pages.php:401 pivot-shortcode.php:263
 msgid "Choose an order"
 msgstr "Choisir un ordre"
 
-#: inc/pivot-pages.php:393 pivot-shortcode.php:256
+#: inc/pivot-pages.php:402 pivot-shortcode.php:264
 msgid "Ascending"
 msgstr "Ascendant"
 
-#: inc/pivot-pages.php:394 pivot-shortcode.php:257
+#: inc/pivot-pages.php:403 pivot-shortcode.php:265
 msgid "Descending"
 msgstr "Descendant"
 
-#: inc/pivot-pages.php:395 pivot-shortcode.php:258
+#: inc/pivot-pages.php:404 pivot-shortcode.php:266
 msgid "Shuffle"
 msgstr "Aléatoire"
 
-#: inc/pivot-pages.php:397 pivot-shortcode.php:260
+#: inc/pivot-pages.php:406 pivot-shortcode.php:268
 msgid "Choose the sort mode for the query"
 msgstr "Choisir le mode de triage pour la requête"
 
-#: inc/pivot-pages.php:400 pivot-shortcode.php:263
+#: inc/pivot-pages.php:409 pivot-shortcode.php:271
 msgid "Sort Field"
 msgstr "Champ de triage"
 
-#: inc/pivot-pages.php:402 pivot-shortcode.php:265
+#: inc/pivot-pages.php:411 pivot-shortcode.php:273
 msgid "Define the field on which the sort mode will apply"
 msgstr "Défini le champ sur lequel on applique le triage"
 
-#: inc/pivot-pages.php:434
+#: inc/pivot-pages.php:443
 msgid "Pivot Plugin Pages"
 msgstr "Les pages du plugin Pivot"
 
-#: inc/pivot-pages.php:534
+#: inc/pivot-pages.php:545
 msgid "This path already exists"
 msgstr "Ce chemin existe déjà"
 
-#: inc/pivot-pages.php:540
+#: inc/pivot-pages.php:551
 msgid "Query is required"
 msgstr "Requête est requis"
 
-#: inc/pivot-pages.php:544
+#: inc/pivot-pages.php:555
 msgid "Type is required"
 msgstr "Type est requis"
 
-#: inc/pivot-pages.php:548
+#: inc/pivot-pages.php:559
 msgid "Path is required"
 msgstr "Chemin est requis"
 
-#: inc/pivot-pages.php:552
+#: inc/pivot-pages.php:563
 msgid "Page title is required"
 msgstr "Le titre de la page est requis"
 
-#: inc/pivot-pages.php:579
+#: inc/pivot-pages.php:590
 msgid "Add page"
 msgstr "Ajouter une page"
 
-#: inc/pivot-pages.php:579
+#: inc/pivot-pages.php:590
 msgid "Edit page"
 msgstr "Editer une page"
 
 #: inc/pivot-template-helper.php:116 inc/pivot-template-helper.php:117
 msgid "Share button"
-msgstr "bouton de partage"
+msgstr "Bouton de partage"
 
 #: inc/pivot-template-helper.php:129
 msgid "Contact"
@@ -450,12 +462,12 @@ msgstr "Offres liées"
 
 #: inc/pivot-template-helper.php:258
 #: templates/pivot-activite-details-part-template.php:34
-#: templates/pivot-default-details-part-template.php:29
-#: templates/pivot-hebergement-details-part-template.php:58
+#: templates/pivot-default-details-part-template.php:37
+#: templates/pivot-hebergement-details-part-template.php:66
 #: templates/pivot-itinerary-details-part-template.php:26
 #: templates/pivot-linked-offers.php:19
-#: templates/pivot-mice-details-part-template.php:29
-#: templates/pivot-restauration-details-part-template.php:44
+#: templates/pivot-mice-details-part-template.php:37
+#: templates/pivot-restauration-details-part-template.php:52
 msgid "Link to"
 msgstr "Lien vers"
 
@@ -515,89 +527,89 @@ msgstr "Réinitialiser"
 msgid "The <strong>offerid</strong> argument is missing"
 msgstr "L'argument <strong>offerid</strong> est manquant"
 
-#: pivot-shortcode.php:69
+#: pivot-shortcode.php:70
 msgid "The <strong>query</strong> argument is missing"
 msgstr "L'argument <strong>query</strong> est manquant"
 
-#: pivot-shortcode.php:99
+#: pivot-shortcode.php:100
 msgid "It's not possible to add this type of filter: "
 msgstr "Il n'est pas possible d'ajouter ce type de filtre: "
 
-#: pivot-shortcode.php:115
+#: pivot-shortcode.php:116
 msgid "The attribute \"operator\" is required for this kind of filter"
 msgstr "L'attribut \"operator\" est requis pour ce genre de filtre"
 
-#: pivot-shortcode.php:129
+#: pivot-shortcode.php:130
 msgid "The attribute \"operator\" is not valid, it should be one of these: "
 msgstr ""
 "L'attribut \"operator\" n'est pas valide, ça devrait être un de ceux là: "
 
-#: pivot-shortcode.php:137
+#: pivot-shortcode.php:138
 msgid "The attribute \"filtervalue\" is required for this kind of filter"
 msgstr "L'attribut \"filtervalue\" est requis pour ce genre de filtre"
 
-#: pivot-shortcode.php:176
+#: pivot-shortcode.php:178
 msgid "The <strong>type</strong> attributes for the query is wrong or missing "
 msgstr ""
 "L'attribut <strong>type</strong> pour la requête est mauvais ou manquant "
 
-#: pivot-shortcode.php:192
+#: pivot-shortcode.php:194
 msgid "Build Pivot Shortcode"
 msgstr "Construire le Shortcode Pivot"
 
-#: pivot-shortcode.php:219
+#: pivot-shortcode.php:221
 msgid "Define number of offers"
 msgstr "Définir le nombre d'offres"
 
-#: pivot-shortcode.php:221
+#: pivot-shortcode.php:223
 msgid "It will be 3 by default"
-msgstr "ça sera 3 par défaut."
+msgstr "Ça sera 3 par défaut"
 
-#: pivot-shortcode.php:225
+#: pivot-shortcode.php:233
 msgid "Filter URN"
 msgstr "URN filtré"
 
-#: pivot-shortcode.php:246
+#: pivot-shortcode.php:254
 msgid "Filter value"
 msgstr "Valeur filtrée"
 
-#: pivot-shortcode.php:248
+#: pivot-shortcode.php:256
 msgid "Searched value"
 msgstr "Valeur recherchée"
 
-#: pivot-shortcode.php:268
+#: pivot-shortcode.php:276
 msgid "Build shortcode"
 msgstr "Construire le Shortcode"
 
-#: pivot-shortcode.php:271
+#: pivot-shortcode.php:279
 msgid "Shortcode to insert"
 msgstr "Shortcode a insérer"
 
-#: pivot-shortcode.php:274
+#: pivot-shortcode.php:282
 msgid "Copy and paste this text in your post, page, ... body"
 msgstr "Copier et coller ce texte dans votre post, page, … corps de texte"
 
-#: pivot.php:265
+#: pivot.php:286
 msgid "You do not have sufficient permissions to access this page."
 msgstr "Vous n'avez pas les droits suffisants pour accéder à cette page."
 
-#: pivot.php:286
+#: pivot.php:307
 msgid "Base Uri"
 msgstr "Uri de base"
 
-#: pivot.php:286 pivot.php:291 pivot.php:313 pivot.php:318
+#: pivot.php:307 pivot.php:312 pivot.php:334 pivot.php:339
 msgid "This field is required"
 msgstr "Ce champ est requis"
 
-#: pivot.php:288
+#: pivot.php:309
 msgid "Uri to access Pivot Database."
 msgstr "Uri pour accéder à la Base de données Pivot."
 
-#: pivot.php:288
+#: pivot.php:309
 msgid "End / is required !"
 msgstr "Le / de fin est requis !"
 
-#: pivot.php:293
+#: pivot.php:314
 msgid ""
 "Personnal Key to access Pivot webservices, take contact with <a href="
 "\"http://pivot.tourismewallonie.be/index.php/2015-05-05-10-23-26/flux-de-"
@@ -607,27 +619,27 @@ msgstr ""
 "\"http://pivot.tourismewallonie.be/index.php/2015-05-05-10-23-26/flux-de-"
 "donnees-3-1\" target=\"_blank\">Pivot</a>"
 
-#: pivot.php:296
+#: pivot.php:317
 msgid "Check Pivot config"
 msgstr "Contrôler la configuration"
 
-#: pivot.php:301
+#: pivot.php:322
 msgid "Votre maison de tourisme"
 msgstr ""
 
-#: pivot.php:303
+#: pivot.php:324
 msgid "Choisir une maison de tourisme"
 msgstr ""
 
-#: pivot.php:309
+#: pivot.php:330
 msgid "Include Bootstrap"
 msgstr "Inclure Bootstrap"
 
-#: pivot.php:310
+#: pivot.php:331
 msgid "required for default templates"
 msgstr "requis pour les templates par défaut"
 
-#: pivot.php:315
+#: pivot.php:336
 msgid ""
 "Personnal Key to access bitly webservices, signin <a href=\"https://bitly."
 "com/\" target=\"_blank\">bitly.com</a> and get you access token"
@@ -636,11 +648,11 @@ msgstr ""
 "\"https://bitly.com/\" target=\"_blank\">bitly.com</a> et recevez votre clé "
 "d'accès"
 
-#: pivot.php:318
+#: pivot.php:339
 msgid "MapBox access token"
 msgstr "Jeton d'accès à la MapBox"
 
-#: pivot.php:320
+#: pivot.php:341
 msgid ""
 "Personnal Key to access MapBox services, signin <a href=\"https://account."
 "mapbox.com/\" target=\"_blank\">mapbox.com</a> and get you access token"
