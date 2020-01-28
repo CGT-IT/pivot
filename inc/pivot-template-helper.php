@@ -526,7 +526,7 @@ function _add_pivot_map($map, $nb_col){
                      integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
                      crossorigin=""></script>';
   // Create Map element
-  $output .= '<div id="mapid" style="height: 600px;width: 600px;z-index:0;"></div>';
+  $output .= '<div id="mapid" style="height: 800px;width: 600px;z-index:0;"></div>';
   // Include map custom js
   $output .= '<script src="'.plugins_url('js/mapcardorientation.js', dirname(__FILE__)).'"></script>';
   $output .= '</div>';
