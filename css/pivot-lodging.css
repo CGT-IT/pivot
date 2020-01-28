@@ -41,7 +41,7 @@ body{
     width: 100%!important;
 }
 .pivot-offer-list{
-    max-height: 600px;
+    max-height: 800px;
     overflow-y: scroll;
 }
 
