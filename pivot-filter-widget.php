@@ -215,8 +215,8 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL){
     case 'Type':
     case 'Value':
       $output .= '<div class="pl-2 form-item form-item-'.$filter->filter_name.'">'
-                .  '<label title="" data-toggle="tooltip" class="w-50 control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.$filter->filter_title.'">'
-                .    '<input type="checkbox" id="edit-'.$filter->filter_name.'" name="'.$filter->id.'"  class="w-50 form-checkbox"'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?'checked':'').'> '
+                .  '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.$filter->filter_title.'">'
+                .    '<input type="checkbox" id="edit-'.$filter->filter_name.'" name="'.$filter->id.'"  class="form-checkbox"'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?'checked':'').'> '
                 .    '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$filter->urn.';h=12"> '.$filter->filter_title
                 .  '</label>'
                 .'</div>';

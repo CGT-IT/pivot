@@ -53,7 +53,7 @@ function pivot_enqueue_admin_script($hook) {
  * Register Scripts
  */
 function pivot_register_script() {
-  wp_register_style('lodging_style', MY_PLUGIN_URL.'css/'.'pivot-lodging.css', array(), '2.0', false);
+  wp_register_style('lodging_style', MY_PLUGIN_URL.'css/'.'pivot-lodging.css', array(), '2.1', false);
   wp_register_style('event_style', MY_PLUGIN_URL.'css/'.'pivot-event.css', array(), '2.0', false);
   wp_register_style('fontawesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.1/css/all.min.css', array(), '1.0.0', false);
   wp_register_style('bootstrapexternal', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', array(), '1.0.0', false);
