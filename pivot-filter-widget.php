@@ -142,10 +142,10 @@ function pivot_add_filters(){
     // Print footer section and close HTML form
     $output .= '</div>'
          .   '<div class="row mt-2">'
-         .     '<div class="col-xl-8 col-12">'
+         .     '<div class="col-xl-7 col-12">'
          .       '<button type="submit" id="filter-submit" name="filter-submit" value="'.esc_html__('Search', 'pivot').'"class="btn text-dark btn-lg btn-block form-submit" style="background-color:#f5f5f5;"><i class="fas fa-search"></i> '.esc_html__('Search', 'pivot').'</button>'
          .     '</div>'
-         .     '<div class="col-xl-4 col-12">'
+         .     '<div class="col-xl-5 col-12">'
          .       '<button type="submit" id="filter-reset" name="filter-reset" value="'.esc_html__('Reset', 'pivot').'" class="btn btn-lg btn-block form-submit text-white" style="background-color:#555555;"><i class="fas fa-redo-alt"></i> '.esc_html__('Reset', 'pivot').'</button>'
          .     '</div>'
          .   '</div>'
