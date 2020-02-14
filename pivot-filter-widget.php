@@ -255,6 +255,8 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL){
     default:
       $output .= '<div class="pl-2 form-item form-item-'.$filter->filter_name.'">'
                 .  '<label title="'.__($filter->filter_title, 'pivot').'" data-toggle="tooltip" class="w-50 control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.__($filter->filter_title, 'pivot').'">'
+                .    __($filter->filter_title, 'pivot')
+                .  '</label>'
                 .  '<input placeholder="'.__($filter->filter_title, 'pivot').'" type="text" class="w-50" id="edit-'.$filter->filter_name.'" name="'.$filter->id.'" value="'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?$_SESSION['pivot']['filters'][$page_id][$filter->id]:'').'">'
                 .'</div>';
       return $output;
