@@ -180,9 +180,15 @@ function pivot_add_rewrite_rules() {
 
   foreach($pages as $pivot_page){
     add_rewrite_tag('%'.$pivot_page->path.'%', '([^&]+)');
+    $path_parts = explode("/", $pivot_page->path);
+   add_rewrite_rule(
+      '^'.$pivot_page->path.'$',
+      'index.php?pagename='.$pivot_page->path,
+      'top'
+    );
 
     add_rewrite_rule(
-      '^'.$pivot_page->path.'/([^/]*)/?',
+      $pivot_page->path.'/([^/]*)/?',
       'index.php?'.$pivot_page->path.'=$matches[1]',
       'top'
     );
@@ -195,7 +201,8 @@ add_filter('pre_handle_404', function($preempt, $wp_query) {
   global $wp;
   $customPages = pivot_get_pages_path();
   $customPages[] = array('path' => 'details');
-  if ($key=array_search($wp->request, array_column($customPages, 'path'))) {
+  $key = array_search($wp->request, array_column($customPages, 'path'));
+  if (isset($key) && is_int($key)) {
     pivot_create_fake_post($customPages[$key]['title'], $customPages[$key]['path']);
     $preempt = true;
   }
