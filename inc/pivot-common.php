@@ -576,16 +576,16 @@ function _show_admin_notice($text, $severity = 'error'){
 }
 
 function _get_path(){
+  global $wp_query;
   $path = $_SERVER['REQUEST_URI'];
   if((strpos($path, "paged=")) !== FALSE){
-    if (preg_match('/\/(.*?)\/&paged=/', $path, $match) == 1) {
-      $path = substr($match[1], strrpos($match[1], '/' ));
+    if((strpos($path, key($wp_query->query)) !== FALSE)){
+      $path = key($wp_query->query);
     }
   }else{
-    $path = substr(rtrim($path,'/'), strrpos(rtrim($path,'/'), '/' )+1);
+    global $post;
+    $path = $post->post_name;
   }
-  $path = str_replace('/', '', $path);
-
   return $path;
 }
 

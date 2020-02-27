@@ -350,6 +350,12 @@ function pivot_get_page($id) {
   global $wpdb;
   $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}pivot_pages WHERE id= %d", $id);
   $pivot_page = $wpdb->get_row($query);
+  
+  // Unscape String
+  foreach($pivot_page as &$field){
+  if(is_string($field))
+    $field = stripslashes( $field );
+  }
 
   return $pivot_page;
 }
