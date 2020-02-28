@@ -14,6 +14,13 @@
       show_hide_sortField();
     });
     
+    // Remove img from pivot pages
+    $('#reset_img').click(function() {
+      $('#imageUrl').val('');
+      $('a.imageUrl').attr("href", '');
+      $('a.imageUrl img').attr("src", '');
+    });
+    
     function show_hide_sortField(){
       if(sortMode.find(":selected").val() == 'ASC' || sortMode.find(":selected").val() == 'DESC'){
         sortField.show();
