@@ -418,8 +418,10 @@ function pivot_meta_box() {
     <p class="description"><b><?php esc_html_e('Perfect format would be 1920x400 px', 'pivot') ?></b></p>
     <p><label><strong><?php esc_html_e('Current image', 'pivot');?></strong></label></p>
     <input type="hidden" id="imageUrl" name="imageUrl" value="<?php if(isset($edit_page)) echo $edit_page->image;?>">
-    <img width="300px" src="<?php if(isset($edit_page)) echo $edit_page->image;?>"/>
-    
+    <a class="imageUrl" target="_blank" href="<?php if(isset($edit_page)) echo $edit_page->image;?>">
+      <img width="300px" src="<?php if(isset($edit_page)) echo $edit_page->image;?>"/>
+    </a>
+    <button class="ed_button button button-small" type='reset' id='reset_img'/><?php _e('Remove'); ?> image</button>
   </div>
 
   <br>
