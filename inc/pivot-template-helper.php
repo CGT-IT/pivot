@@ -560,3 +560,17 @@ function _set_nb_col($map, $nb_col){
 
   return $output;
 }
+
+function _add_banner_image($image){
+  if($image != NULL && $image != ''){
+    $output = '<div class="row" style="background-image:url('.$image.');
+                                       background-position: center center;
+                                       background-repeat: no-repeat;
+                                       background-size: cover;
+                                       height: 400px;">
+               </div>';
+  }else{
+    $output = '';
+  }
+  return $output;
+}

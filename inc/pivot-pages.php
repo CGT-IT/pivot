@@ -364,37 +364,62 @@ function pivot_meta_box() {
     global $edit_page;
 ?>
   <div class="form-item form-type-textfield form-item-pivot-query">
-    <label for="edit-pivot-query"><?php esc_html_e('Query', 'pivot') ?></label>
+    <label for="edit-pivot-query"><strong><?php esc_html_e('Query', 'pivot') ?></strong></label>
     <input type="text" id="edit-pivot-query" name="query" value="<?php if(isset($edit_page)) echo $edit_page->query;?>" size="60" maxlength="128" class="form-text">
     <p class="description"><?php esc_html_e('Pivot predefined query', 'pivot') ?></p>
   </div>
   <div class="form-item form-type-textfield form-item-pivot-type">
-    <label for="edit-pivot-type"><?php esc_html_e('Type', 'pivot') ?> </label>
+    <label for="edit-pivot-type"><strong><?php esc_html_e('Type', 'pivot') ?></strong> </label>
     <select id="edit-pivot-type" name="type">
       <?php print _get_offer_types($edit_page); ?>
     </select>
     <p class="description"><?php esc_html_e('Type of query', 'pivot') ?></p>
   </div>
+  <div class="form-item form-type-textfield form-item-pivot-path">
+    <label for="edit-pivot-path"><strong><?php esc_html_e('Path', 'pivot') ?></strong> </label>
+    <input type="text" id="edit-pivot-path" name="path" value="<?php if(isset($edit_page)) echo $edit_page->path;?>" size="60" maxlength="128" class="form-text">
+    <p class="description"><?php esc_html_e('Path to access results', 'pivot') ?></p>
+  </div>
+
+  <br>
+  <h2 class="hndle"><b><span><?php esc_html_e('Visuel') ?></span></b></h2>
+  <br>
+  
   <div class="form-item form-item-pivot-nb-col">
-    <label for="edit-pivot-nb-col"><?php esc_html_e('Define number of offers per line', 'pivot') ?> </label>
+    <label for="edit-pivot-nb-col"><strong><?php esc_html_e('Define number of offers per line', 'pivot') ?></strong> </label>
     <input type="number" id="edit-pivot-nb-col" name="nbcol" min="2" max="6" value="<?php echo (isset($edit_page))?$edit_page->nbcol:'4';?>">
     <p class="description"><?php esc_html_e('It will be 4 by default', 'pivot')?></p>
   </div>
   <div class="form-item form-type-textfield form-item-pivot-map">
     <input type="checkbox" id="edit-pivot-map" name="map" class="form-checkbox" <?php echo (isset($edit_page) && $edit_page->map == 1?'checked':'');?>>
-    <label for="edit-pivot-map"><?php esc_html_e('Show map', 'pivot') ?> </label>
+    <label for="edit-pivot-map"><strong><?php esc_html_e('Show map', 'pivot') ?></strong> </label>
     <img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:typ:269;modifier=orig;h=20"/>
     <p class="description"><?php esc_html_e('Define if you want to show a map on this page or not', 'pivot') ?></p>
-  </div>
-  <div class="form-item form-type-textfield form-item-pivot-path">
-    <label for="edit-pivot-path"><?php esc_html_e('Path', 'pivot') ?> </label>
-    <input type="text" id="edit-pivot-path" name="path" value="<?php if(isset($edit_page)) echo $edit_page->path;?>" size="60" maxlength="128" class="form-text">
-    <p class="description"><?php esc_html_e('Path to access results', 'pivot') ?></p>
-  </div>
+  </div>  
   <div class="form-item form-type-textfield form-item-pivot-title">
-    <label for="edit-pivot-title"><?php esc_html_e('Title', 'pivot') ?> </label>
+    <label for="edit-pivot-title"><strong><?php esc_html_e('Title', 'pivot') ?></strong> </label>
     <input type="text" id="edit-pivot-title" name="title" value="<?php if(isset($edit_page)) echo $edit_page->title;?>" size="60" maxlength="128" class="form-text">
     <p class="description"><?php esc_html_e('Page title', 'pivot') ?></p>
+  </div>
+  <div class="form-item form-type-textfield form-item-pivot-description">
+    <label for="edit-pivot-description"><strong><?php esc_html_e('Description') ?></strong></label>
+    <?php $content = ''; ?>
+    <?php if(isset($edit_page)): ?>
+      <?php $content = $edit_page->description; ?>
+    <?php endif; ?>
+    <?php wp_editor($content, 'edit-pivot-description', array('textarea_rows' => 10, 'media_buttons' => 0, 'tinymce' => 0,'quicktags' => array( 'buttons' => 'strong,em,ul,ol,li,close' ))); ?>
+    <p class="description"><?php esc_html_e('Small text to display above the page under the title', 'pivot') ?></p>
+  </div><br>
+  <div class="form-item form-type-file form-item-pivot-image">
+    <label><strong><?php esc_html_e('Choose an image', 'pivot');?></strong></label>
+    <input type="file" name="my_image_upload" id="my_image_upload"  multiple="false" />
+    <?php wp_nonce_field( 'my_image_upload', 'my_image_upload_nonce' ); ?>
+    <p class="description"><?php esc_html_e('This image will be displayed full width between menu and page title', 'pivot') ?></p>
+    <p class="description"><b><?php esc_html_e('Perfect format would be 1920x400 px', 'pivot') ?></b></p>
+    <p><label><strong><?php esc_html_e('Current image', 'pivot');?></strong></label></p>
+    <input type="hidden" id="imageUrl" name="imageUrl" value="<?php if(isset($edit_page)) echo $edit_page->image;?>">
+    <img width="300px" src="<?php if(isset($edit_page)) echo $edit_page->image;?>"/>
+    
   </div>
 
   <br>
@@ -402,7 +427,7 @@ function pivot_meta_box() {
   <br>
   
   <div class="form-item form-type-textfield form-item-pivot-sortMode">
-    <label for="edit-pivot-sortMode"><?php esc_html_e('Sort mode', 'pivot') ?> </label>
+    <label for="edit-pivot-sortMode"><strong><?php esc_html_e('Sort mode', 'pivot') ?></strong> </label>
     <select id="edit-pivot-sortMode" name="sortMode">
       <option selected value=""><?php esc_html_e('Choose an order', 'pivot') ?></option>
       <option <?php if(isset($edit_page) && $edit_page->sortMode == 'ASC') echo 'selected="selected"';?>value="ASC"><?php esc_html_e('Ascending', 'pivot') ?></option>
@@ -412,7 +437,7 @@ function pivot_meta_box() {
     <p class="description"><?php esc_html_e('Choose the sort mode for the query', 'pivot') ?></p>
   </div>
   <div class="form-item form-type-textfield form-item-pivot-sortField">
-    <label for="edit-pivot-sortField"><?php esc_html_e('Sort Field', 'pivot') ?> </label>
+    <label for="edit-pivot-sortField"><strong><?php esc_html_e('Sort Field', 'pivot') ?></strong> </label>
     <input type="text" id="edit-pivot-sortField" name="sortField" value="<?php if(isset($edit_page)) echo $edit_page->sortField;?>" size="60" maxlength="128" class="form-text">
     <p class="description"><?php esc_html_e('Define the field on which the sort mode will apply', 'pivot') ?></p>
   </div>
@@ -488,6 +513,7 @@ function pivot_action(){
       if(is_plugin_active('wpml-string-translation/plugin.php')){
         $page_details = pivot_get_page($_GET['delete']);
         icl_unregister_string('pivot', 'title-for-'.$page_details->query);
+        icl_unregister_string('pivot', 'description-for-'.$page_details->query);
       }
         // First delete dependencies (filters linked to this page)
       $wpdb->delete($wpdb->prefix.'pivot_filter', array('page_id' => $_GET['delete']), array('%d'));
@@ -503,6 +529,36 @@ function pivot_action(){
     $nbcol = $_POST['nbcol'];
     $path = $_POST['path'];
     $title = $_POST['title'];
+    $description = $_POST['edit-pivot-description'];
+    
+    // Check that the nonce is valid, and the user can edit this post.
+    if(isset($_POST['my_image_upload_nonce']) && wp_verify_nonce($_POST['my_image_upload_nonce'], 'my_image_upload')){
+      // Allowed image types
+      $allowed_image_types = array('image/jpeg','image/png');
+      // Check if there's an image
+      if (isset($_FILES['my_image_upload']['size']) && $_FILES['my_image_upload']['size'] > 0){
+        // Check conditions
+        if(in_array($_FILES['my_image_upload']['type'], $allowed_image_types)){
+          // These files need to be included as dependencies when on the front end.
+          require_once( ABSPATH . 'wp-admin/includes/image.php' );
+          require_once( ABSPATH . 'wp-admin/includes/file.php' );
+          require_once( ABSPATH . 'wp-admin/includes/media.php' );
+
+          // Let WordPress handle the upload.
+          // Remember, 'my_image_upload' is the name of our file input in our form above.
+          $attachment_id = media_handle_upload('my_image_upload', 0);
+          $image_url = wp_get_attachment_url($attachment_id);
+          if(is_wp_error($attachment_id)){
+            print _show_admin_notice('There was an error uploading the image.');
+          }
+        }else{
+          print _show_admin_notice('image/jpeg and image/png only allowed');
+        }
+      }
+    }else{
+      print _show_admin_notice('There was an error uploading the image.');
+    }
+    
     $map = isset($_POST['map'])?1:0;
     $sortMode = $_POST['sortMode'];
     $sortField = $_POST['sortField'];
@@ -520,9 +576,11 @@ function pivot_action(){
             'map' => $map,
             'sortMode' => $sortMode,
             'sortField' => $sortField,
-            'nbcol' => $nbcol
+            'nbcol' => $nbcol,
+            'description' => $description,
+            'image' => (isset($image_url)?$image_url:$_POST['imageUrl'])
           ), 
-          array('%s','%s','%s','%s','%d','%s','%d')
+          array('%s','%s','%s','%s','%d','%s','%d','%s','%s')
         );
       }else{
         // Update the data
@@ -536,16 +594,19 @@ function pivot_action(){
             'map' => $map,
             'sortMode' => $sortMode,
             'sortField' => $sortField,
-            'nbcol' => $nbcol
+            'nbcol' => $nbcol,
+            'description' => $description,
+            'image' => (isset($image_url)?$image_url:$_POST['imageUrl'])
           ), 
           array('id' => $_POST['page_id']), 
-          array('%s','%s','%s','%s','%d','%s','%s','%d'),
+          array('%s','%s','%s','%s','%d','%s','%s','%d','%s','%s'),
           array('%d')
         );
       }
       // IF WPML is active add title in translatable string
       if(is_plugin_active('wpml-string-translation/plugin.php')){
         icl_register_string('pivot', 'title-for-'.$query, $title, false, substr(get_locale(), 0, 2 ));
+        icl_register_string('pivot', 'description-for-'.$query, $description, false, substr(get_locale(), 0, 2 ));
       }
     }else{
       $text = esc_html__('This path already exists', 'pivot').': <a href="'.get_permalink( $pivot_page->ID ).'">'.get_permalink( $pivot_page->ID ).'</a>';
@@ -592,7 +653,7 @@ function pivot_add_page(){
   <!--Display the form to add a new row-->
   <div class="wrap">
     <div id="faq-wrapper">
-      <form method="post" action="?page=pivot-pages">
+      <form method="post" enctype="multipart/form-data" action="?page=pivot-pages">
           <h2><?php echo $tf_title = ($page_id == 0)?$tf_title = esc_attr('Add page', 'pivot') : $tf_title = esc_attr('Edit page', 'pivot');?></h2>
         <div id="poststuff" class="metabox-holder">
           <?php do_meta_boxes('pivot', 'normal','low'); ?>

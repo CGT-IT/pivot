@@ -10,8 +10,12 @@
 <?php $offres = pivot_lodging_page($pivot_page->id); ?>
   
 <div class="container-fluid pivot-list">
+  <?php print _add_banner_image($pivot_page->image); ?>
   <div class="row m-4">
-    <div class="col-12"><h1 class="text-center"><?php _e($pivot_page->title, 'pivot');?></h1></div>
+    <div class="col-12">
+      <h1 class="text-center"><?php _e($pivot_page->title, 'pivot');?></h1>
+      <div id="pivot-page-description" class="text-center"><?php _e($pivot_page->description, 'pivot');?></div>
+    </div>
   </div>
   <div class="row">
     <?php if(!(empty($filters))): ?>
