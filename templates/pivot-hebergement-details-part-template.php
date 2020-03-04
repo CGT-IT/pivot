@@ -8,8 +8,8 @@
   <?php $url = get_bloginfo('wpurl').(($lang=='fr')?'':'/'.$lang).'/'.$offre->path.'/'.$codeCGT.'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString(); ?>
   <div class="card text-left pivot-offer">
     <div class="card-orientation <?php print ($offre->map!=1||wp_is_mobile()==1)?'':'card-horizontal';?>">
-      <div class="container-img <?php print ($offre->map!=1||wp_is_mobile()==1)?'':'col-5 p-0 my-auto';?>">
-        <img class="pivot-img card-img-top zoom pivot-img-list" src="https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/<?php print $codeCGT ;?>;w=428;h=284"/>
+      <div class="container-img embed-responsive embed-responsive-16by9 <?php print ($offre->map!=1||wp_is_mobile()==1)?'':'col-5 p-0 my-auto';?>">
+        <img class="embed-responsive-item pivot-img card-img-top zoom pivot-img-list" src="<?php print _get_offer_default_image($offre); ?>"/>
         <div class="p-3 position-absolute fixed-top">
           <?php print _search_specific_urn_img($offre, 'urn:fld:label:bvvelo', 40, null, true); ?>
         </div>
@@ -63,7 +63,7 @@
           <?php print $offre->adresse1->cp; ?> 
           <?php print $offre->adresse1->localite->value->__toString(); ?>
         </p>
-        <a target="_blank" class="text-dark stretched-link" title="<?php echo __('Link to', 'pivot') .' '. $offerName; ?>" href="<?php print $url; ?>"></a>
+        <a target="_blank" class="text-dark stretched-link" title="<?php echo __('Link to', 'pivot') .' '. $offreName; ?>" href="<?php print $url; ?>"></a>
         <span class="pivot-id-type-offre d-none item"><?php print $offre->typeOffre->attributes()->idTypeOffre->__toString(); ?></span>
         <span class="pivot-code-cgt d-none item"><?php print $codeCGT; ?></span>
         <span class="pivot-latitude d-none item"><?php print $offre->adresse1->latitude->__toString(); ?></span>
