@@ -5,6 +5,7 @@
   <?php $offre = $args; ?>
 <?php else: ?>
   <?php $offre = _get_offer_details(); ?>
+  <?php _check_is_offer_active($offre); ?>
   <?php _add_meta_data($offre, 'details'); ?>
   <?php get_header(); ?>
 <?php endif;?>
