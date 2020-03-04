@@ -74,6 +74,27 @@ function _add_section($offre, $urnCat, $title, $faIcon='', $urnSubCat=0){
   return $output;
 }
 
+function _add_section_language($offre){
+  // Init var, will be used to check if there is well content or not
+  $content = '';
+
+  $open_balise = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 f0fc fa-language"></i>'. __('Language(s)', 'pivot') .'</h5>';
+  foreach($offre->spec as $specification){
+    if($specification->urnSubCat->__toString() == 'urn:cat:accueil:langpar'){
+      $language = _get_urn_documentation($specification->attributes()->urn->__toString());
+      $content .= '<img alt="'.__('Language(s)', 'pivot').' '.$language.'" title="'.$language.'"class="p-1 pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'. $specification->attributes()->urn->__toString() .';h=30"/>';
+    }
+  }
+  // Check if there is well something to display
+  if($content != ''){
+    $output = $open_balise.$content;
+  }else{
+    $output = '';
+  }
+  
+  return $output;
+}
+
 function _add_section_themes($offre){
   $excludedUrn = array('urn:fld:dateech', 'urn:fld:class');
   // Init var, will be used to check if there is well content or not
@@ -561,6 +582,11 @@ function _set_nb_col($map, $nb_col){
   return $output;
 }
 
+/**
+ * Return a div with a background image
+ * @param string $image
+ * @return string
+ */
 function _add_banner_image($image){
   if($image != NULL && $image != ''){
     $output = '<div class="row" style="background-image:url('.$image.');
@@ -571,6 +597,33 @@ function _add_banner_image($image){
                </div>';
   }else{
     $output = '';
+  }
+  return $output;
+}
+
+/**
+ * Will return url of default image for a given offer
+ * @param Object $offre
+ * @param int $width wanted width in px. Useless if media is not really stored in Pivot
+ * @param int $height wanted height in px. Useless if media is not really stored in Pivot
+ * @return string
+ */
+function _get_offer_default_image($offre, $width=428, $height=285){
+  $output = '';
+  foreach($offre->relOffre as $relation){
+    // Check if it's well a media (268) and the default 
+    if($relation->offre->typeOffre->attributes()->idTypeOffre->__toString() == '268' && $relation->attributes()->urn == 'urn:lnk:media:defaut'){
+      $media_offer = _get_offer_details($relation->offre->attributes()->codeCgt->__toString(), 2);
+      // Check if media is publishable
+      if($media_offer->estActive == 30){
+        if(_get_urn_value($media_offer, 'urn:fld:mode') != 0){
+          $output = _get_urn_value($media_offer, 'urn:fld:url');
+        }
+      }
+    }
+  }
+  if($output == ''){
+    $output = get_option('pivot_uri').'img/'.$offre->attributes()->codeCgt->__toString().';w='.$width.';h='.$height;;
   }
   return $output;
 }
