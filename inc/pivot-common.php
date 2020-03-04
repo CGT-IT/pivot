@@ -606,7 +606,11 @@ function _get_offer_details($offer_id = NULL, $details = 3){
       }
     }
   }
+  
+  return $offre;
+}
 
+function _check_is_offer_active($offre){
   // Check if offer is publishable, if not redirect to 404 page.
   if($offre->estActive != 30){
     $warning_text = __("This offer doesn't exist or is not publishable anymore", "pivot");
@@ -617,8 +621,6 @@ function _get_offer_details($offer_id = NULL, $details = 3){
     get_template_part(404);
     exit();
   }
-  
-  return $offre;
 }
 
 /**
