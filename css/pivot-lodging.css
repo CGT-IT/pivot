@@ -69,6 +69,10 @@ body{
     display: block;
     width: 100%;
 }
+.pivot-contacts a{
+    unicode-bidi:bidi-override; 
+    direction: rtl;
+}
 
 @media screen and (max-width: 500px){
     #pivot-equipments{
@@ -104,10 +108,10 @@ body{
     bottom: 15px !important;
 }
 
-#pivotCarousel img.pivot-img.pivot-img-details {
+/*#pivotCarousel img.pivot-img.pivot-img-details {
     max-height: 500px;
     width: 900px;
-}
+}*/
 #pivotCarousel .carousel-item{
     text-align: center;
 }
