@@ -158,20 +158,20 @@ function _add_section_contact($offre){
               . '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$specification->attributes()->urn->__toString().';h=16"/>';
       switch ($specification->type->__toString()){
         case 'EMail':
-          $output .= '<a class="'.$specification->type->__toString().'" href="mailto:'.$specification->value->__toString().'">'.$specification->value->__toString().'</a>';
+          $output .= '<a class="'.$specification->type->__toString().'" href="mailto:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
           break;
         case 'URL':
-          $output .= '<a class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'">'.esc_url($specification->value->__toString()).'</a>';
+          $output .= '<a class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'">'.strrev(esc_url($specification->value->__toString())).'</a>';
           break;
         case 'GSM':
-          $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.$specification->value->__toString().'</a>';
+          $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
           break;
         case 'Phone':
-          $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.$specification->value->__toString().'</a>';
+          $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
           break;
         default:
           if (esc_url($specification->value->__toString())){
-            $output .= '<a class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'">'.esc_url($specification->value->__toString()).'</a>';
+            $output .= '<a class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'">'.strrev(esc_url($specification->value->__toString())).'</a>';
           }else{
             $output .= $specification->value->__toString();
           }
@@ -191,6 +191,59 @@ function _add_section_contact($offre){
           .    '<li class="pivot-latitude d-none">'.$offre->adresse1->latitude->__toString().'</li>'
           .    '<li class="pivot-longitude d-none">'.$offre->adresse1->longitude->__toString().'</li>'
           .  '</ul></div></section>';
+  
+  return $output;
+}
+
+/**
+ * Return a HTML section with all contact infos
+ * @param Object $offre complete offer object
+ * @return string
+ */
+function _add_section_contact_version2($offre){
+  $output = '<section class="pivot-contacts card lis-brd-light wow fadeInUp mb-4">'
+          .   '<div class="card-body p-4">'
+          .     '<h3 class="pivo-title">'._get_urn_value($offre, 'urn:fld:nomofr').'</h3>'
+          . '<ul class="adr list-unstyled lis-line-height-2 m-0">'
+          .    '<li class="street-address"><i class="fas fa-map"></i> '.$offre->adresse1->rue->__toString().', '.$offre->adresse1->numero->__toString().'</li>'
+          .      '<span class="postal-code">'.$offre->adresse1->cp->__toString().' </span>'
+          .      '<span class="locality">'.(isset($offre->adresse1->localite)?$offre->adresse1->localite->value->__toString():'').'</span>'
+          .    '<li class="country-name">'.$offre->adresse1->pays->__toString().'</li>'
+          .    '<li class="pivot-latitude d-none">'.$offre->adresse1->latitude->__toString().'</li>'
+          .    '<li class="pivot-longitude d-none">'.$offre->adresse1->longitude->__toString().'</li>'
+          .    '<li class="pivot-id-type-offre d-none">'.$offre->typeOffre->attributes()->idTypeOffre->__toString().'</li>'
+          .  '</ul>'
+          .     '<ul class="list-unstyled lis-line-height-2 m-0">';
+  foreach($offre->spec as $specification){
+    if($specification->urnCat->__toString() == 'urn:cat:moycom' && $specification->urnSubCat->__toString() != 'urn:cat:moycom:sitereservation'){
+      $output .= '<li>'
+              . '<img class="pr-2 pivot-picto" src="'.get_option('pivot_uri').'img/'.$specification->attributes()->urn->__toString().';h=20"/>';
+      switch ($specification->type->__toString()){
+        case 'EMail':
+          $output .= '<a class="'.$specification->type->__toString().'" href="mailto:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
+          break;
+        case 'URL':
+          $output .= '<a class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'">'.strrev(esc_url($specification->value->__toString())).'</a>';
+          break;
+        case 'GSM':
+          $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
+          break;
+        case 'Phone':
+          $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
+          break;
+        default:
+          if (esc_url($specification->value->__toString())){
+            $output .= '<a class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'">'.strrev(esc_url($specification->value->__toString())).'</a>';
+          }else{
+            $output .= $specification->value->__toString();
+          }
+          break;
+      }
+
+      $output .= '</li>';
+    }
+  }
+  $output .= '</ul></div></section>';
   
   return $output;
 }
@@ -536,8 +589,11 @@ function _add_section_accessi($offre){
   return $output;
 }
 
-function _add_pivot_map($map, $nb_col){
-  $output = '<div id="maparea" class="'.(($map==1)?'col-'.$nb_col.' d-none d-md-block':'').'">';
+function _add_pivot_map($map = 0, $nb_col = 12, $width = '600px', $height = '800px', $single_offer = FALSE){
+  $output = '';
+  if($single_offer == FALSE){
+    $output = '<div id="maparea" class="'.(($map==1)?'col-'.$nb_col.' d-none d-md-block':'').'">';
+  }
   // Include leaflet css for map
   $output .= ' <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
                    integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
@@ -547,10 +603,15 @@ function _add_pivot_map($map, $nb_col){
                      integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
                      crossorigin=""></script>';
   // Create Map element
-  $output .= '<div id="mapid" style="height: 800px;width: 600px;z-index:0;"></div>';
-  // Include map custom js
-  $output .= '<script src="'.plugins_url('js/mapcardorientation.js', dirname(__FILE__)).'"></script>';
-  $output .= '</div>';
+  $output .= '<div id="mapid" style="height:'.$height.';width:'.$width.';z-index:0;"></div>';
+  
+  if($single_offer == FALSE){
+    // Include map custom js
+    $output .= '<script src="'.plugins_url('js/mapcardorientation.js', dirname(__FILE__)).'"></script>';
+    $output .= '</div>';
+  }else{
+    $output .= '<script src="'.plugins_url('js/mapsingleoffer.js', dirname(__FILE__)).'"></script>';
+  }
   
   return $output;
 }
