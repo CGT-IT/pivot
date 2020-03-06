@@ -46,7 +46,7 @@ function map_call(){
         iconUrl: image,
       });
       // Set marker
-      var marker = L.marker(point, {icon: pointIcon}).bindTooltip(offerTitle).addTo(pivotMap);
+      L.marker(point, {icon: pointIcon}).bindTooltip(offerTitle).addTo(pivotMap);
     }
   });
 
