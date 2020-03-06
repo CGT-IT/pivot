@@ -1,6 +1,6 @@
 <?php $offre = $args; ?>
 
-<div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 col-12 offset-xl-2 offset-lg-2 offset-md-2">
+<div class="col-12">
   <!--Image carousel-->
   <div id="pivotCarousel" class="carousel slide" data-ride="carousel">
     <!-- Indicators -->
@@ -23,7 +23,7 @@
     </ol>
 
     <!-- Images -->
-    <div class="carousel-inner" style="height:auto;max-height: 600px;">
+    <div class="carousel-inner">
       <?php $i = 0;?>
       <?php foreach($offre->relOffre as $relation): ?>
         <!--if it's well an image-->
@@ -36,15 +36,15 @@
                   <?php foreach($relation as $specification): ?>
                     <?php $media_name = _get_urn_value($specification, 'urn:fld:nomofr'); ?>
                     <?php if(strpos(_get_urn_value($specification, 'urn:fld:url'), 'pivotmedia')): ?>
-                      <figure>
-                        <img class="pivot-img pivot-img-details" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $relation->offre->attributes()->codeCgt->__toString(); ?>;w=900"/>
+                      <figure class="embed-responsive embed-responsive-16by9">
+                        <img class="embed-responsive-item pivot-img pivot-img-details" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $relation->offre->attributes()->codeCgt->__toString(); ?>;w=1920"/>
                         <?php if($copyright = _get_urn_value($specification, 'urn:fld:copyr')): ?>
                           <figcaption><small><?php print _construct_media_copyright($copyright, _get_urn_value($specification, 'urn:fld:date'));?></small></figcaption>
                         <?php endif; ?>
                       </figure>
                     <?php else: ?>
-                      <figure>
-                        <img class="pivot-img pivot-img-details" src="<?php print _get_urn_value($specification, 'urn:fld:url'); ?>"/>
+                      <figure class="embed-responsive embed-responsive-16by9">
+                        <img class="embed-responsive-item pivot-img pivot-img-details" src="<?php print _get_urn_value($specification, 'urn:fld:url'); ?>"/>
                         <?php if($copyright = _get_urn_value($specification, 'urn:fld:copyr')): ?>
                           <figcaption><small><?php print _construct_media_copyright($copyright, _get_urn_value($specification, 'urn:fld:date'));?></small></figcaption>
                         <?php endif; ?>
