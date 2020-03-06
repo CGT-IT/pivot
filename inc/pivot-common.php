@@ -296,6 +296,13 @@ function _get_list_typeofr($selected_id = NULL){
   return $typeofr_list;
 }
 
+/**
+ * 
+ * @param string $type 
+ * @param string $value 
+ * @param string $selected_value = selected option
+ * @return string = list of HTML option
+ */
 function _get_commune_from_pivot($type, $value, $selected_value = NULL){
   // Construction of request uri
   $uri = 'https://pivotweb.tourismewallonie.be/PivotWeb-3.1/thesaurus/tins/'.$type.'/'.$value.';pretty=true;fmt=xml';
