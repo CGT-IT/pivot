@@ -592,7 +592,7 @@ function _add_section_accessi($offre){
 function _add_pivot_map($map = 0, $nb_col = 12, $width = '600px', $height = '800px', $single_offer = FALSE){
   $output = '';
   if($single_offer == FALSE){
-    $output = '<div id="maparea" class="'.(($map==1)?'col-'.$nb_col.' d-none d-md-block':'').'">';
+    $output = '<div id="maparea" data-nb-col="'.$nb_col.'" class="'.(($map==1)?'col-'.$nb_col.' d-none d-md-block':'').'">';
   }
   // Include leaflet css for map
   $output .= ' <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"

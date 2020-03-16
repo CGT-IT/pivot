@@ -5,10 +5,12 @@
     if($('#maparea').length){
       if($("#carte").length){
         $("#carte").click(function() {
-          $('#maparea').toggleClass("col-7");
+          let mapNbCol = "col-"+$('#maparea').data("nb-col");
+          $('#maparea').toggleClass(mapNbCol);
           $("#carte").toggleClass("fa-map-marked-alt");
           $("#carte").toggleClass("fa-list");
-          $('#offers-area').toggleClass("col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-5");
+          let offerNbCol = 12 - $('#maparea').data("nb-col");
+          $('#offers-area').toggleClass("col-xs-12 col-sm-12 col-md-"+offerNbCol+" col-lg-"+offerNbCol+" col-xl-"+offerNbCol);
           $('#offers-area').toggleClass("col-12");
           $('#offers-area').toggleClass("pivot-offer-list");
           $('.offers-area-col').each(function(){
@@ -39,13 +41,13 @@
             $(this).find(".title-no-header").toggle();
           });
           
-          if($("#maparea.col-7").length){
+          if($("#maparea[class^='col-']").length){
             map_call();
           }
         });
-        if($("#maparea.col-7").length){
-          map_call();
-        }
+      }
+      if($("#maparea[class^='col-']").length){
+        map_call();
       }
     }
   });
