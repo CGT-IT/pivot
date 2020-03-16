@@ -28,7 +28,7 @@
             }
             if($(this).hasClass('nb-col-5')){
               $(this).toggleClass("col-12");
-              $(this).toggleClass("w-xl-20 w-lg-20 col-md-6 col-sm-6 col-xs-12");  
+              $(this).toggleClass("w-xl-20 w-lg-20 w-md-20 w-sm-20 w-20");  
             }
             if($(this).hasClass('nb-col-6')){
               $(this).toggleClass("col-12");

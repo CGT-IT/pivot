@@ -622,22 +622,21 @@ function _set_nb_col($map, $nb_col){
   }else{
     switch($nb_col){
       case 2:
-        $output = 'col-xl-6 col-lg-6 ';
+        $output = 'col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12 ';
         break;
       case 3:
-        $output = 'col-xl-4 col-lg-4 ';
+        $output = 'col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12 ';
         break;
       case 5:
-        $output = 'w-xl-20 w-lg-20 ';
+        $output = 'w-xl-20 w-lg-20 w-md-20 w-sm-20 w-20 ';
         break;
       case 6:
-        $output = 'col-xl-2 col-lg-2 ';
+        $output = 'col-xl-2 col-lg-2 col-md-6 col-sm-6 col-xs-12 ';
         break;
       default:
-        $output = 'col-xl-3 col-lg-4 ';
+        $output = 'col-xl-3 col-lg-4 col-md-6 col-sm-6 col-xs-12 ';
         break;
     }
-    $output .= 'col-md-6 col-sm-6 col-xs-12 ';
   }
 
   return $output;
