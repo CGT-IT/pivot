@@ -201,7 +201,9 @@ add_filter('pre_handle_404', function($preempt, $wp_query) {
   global $wp;
   $customPages = pivot_get_pages_path();
   $customPages[] = array('path' => 'details');
-  $key = array_search($wp->request, array_column($customPages, 'path'));
+  // To be sure paged case are also treated
+  $request_path = rtrim(strtok($wp->request, '&'), '/');
+  $key = array_search($request_path, array_column($customPages, 'path'));
   if (isset($key) && is_int($key)) {
     pivot_create_fake_post($customPages[$key]['title'], $customPages[$key]['path']);
     $preempt = true;
