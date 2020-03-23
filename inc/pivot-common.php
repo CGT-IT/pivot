@@ -65,6 +65,43 @@ function _get_translated_value($field){
   }
 }
 
+function _get_event_categories(){
+  
+  $uri = 'https://pivotweb.tourismewallonie.be/PivotWeb-3.1/thesaurus/typeofr/9/urn:cat:classlab:classif;pretty=true;fmt=xml;';
+
+  $ssl_options=array(
+    "ssl"=>array(
+      "verify_peer"=>false,
+      "verify_peer_name"=>false,
+    ),
+  );
+
+  $xml_response = file_get_contents($uri, false, stream_context_create($ssl_options));
+  $event_categories = simplexml_load_string($xml_response);
+  print '<pre>';print_r($event_categories);print '</pre>';
+  
+  // une methode en accès direct pour arriver et boucler sur la spec "urn:fld:catevt"
+  // Si on veut aller plus loin et essayer de rendre la fonction utilisable dans d'autre contexte, 
+  // faudrait imbriquer 2 boucles jusqu'à arriver à la spec voulue ("urn:fld:catevt" dans ce cas-ci)
+  foreach($event_categories->spec->spec[1] as $category){
+    if($category->attributes()->urn){
+      /* L'urn est un attribut voilà comment y accéder.
+       * 
+       * $category->attributes()->urn
+       */
+      /* le label en français, pcq je sais que la valeur FR en tjs en première.
+       * Pour être propre faudrait faire une boucle sur les label jusqu'à trouver l'attribut lang = FR
+       * 
+       * $category->label[0]->value->__toString()
+       */
+      
+      // print '<pre>';print_r($category);print '</pre>';
+
+      print 'Option URN: '.$category->attributes()->urn.' et son label fr'.$category->label[0]->value->__toString().'<br>';
+    }
+  }
+}
+
 /**
  * Call the "thesaurus" web service to get the translated documentation of specific URN
  * 
@@ -172,9 +209,10 @@ function _search_specific_urn($offre, $urn){
  * Will return a span with image of the ranking picto inside.
  * 
  * @param Object $offre the complete offer Object
+ * @param string $color color in hexadecimal format without # (null by default)
  * @return string
  */
-function _get_ranking_picto($offre){
+function _get_ranking_picto($offre, $color = null){
   $urn = 'urn:fld:class';
   // Loop on each specific field
   foreach($offre->spec as $specification){
@@ -190,7 +228,7 @@ function _get_ranking_picto($offre){
       $alt_attribute = 'alt="image '.$urn_doc.'"';
       $height = 20;
       // Construct <img/> tag
-      $img = '<img '.$title_attribute.' '.$alt_attribute.' class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$urn.';h='.$height;
+      $img = '<img '.$title_attribute.' '.$alt_attribute.' class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$urn.(($color)?';c='.$color:'').';h='.$height;
       $img .= '"/>';
 
       $output .= $img.'</span>';
