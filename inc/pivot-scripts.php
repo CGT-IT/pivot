@@ -38,6 +38,11 @@ function pivot_enqueue_admin_script($hook) {
     wp_enqueue_script('clipboard_script', MY_PLUGIN_URL.'js/clipboard.min.js',array('jquery'), '1.0', true);
     wp_enqueue_script('pivot_shortcode_script', MY_PLUGIN_URL.'js/shortcode.js',array('jquery'), '3.0', true);
   }
+  if((isset($_GET['page']) && $_GET['page'] === "pivot-shortcode-event")){
+    wp_enqueue_script('clipboard_script', MY_PLUGIN_URL.'js/clipboard.min.js',array('jquery'), '1.0', true);
+    wp_enqueue_script('pivot_shortcode_event_script', MY_PLUGIN_URL.'js/shortcodeevent.js',array('jquery'), '1.0', true);
+    wp_enqueue_style('pivot_admin_css', MY_PLUGIN_URL.'css/pivot-admin.css',array(), '1.0', false);
+  }
   if(isset($_GET['page']) && $_GET['page'] === "pivot-pages" && isset($_GET['edit']) && $_GET['edit'] === 'true'){
     wp_enqueue_script('pivot_pages_script', MY_PLUGIN_URL.'js/pages.js',array('jquery'), '3.3', true);
   }

@@ -223,7 +223,7 @@ function pivot_create_fake_post($title, $path){
   global $wp_query;
   global $wp;
   // negative ID, to avoid clash with a valid post
-  $post_id = -99;
+  $post_id = 0;
   
   $post = new stdClass();
   $post->ID = $post_id;

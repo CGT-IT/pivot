@@ -3,6 +3,7 @@
 add_action('add_meta_boxes', 'pivot_build_shortcode_box');
 add_shortcode('pivot_shortcode', 'pivot_custom_shortcode');
 add_shortcode('pivot_shortcode_offer_details', 'pivot_custom_shortcode_offer_details');
+add_shortcode('pivot_shortcode_event', 'pivot_custom_shortcode_event');
 add_shortcode('pivot_shortcode_event_slider', 'pivot_custom_shortcode_event_slider');
 
 /**
@@ -100,6 +101,132 @@ function pivot_custom_shortcode_offer_details($atts){
 
     // Add main HTML content in output
     $output .= pivot_template($template_name, $offre);
+  }
+  return $output;
+}
+
+/**
+ * Define shortcode content
+ * Should look like this [pivot_lodging query='QRY-01-0000-000D' path-details='event' nboffers='6' type='activite']
+ * @param array $atts attributes 
+ * @return string HTML content
+ */
+function pivot_custom_shortcode_event($atts) {
+  $output = '';
+  $find_type = false;
+  $field_params = array();
+  
+	// Attributes
+	$atts = shortcode_atts(
+		array(
+      'query' => '', // Query Pivot
+      'nboffers' => '3', // Number of offers to display
+      'nbcol' => '4', // Number of column to display
+      'date1' => '', // URN of the first date you want to compare
+      'operator1' => '', // Comparison operator for the first date. Allowed values: equal, lesser, lesserequal, greater, greaterequal
+      'value1' => '', // Relative first date value to compare
+      'date2' => '', // URN of the first date you want to compare
+      'operator2' => '', // Comparison operator for the second date. Allowed values: equal, lesser, lesserequal, greater, greaterequal
+      'value2' => '', // Relative second date value to compare
+      'sortmode' => '', // Sort mode. Allowed values: shuffle, asc, desc
+      'sortfield' => '', // URN of the field you want to sort
+		),
+		$atts,
+		'pivot_shortcode_event'
+	);
+
+  // Check if attribute "query" is not empty
+  if(empty($atts['query'])){
+    $text = __('The <strong>query</strong> argument is missing', 'pivot');
+    return _show_warning($text, 'danger');
+  }else{
+    // Construct filter if set for first date
+    if(!empty($atts['date1'])){
+      // Operator is required so check if it is well set
+      if(empty($atts['operator1'])){
+        $text = __('The attribute "operator1" is required as you defined a startdate attribute', 'pivot');
+        return _show_warning($text, 'danger');
+      }else{
+        $valid_operator = array("equal", "lesser", "lesserequal", "greater", "greaterequal");
+        // Check if operator is valid
+        if(in_array($atts['operator1'], $valid_operator)){
+          if(!empty($atts['value1'])){
+            $field_params['filters']['shortcode_date_start']['name'] = $atts['date1'];
+            $field_params['filters']['shortcode_date_start']['operator'] = $atts['operator1'];
+            $field_params['filters']['shortcode_date_start']['searched_value'][] = date("d/m/Y", strtotime($atts['value1']));
+          }else{
+            $text = __('The attribute "value1" is required as you defined a startdate attribute', 'pivot');
+            return _show_warning($text, 'danger');
+          }
+        }else{
+          // If operator not valid, construction of error message
+          $operator_list = '<ul>';
+          foreach($valid_operator as $operator){
+            $operator_list .= '<li>'.$operator.'</li>';
+          }
+          $operator_list .= '</ul>';
+          $text = __('The attribute "operator1" is not valid, it should be one of these: '.$operator_list, 'pivot');
+          return _show_warning($text, 'danger');
+        }
+      }
+    }
+    // Construct filter if set for second date
+    if(!empty($atts['date2'])){
+      // Operator is required so check if it is well set
+      if(empty($atts['operator2'])){
+        $text = __('The attribute "operator2" is required as you defined a startdate attribute', 'pivot');
+        return _show_warning($text, 'danger');
+      }else{
+        $valid_operator = array("equal", "lesser", "lesserequal", "greater", "greaterequal");
+        // Check if operator is valid
+        if(in_array($atts['operator2'], $valid_operator)){
+          if(!empty($atts['value2'])){
+            $field_params['filters']['shortcode_date_end']['name'] = $atts['date2'];
+            $field_params['filters']['shortcode_date_end']['operator'] = $atts['operator2'];
+            $field_params['filters']['shortcode_date_end']['searched_value'][] = date("d/m/Y", strtotime($atts['value2']));
+          }else{
+            $text = __('The attribute "value2" is required as you defined a startdate attribute', 'pivot');
+            return _show_warning($text, 'danger');
+          }
+        }else{
+          // If operator not valid, construction of error message
+          $operator_list = '<ul>';
+          foreach($valid_operator as $operator){
+            $operator_list .= '<li>'.$operator.'</li>';
+          }
+          $operator_list .= '</ul>';
+          $text = __('The attribute "operator2" is not valid, it should be one of these: '.$operator_list, 'pivot');
+          return _show_warning($text, 'danger');
+        }
+      }
+    }
+    // Check sorting
+    if(!empty($atts['sortmode'])){
+      $field_params['sortMode'] = $atts['sortmode'];
+      if(!empty($atts['sortfield']) && $atts['sortmode'] != 'shuffle'){
+        $field_params['sortField'] = $atts['sortfield'];
+      }
+    }
+    
+    $xml_query = _xml_query_construction($atts['query'], $field_params);
+
+    // Get template name depending of query type
+    $template_name = 'pivot-activite-details-part-template';
+
+    // Get offers
+    $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query);
+
+    $output = '<div class="container-fluid pivot-list">'
+               .'<div class="row row-eq-height pivot-row d-flex flex-wrap">';
+
+    // Add main HTML content in output
+    foreach($offres as $offre){
+      $offre->path = 'details';
+      $offre->nb_per_row = $atts['nbcol'];
+      $output.= pivot_template($template_name, $offre);
+    }
+
+    $output .= '</div></div>';
   }
   return $output;
 }
@@ -345,6 +472,138 @@ function pivot_build_shortcode_box_html(){
   <div id="major-publishing-actions" class="form-item form-type-textfield form-item-pivot-shortcode">
     <label class="bold" for="edit-pivot-shortcode"><?php esc_html_e('Shortcode to insert', 'pivot')?> </label>
     <input id="pivot-shortcode-insertion" size="120" style="text-align: left;" value="">
+    <div class="button" id="clipboard-btn" data-clipboard-target="#pivot-shortcode-insertion"><span class="dashicons dashicons-editor-paste-text"></span></div>
+    <p class="description"><?php esc_html_e('Copy and paste this text in your post, page, ... body', 'pivot')?></p>
+  </div>
+
+  <?php
+}
+
+/**
+ * HTML content for the custom meta box
+ */
+function pivot_build_shortcode_event_box_html(){
+  ?>
+  <h1 id="pivot-shortcodeh1"><?php _e('Create your shortcode event', 'pivot');?></h1>
+  <div class="form-item form-type-textfield form-item-pivot-query">
+    <label for="edit-pivot-query"><?php esc_html_e('Query', 'pivot') ?></label>
+    <input type="text" id="edit-pivot-query" name="query" size="60" maxlength="128" class="form-text">
+    <p class="description"><?php esc_html_e('Pivot predefined query', 'pivot') ?></p>
+  </div>
+
+  <div class="form-item form-item-pivot-nb-offers">
+    <label for="edit-pivot-nb-offers"><?php esc_html_e('Define number of offers to display', 'pivot') ?> </label>
+    <input type="number" id="edit-pivot-nb-offers" name="nb-offers" min="1" max="30" value="3">
+    <p class="description"><?php esc_html_e('It will be 3 by default', 'pivot')?></p>
+  </div>
+
+  <div class="form-item form-item-pivot-nb-col">
+    <label for="edit-pivot-nb-col"><?php esc_html_e('Define number of offers to display per line', 'pivot') ?> </label>
+    <input type="number" id="edit-pivot-nb-col" name="nb-col" min="2" max="6" value="4">
+    <p class="description"><?php esc_html_e('It will be 4 by default', 'pivot')?></p>
+  </div>
+
+  <div class="form-item form-type-textfield form-item-pivot-date1">
+    <label for="edit-pivot-date1"><?php esc_html_e('First date', 'pivot')?> </label>
+    <select id="edit-pivot-date1" name="date1">
+      <option selected value=""><?php esc_html_e('Choose a date', 'pivot') ?></option>
+      <option value="urn:fld:datedebvalid"><?php esc_html_e('Début de publication', 'pivot') ?></option>
+      <option value="urn:fld:datefinvalid"><?php esc_html_e('Fin de publication', 'pivot') ?></option>
+      <option value="urn:fld:date:datedeb"><?php esc_html_e('Date de début', 'pivot') ?></option>
+      <option value="urn:fld:date:datefin"><?php esc_html_e('Date de fin', 'pivot') ?></option>
+    </select>
+    <p class="description"><?php esc_html_e('URN or ID of the date field you want to filter', 'pivot')?></p>
+  </div>
+  <div id="value-date1-infos">
+    <div class="form-item form-type-textfield form-item-pivot-operator1">
+      <label for="edit-pivot-operator1"><?php esc_html_e('Operator', 'pivot')?> </label>
+      <select id="edit-pivot-operator1" name="operator1">
+        <option selected disabled hidden><?php esc_html_e('Choose an operator', 'pivot')?></option>
+        <option value="equal"><?php esc_html_e('Equal', 'pivot')?></option>
+        <option value="lesser"><?php esc_html_e('Lesser', 'pivot')?></option>
+        <option value="lesserequal"><?php esc_html_e('Lesser or equal', 'pivot')?></option>
+        <option value="greater"><?php esc_html_e('Greater', 'pivot')?></option>
+        <option value="greaterequal"><?php esc_html_e('Greater or equal', 'pivot')?></option>
+      </select>
+      <p class="description"><?php esc_html_e('Type of comparison', 'pivot') ?></p>
+    </div>
+    <div class="form-item form-type-textfield form-item-pivot-value">
+      <label for="edit-pivot-value1"><?php esc_html_e('Relative start date value', 'pivot')?> </label>
+      <input type="number" id="edit-pivot-value1" name="value1" min="1" max="50">
+    </div>
+    <div class="form-item form-type-textfield form-item-pivot-format">
+      <label for="edit-pivot-format1"><?php esc_html_e('Format', 'pivot') ?> </label>
+      <select id="edit-pivot-format1" name="format1">
+        <option selected value=""><?php esc_html_e('Choose a format', 'pivot') ?></option>
+        <option value="days"><?php esc_html_e('Day(s)', 'pivot') ?></option>
+        <option value="weeks"><?php esc_html_e('Week(s)', 'pivot') ?></option>
+        <option value="months"><?php esc_html_e('Month(s)', 'pivot') ?></option>
+      </select>
+      <p class="description"><a target='_blank' href='https://www.php.net/manual/fr/datetime.formats.relative.php'><?php esc_html_e('It will use relative dates', 'pivot') ?></a></p>
+    </div>
+  </div>
+
+  <div class="form-item form-type-textfield form-item-pivot-date2">
+    <label for="edit-pivot-date2"><?php esc_html_e('Second date', 'pivot')?> </label>
+    <select id="edit-pivot-date2" name="date2">
+      <option selected value=""><?php esc_html_e('Choose a date', 'pivot') ?></option>
+      <option value="urn:fld:datedebvalid"><?php esc_html_e('Début de publication', 'pivot') ?></option>
+      <option value="urn:fld:datefinvalid"><?php esc_html_e('Fin de publication', 'pivot') ?></option>
+      <option value="urn:fld:date:datedeb"><?php esc_html_e('Date de début', 'pivot') ?></option>
+      <option value="urn:fld:date:datefin"><?php esc_html_e('Date de fin', 'pivot') ?></option>
+    </select>
+    <p class="description"><?php esc_html_e('URN or ID of the date field you want to filter', 'pivot')?></p>
+  </div>  
+  <div id="value-date2-infos">
+    <div class="form-item form-type-textfield form-item-pivot-operator2">
+      <label for="edit-pivot-operator2"><?php esc_html_e('Operator', 'pivot')?> </label>
+      <select id="edit-pivot-operator2" name="operator2">
+        <option selected disabled hidden><?php esc_html_e('Choose an operator', 'pivot')?></option>
+        <option value="equal"><?php esc_html_e('Equal', 'pivot')?></option>
+        <option value="lesser"><?php esc_html_e('Lesser', 'pivot')?></option>
+        <option value="lesserequal"><?php esc_html_e('Lesser or equal', 'pivot')?></option>
+        <option value="greater"><?php esc_html_e('Greater', 'pivot')?></option>
+        <option value="greaterequal"><?php esc_html_e('Greater or equal', 'pivot')?></option>
+      </select>
+      <p class="description"><?php esc_html_e('Type of comparison', 'pivot') ?></p>
+    </div>
+    <div class="form-item form-type-textfield form-item-pivot-value">
+      <label for="edit-pivot-value2"><?php esc_html_e('Relative start date value', 'pivot')?> </label>
+      <input type="number" id="edit-pivot-value2" name="value2" min="1" max="50">
+    </div>
+    <div class="form-item form-type-textfield form-item-pivot-format">
+      <label for="edit-pivot-format2"><?php esc_html_e('Format', 'pivot') ?> </label>
+      <select id="edit-pivot-format2" name="format2">
+        <option selected value=""><?php esc_html_e('Choose a format', 'pivot') ?></option>
+        <option value="days"><?php esc_html_e('Day(s)', 'pivot') ?></option>
+        <option value="weeks"><?php esc_html_e('Week(s)', 'pivot') ?></option>
+        <option value="months"><?php esc_html_e('Month(s)', 'pivot') ?></option>
+      </select>
+      <p class="description"><a target='_blank' href='https://www.php.net/manual/fr/datetime.formats.relative.php'><?php esc_html_e('It will use relative dates', 'pivot') ?></a></p>
+    </div>
+  </div>
+
+  <div class="form-item form-type-textfield form-item-pivot-sortMode">
+    <label for="edit-pivot-sortMode"><?php esc_html_e('Sort mode', 'pivot') ?> </label>
+    <select id="edit-pivot-sortMode" name="sortMode">
+      <option selected value=""><?php esc_html_e('Choose an order', 'pivot') ?></option>
+      <option value="ASC"><?php esc_html_e('Ascending', 'pivot') ?></option>
+      <option value="DESC"><?php esc_html_e('Descending', 'pivot') ?></option>
+      <option value="shuffle"><?php esc_html_e('Shuffle', 'pivot') ?></option>
+    </select>
+    <p class="description"><?php esc_html_e('Choose the sort mode for the query', 'pivot') ?></p>
+  </div>
+  <div class="form-item form-type-textfield form-item-pivot-sortField">
+    <label for="edit-pivot-sortField"><?php esc_html_e('Sort Field', 'pivot') ?> </label>
+    <input type="text" id="edit-pivot-sortField" name="sortField" maxlength="128" class="form-text">
+    <p class="description"><?php esc_html_e('Define the field on which the sort mode will apply', 'pivot') ?></p>
+  </div>
+
+  <div><input id="build-shortcode-event" type="button" class="button" value="<?php esc_html_e('Build shortcode', 'pivot')?>"> </button></div>
+  <br>
+  <div id="major-publishing-actions" class="form-item form-type-textfield form-item-pivot-shortcode">
+    <label class="bold" for="edit-pivot-shortcode"><?php esc_html_e('Shortcode to insert', 'pivot')?> </label>
+    <input id="pivot-shortcode-insertion" size="200" style="text-align: left;" value="">
     <div class="button" id="clipboard-btn" data-clipboard-target="#pivot-shortcode-insertion"><span class="dashicons dashicons-editor-paste-text"></span></div>
     <p class="description"><?php esc_html_e('Copy and paste this text in your post, page, ... body', 'pivot')?></p>
   </div>
