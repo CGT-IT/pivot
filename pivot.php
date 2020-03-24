@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 1.4.5
+ * Version: 1.4.6
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -285,6 +285,7 @@ function pivot_menu() {
   $pivot_filters_submenu = add_submenu_page('pivot-admin', 'Filters', 'Manage filters', 'delete_others_pages', 'pivot-filters', 'pivot_filters_settings');
   add_action( "load-$pivot_filters_submenu", 'pivot_filter_screen_option');
   add_submenu_page('pivot-admin', 'Shortcode', 'Shortcode', 'manage_options', 'pivot-shortcode', 'pivot_build_shortcode_box_html');
+  add_submenu_page('pivot-admin', 'Shortcode Event', 'Shortcode Event', 'delete_others_pages', 'pivot-shortcode-event', 'pivot_build_shortcode_event_box_html');
 }
 
 function init() {
