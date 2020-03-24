@@ -277,3 +277,109 @@ i#carte {
     margin-left: 5px;
   }
 }
+
+
+/** Slider Event **/
+/* show 2 items */
+#pivot-event-carousel .carousel-inner.nb-col-2 .active,
+#pivot-event-carousel .carousel-inner.nb-col-2 .active + .carousel-item{
+  display: block;
+}
+#pivot-event-carousel .carousel-inner.nb-col-2 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left),
+#pivot-event-carousel .carousel-inner.nb-col-2 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item{
+  transition: none;
+}
+#pivot-event-carousel .carousel-inner.nb-col-2 .active.carousel-item + .carousel-item {
+  z-index: -1;
+  display: block;
+  visibility: visible;
+}
+
+/* show 3 items */
+#pivot-event-carousel .carousel-inner.nb-col-3 .active,
+#pivot-event-carousel .carousel-inner.nb-col-3 .active + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-3 .active + .carousel-item + .carousel-item{
+  display: block;
+}
+#pivot-event-carousel .carousel-inner.nb-col-3 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left),
+#pivot-event-carousel .carousel-inner.nb-col-3 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-3 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item{
+  transition: none;
+}
+#pivot-event-carousel .carousel-inner.nb-col-3 .active.carousel-item + .carousel-item + .carousel-item {
+  z-index: -1;
+  display: block;
+  visibility: visible;
+}
+
+/* show 4 items */
+#pivot-event-carousel .carousel-inner.nb-col-4 .active,
+#pivot-event-carousel .carousel-inner.nb-col-4 .active + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-4 .active + .carousel-item + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-4 .active + .carousel-item + .carousel-item + .carousel-item{
+  display: block;
+}
+#pivot-event-carousel .carousel-inner.nb-col-4 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left),
+#pivot-event-carousel .carousel-inner.nb-col-4 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-4 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-4 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item{
+  transition: none;
+}
+#pivot-event-carousel .carousel-inner.nb-col-4 .active.carousel-item + .carousel-item + .carousel-item + .carousel-item {
+  z-index: -1;
+  display: block;
+  visibility: visible;
+}
+
+/* show 5 items */
+#pivot-event-carousel .carousel-inner.nb-col-5 .active,
+#pivot-event-carousel .carousel-inner.nb-col-5 .active + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-5 .active + .carousel-item + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-5 .active + .carousel-item + .carousel-item + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-5 .active + .carousel-item + .carousel-item + .carousel-item + .carousel-item{
+  display: block;
+}
+#pivot-event-carousel .carousel-inner.nb-col-5 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left),
+#pivot-event-carousel .carousel-inner.nb-col-5 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-5 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-5 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-5 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item + .carousel-item{
+  transition: none;
+}
+#pivot-event-carousel .carousel-inner.nb-col-5 .active.carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item {
+  z-index: -1;
+  display: block;
+  visibility: visible;
+}
+
+/* show 6 items */
+#pivot-event-carousel .carousel-inner.nb-col-6 .active,
+#pivot-event-carousel .carousel-inner.nb-col-6 .active + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-6 .active + .carousel-item + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-6 .active + .carousel-item + .carousel-item + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-6 .active + .carousel-item + .carousel-item + .carousel-item + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-6 .active + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item{
+  display: block;
+}
+#pivot-event-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left),
+#pivot-event-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item + .carousel-item,
+#pivot-event-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item{
+  transition: none;
+}
+#pivot-event-carousel .carousel-inner.nb-col-6 .active.carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item {
+  z-index: -1;
+  display: block;
+  visibility: visible;
+}
+#pivot-event-carousel .carousel-item{
+    margin-right: inherit!important;
+}
+
+#pivot-event-carousel .carousel-inner .carousel-item-next,
+#pivot-event-carousel .carousel-inner .carousel-item-prev {
+  position: relative;
+  transform: translate3d(0, 0, 0);
+}
