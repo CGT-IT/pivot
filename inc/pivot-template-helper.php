@@ -643,13 +643,33 @@ function _set_nb_col($map, $nb_col){
 }
 
 /**
+ * Return class defining col system for bootstrap
+ * @param int $nb_per_row
+ * @return string class defining col system for bootstrap
+ */
+function _set_slider_col($nb_per_row){
+  switch($nb_per_row){
+    case 2:
+      return 'col-6';
+    case 3:
+      return 'col-4';
+    case 4:
+      return 'col-3';
+    case 5:
+      return 'w-xl-20 w-lg-20 w-md-20 w-sm-20 w-20 ';
+    case 6:
+      return 'col-2';
+  }
+}
+
+/**
  * Return a div with a background image
  * @param string $image
  * @return string
  */
 function _add_banner_image($image){
   if($image != NULL && $image != ''){
-    $output = '<div class="row" style="background-image:url('.$image.');
+    $output = '<div id="pivot-list-banner" class="row" style="background-image:url('.$image.');
                                        background-position: center center;
                                        background-repeat: no-repeat;
                                        background-size: cover;

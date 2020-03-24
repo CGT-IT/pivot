@@ -3,6 +3,73 @@
 add_action('add_meta_boxes', 'pivot_build_shortcode_box');
 add_shortcode('pivot_shortcode', 'pivot_custom_shortcode');
 add_shortcode('pivot_shortcode_offer_details', 'pivot_custom_shortcode_offer_details');
+add_shortcode('pivot_shortcode_event_slider', 'pivot_custom_shortcode_event_slider');
+
+/**
+ * Shortcode to display a slider of event
+ * @param array $atts
+ * @return string HTML content
+ */
+function pivot_custom_shortcode_event_slider($atts){
+  $output = '';
+  $field_params = array();
+	// Attributes
+	$atts = shortcode_atts(
+		array(
+      'query' => '',
+      'nboffers' => '6',
+      'nbcol' => '2',
+      'sortmode' => '',
+      'sortfield' => '',
+		),
+		$atts,
+		'pivot_shortcode_event_slider'
+	);
+
+  // Check if attribute "query" is not empty
+  if(empty($atts['query'])){
+    $text = __('The <strong>query</strong> argument is missing', 'pivot');
+    print _show_warning($text, 'danger');
+  }else{
+    if(!empty($atts['sortmode'])){
+      $field_params['sortMode'] = $atts['sortmode'];
+      if(!empty($atts['sortfield']) && $atts['sortmode'] != 'shuffle'){
+        $field_params['sortField'] = $atts['sortfield'];
+      }
+    }
+
+    $field_params['page_type'] = 'activite';
+    $xml_query = _xml_query_construction($atts['query'], $field_params);
+
+    // Get template name depending of query type
+    $template_name = 'pivot-eventslider-details-part-template';
+
+    // Get offers
+    $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query);
+
+    // Open HTML balises
+    $output = '<div class="container-fluid">
+                <div id="pivot-event-carousel" class="carousel slide" data-ride="carousel">
+                  <div class="carousel-inner row w-100 mx-auto nb-col-'.$atts['nbcol'].'" data-nbcol="'.$atts['nbcol'].'">';
+
+    // Add main HTML content in output
+    $i = 0;
+    foreach($offres as $offre){
+      $offre->path = 'details';
+      $offre->nb_per_row = $atts['nbcol'];
+      // Will add an 'active' class for the first element
+      if($i == 0){
+        $offre->first = TRUE;
+      }
+      $output.= pivot_template($template_name, $offre);
+      $i++;
+    }
+
+    // Close HTML balises
+    $output .= '</div></div></div>';
+  }
+  return $output;
+}
 
 /**
  * Define shortcode content
