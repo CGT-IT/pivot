@@ -205,7 +205,7 @@ add_filter('pre_handle_404', function($preempt, $wp_query) {
   $request_path = rtrim(strtok($wp->request, '&'), '/');
   $key = array_search($request_path, array_column($customPages, 'path'));
   if (isset($key) && is_int($key)) {
-    pivot_create_fake_post($customPages[$key]['title'], $customPages[$key]['path']);
+    pivot_create_fake_post($customPages[$key]['title'], $customPages[$key]['path'], $customPages[$key]['description']);
     $preempt = true;
   }
 
@@ -219,7 +219,7 @@ add_filter('pre_handle_404', function($preempt, $wp_query) {
  * @param string $title
  * @param string $path
  */
-function pivot_create_fake_post($title, $path){
+function pivot_create_fake_post($title, $path, $description){
   global $wp_query;
   global $wp;
   // negative ID, to avoid clash with a valid post
@@ -231,6 +231,7 @@ function pivot_create_fake_post($title, $path){
   $post->post_date = current_time( 'mysql' );
   $post->post_date_gmt = current_time( 'mysql', 1 );
   $post->post_title = $title;
+  $post->post_excerpt = $description;
   $post->post_content = '';
   $post->post_status = 'publish';
   $post->comment_status = 'closed';
