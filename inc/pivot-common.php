@@ -323,13 +323,19 @@ function _get_list_typeofr($selected_id = NULL){
   $xml_response = file_get_contents($uri, false, stream_context_create($ssl_options));
   $typeofr = simplexml_load_string($xml_response);
   $typeofr_list = '';
-
+  
   foreach($typeofr as $type){
     if($selected_id == $type->attributes()['order']){
       $typeofr_list .= '<option selected="selected" value="'.$type->attributes()['order'].'">'.$type->label->value.'</option>';
     }else{
       $typeofr_list .= '<option value="'.$type->attributes()['order'].'">'.$type->label->value.'</option>';
     }
+  }
+  
+  if($selected_id == 'custom'){
+    $typeofr_list .= '<option selected="selected" value="custom">Custom (hors Pivot) spécialement utilisé pour les vignettes en shortcode</option>';
+  }else{
+    $typeofr_list .= '<option value="custom">Custom (hors Pivot) spécialement utilisé pour les vignettes en shortcode</option>';
   }
   return $typeofr_list;
 }

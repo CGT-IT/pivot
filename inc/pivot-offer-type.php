@@ -127,15 +127,15 @@ function pivot_offer_type_action(){
     $wpdb->delete($wpdb->prefix.'pivot_offer_type', array('id' => $_GET['delete']), array('%d'));
   }
   // Process the changes in the custom table
-  if(isset($_POST['pivot_add_type']) && $_POST['pivot_typeofr'] != '' && $_POST['parent'] != '') {
+  if(isset($_POST['pivot_add_type']) && $_POST['parent'] != '') {
     // Add new row in the custom table
     if(empty($_POST['type_id'])) {
       if(empty(pivot_get_offer_type($_POST['id']))){
         $wpdb->insert( 
           $wpdb->prefix.'pivot_offer_type', 
           array( 
-            'id' => $_POST['id'], 
-            'type' => $_POST['type'],
+            'id' => (!empty($_POST['id'])?$_POST['id']:time()), 
+            'type' => (!empty($_POST['type'])?$_POST['type']:$_POST['parent']),
             'parent' => $_POST['parent']
           ), 
           array('%d','%s','%s') 
