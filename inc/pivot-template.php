@@ -219,7 +219,7 @@ add_filter('pre_handle_404', function($preempt, $wp_query) {
  * @param string $title
  * @param string $path
  */
-function pivot_create_fake_post($title, $path, $description){
+function pivot_create_fake_post($title, $path, $description, $post_type='page'){
   global $wp_query;
   global $wp;
   // negative ID, to avoid clash with a valid post
@@ -238,7 +238,7 @@ function pivot_create_fake_post($title, $path, $description){
   $post->ping_status = 'closed';
   // append random number to avoid clash
   $post->post_name = $path; 
-  $post->post_type = 'page';
+  $post->post_type = $post_type;
   // important!
   $post->filter = 'raw';
   
@@ -253,7 +253,7 @@ function pivot_create_fake_post($title, $path, $description){
   $wp_query->found_posts = 1;
   $wp_query->post_count = 1;
   $wp_query->max_num_pages = 1; 
-  $wp_query->is_page = true;
+  $wp_query->is_page = ($post_type=='page')?true:false;
   $wp_query->is_singular = true; 
   $wp_query->is_single = false; 
   $wp_query->is_attachment = false;

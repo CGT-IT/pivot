@@ -654,6 +654,8 @@ function _get_offer_details($offer_id = NULL, $details = 3){
         $params['type'] = 'offer';
         $xml_object = _pivot_request('offer-details', $details, $params);
         $offre = $xml_object->offre;
+        $url = get_bloginfo('wpurl').((substr(get_locale(), 0, 2 )=='fr')?'':'/'.substr(get_locale(), 0, 2 )).'/'.$offre->path.'/'.$params['offer_code'].'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString();
+        pivot_create_fake_post(_get_urn_value($offre, 'urn:fld:nomofr'), $url, _get_urn_value($offre, 'urn:fld:descmarket'), 'post');
       }
     }
   }
