@@ -685,11 +685,12 @@ function _add_banner_image($image, $height='400px'){
 /**
  * Will return url of default image for a given offer
  * @param Object $offre
- * @param int $width wanted width in px. Useless if media is not really stored in Pivot
- * @param int $height wanted height in px. Useless if media is not really stored in Pivot
+ * @param $noimg_src = url source of the image. If you want a different from Pivot
+ * @param int $width wanted width in px set to null if you want original. Useless if media is not really stored in Pivot
+ * @param int $height wanted height in px set to null if you want original. Useless if media is not really stored in Pivot
  * @return string
  */
-function _get_offer_default_image($offre, $width=428, $height=285){
+function _get_offer_default_image($offre, $width=428, $height=285, $noimg_src=NULL){
   $output = '';
   foreach($offre->relOffre as $relation){
     // Check if it's well a media (268) and the default 
@@ -697,14 +698,16 @@ function _get_offer_default_image($offre, $width=428, $height=285){
       $media_offer = _get_offer_details($relation->offre->attributes()->codeCgt->__toString(), 2);
       // Check if media is publishable
       if($media_offer->estActive == 30){
-        if(_get_urn_value($media_offer, 'urn:fld:mode') != 0){
-          $output = _get_urn_value($media_offer, 'urn:fld:url');
-        }
+        $output = _get_urn_value($media_offer, 'urn:fld:url');
       }
     }
   }
   if($output == ''){
-    $output = get_option('pivot_uri').'img/'.$offre->attributes()->codeCgt->__toString().';w='.$width.';h='.$height;;
+    if($noimg_src != NULL){
+      $output = $noimg_src;
+    }else{
+      $output = get_option('pivot_uri').'img/'.$offre->attributes()->codeCgt->__toString().';w='.$width.';h='.$height;
+    }
   }
   return $output;
 }
