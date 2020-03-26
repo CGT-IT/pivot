@@ -664,16 +664,17 @@ function _set_slider_col($nb_per_row){
 
 /**
  * Return a div with a background image
- * @param string $image
+ * @param string $image image src
+ * @param string $height height asked for the image, default 400px
  * @return string
  */
-function _add_banner_image($image){
+function _add_banner_image($image, $height='400px'){
   if($image != NULL && $image != ''){
     $output = '<div id="pivot-list-banner" class="row" style="background-image:url('.$image.');
                                        background-position: center center;
                                        background-repeat: no-repeat;
                                        background-size: cover;
-                                       height: 400px;">
+                                       height: '.$height.';">
                </div>';
   }else{
     $output = '';
