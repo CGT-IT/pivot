@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 1.4.9
+ * Version: 1.5.0
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -532,12 +532,18 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL){
     
     // For event check only those where "date fin publication" is between now and +6month
     if(isset($field_params['page_type']) && $field_params['page_type'] == 'activite'){
-      $field_params['filters']['datefinmax']['name'] = 'urn:fld:datefinvalid';
+      $field_params['filters']['datefinmax']['name'] = 'urn:fld:date:datefin';
       $field_params['filters']['datefinmax']['operator'] = 'lesserequal';
       $field_params['filters']['datefinmax']['searched_value'][] = date("d/m/Y", strtotime('+6 month'));
-      $field_params['filters']['datefinmin']['name'] = 'urn:fld:datefinvalid';
+      $field_params['filters']['datefinmin']['name'] = 'urn:fld:date:datefin';
       $field_params['filters']['datefinmin']['operator'] = 'greaterequal';
       $field_params['filters']['datefinmin']['searched_value'][] = date("d/m/Y", strtotime('now'));
+      $field_params['filters']['datefinvalid']['name'] = 'urn:fld:datefinvalid';
+      $field_params['filters']['datefinvalid']['operator'] = 'greaterequal';
+      $field_params['filters']['datefinvalid']['searched_value'][] = date("d/m/Y", strtotime('now'));
+      $field_params['filters']['datedebvalid']['name'] = 'urn:fld:datedebvalid';
+      $field_params['filters']['datedebvalid']['operator'] = 'lesserequal';
+      $field_params['filters']['datedebvalid']['searched_value'][] = date("d/m/Y", strtotime('now'));
     }
     
     if(isset($field_params['filters'])){

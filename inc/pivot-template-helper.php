@@ -478,28 +478,52 @@ function _add_section_mice_rooms($offre, $title, $faIcon=''){
  */
 function _add_section_event_dates($offre){
   $dates_output = '';
-  
+  $i=0;
   foreach($offre->spec as $specification){
     if($specification->attributes()->urn->__toString() == 'urn:obj:date'){
       $dates_output .= '<div class="pivot-date-object">';
       foreach($specification->spec as $dateObj){
-        $date = date("Y-m-d", strtotime(str_replace('/', '-', $dateObj->value->__toString())));
-          if((strtotime($date) >= strtotime('now')) && (strtotime($date) <= strtotime('+6 month'))){
-            $dates_output .= '<span class="time time-start">'
-                            . '<span datetime="'.date("Y-M-D h:m", strtotime($date)).'">'
-                            .   (($dateObj->attributes()->urn->__toString() == 'urn:fld:date:datefin')?' <i class="fas fa-angle-double-right"></i> ':'')
-                            .   ' <span class="day">'.date('d', strtotime($date)).'</span>'
-                            .   ' <span class="month">'.date('M', strtotime($date)).'</span>'
-//                            .   ' <span class="year">'.date('Y', strtotime($date)).'</span>'
-                            . '</span>'
-                            .'</span>';
+        if($dateObj->attributes()->urn->__toString() == 'urn:fld:date:datefin' || $dateObj->attributes()->urn->__toString() == 'urn:fld:date:datedeb'){
+          if($dateObj->attributes()->urn->__toString() == 'urn:fld:date:datedeb'){
+            $dates[$i]['deb'] = date("Y-m-d", strtotime(str_replace('/', '-', $dateObj->value->__toString())));
+          }
+          if($dateObj->attributes()->urn->__toString() == 'urn:fld:date:datefin'){
+            $dates[$i]['fin'] = date("Y-m-d", strtotime(str_replace('/', '-', $dateObj->value->__toString())));
+          }
         }
-
       }
-      $dates_output .= '</div>';
+    $i++;
     }
   }
-  
+  foreach($dates as $date){
+    if(isset($date['fin']) && $date['fin'] != ''){
+      if((strtotime($date['fin']) >= strtotime('now')) && (strtotime($date['fin']) <= strtotime('+ 6months'))){
+        $dates_output .= '<span class="time time-start">'
+                      . '<span datetime="'.date("Y-M-D h:m", strtotime($date['deb'])).'">'
+                      .   ' <span class="day">'.date('d', strtotime($date['deb'])).'</span>'
+                      .   ' <span class="month">'.date('M', strtotime($date['deb'])).'</span>'
+                      . '</span>'
+                      .'</span>';
+        $dates_output .= '<span class="time time-end">'
+                      . '<span datetime="'.date("Y-M-D h:m", strtotime($date['fin'])).'">'
+                      .   ' <i class="fas fa-angle-double-right"></i> '
+                      .   ' <span class="day">'.date('d', strtotime($date['fin'])).'</span>'
+                      .   ' <span class="month">'.date('M', strtotime($date['fin'])).'</span>'
+                      . '</span>'
+                      .'</span>';
+      }
+    }else{
+      if((strtotime($date['deb']) >= strtotime('- 1day')) && (strtotime($date['deb']) <= strtotime('+ 6months'))){
+        $dates_output .= '<span class="time time-start">'
+                        . '<span datetime="'.date("Y-M-D h:m", strtotime($date['deb'])).'">'
+                        .   ' <span class="day">'.date('d', strtotime($date['deb'])).'</span>'
+                        .   ' <span class="month">'.date('M', strtotime($date['deb'])).'</span>'
+                        . '</span>'
+                        .'</span>';
+      }
+    }
+    $dates_output .= '</div>';
+  }
   return $dates_output;
 }
 
