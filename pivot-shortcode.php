@@ -245,15 +245,16 @@ function pivot_custom_shortcode($atts) {
 	// Attributes
 	$atts = shortcode_atts(
 		array(
-      'query' => '',
-      'type' => '',
-      'nboffers' => '3',
-      'nbcol' => '4',
-      'filterurn' => '',
-      'operator' => '',
-      'filtervalue' => '',
-      'sortmode' => '',
-      'sortfield' => '',
+      'query' => '',      // Query ID coming from PIVOT
+      'type' => '',       // template type to show offers
+      'nboffers' => '3',  // Number of offers to display
+      'nbcol' => '4',     // Define how many column we want to display (@see bootstrap)
+      'filterurn' => '',  // Can be use to filter the query on an urn of your choice
+      'operator' => '',   // Comparison operator to filter
+      'filtervalue' => '',// Comparison value to filter
+      'sortmode' => '',   // Define sort mode (choice limited)
+      'sortfield' => '',  // if sortmode is ASC or DESC, use this one to define on which field
+      'details' => '2',   // Should not be used unless you want to display a simple list of title and links of offers
 		),
 		$atts,
 		'pivot_shortcode'
@@ -354,10 +355,15 @@ function pivot_custom_shortcode($atts) {
       $template_name = 'pivot-'.$atts['type'].'-details-part-template';
 
       // Get offers
-      $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query);
+      $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query, NULL, $atts['details']);
       
-      $output = '<div class="container-fluid pivot-list">'
-                 .'<div class="row row-eq-height pivot-row d-flex flex-wrap">';
+      $output = '<div class="container-fluid pivot-list">';
+      // Change display as we want to display only title and url on list
+      if($atts['details'] == 1){
+        $output .= '<div class="list-group">';
+      }else{
+        $output .='<div class="row row-eq-height pivot-row d-flex flex-wrap">';
+      }
 
       // Add main HTML content in output
       foreach($offres as $offre){
