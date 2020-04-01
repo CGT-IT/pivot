@@ -58,7 +58,7 @@ function pivot_enqueue_admin_script($hook) {
  * Register Scripts
  */
 function pivot_register_script() {
-  wp_register_style('lodging_style', MY_PLUGIN_URL.'css/pivot-lodging.css', array(), '2.3', false);
+  wp_register_style('lodging_style', MY_PLUGIN_URL.'css/pivot-lodging.css', array(), '2.4', false);
   wp_register_style('event_style', MY_PLUGIN_URL.'css/pivot-event.css', array(), '2.0', false);
   wp_register_style('fontawesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.1/css/all.min.css', array(), '1.0.0', false);
   wp_register_style('bootstrapexternal', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', array(), '1.0.0', false);
@@ -67,7 +67,7 @@ function pivot_register_script() {
   wp_register_script('bootstrapmin', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js', array(), null, true);
   wp_register_script('dataTablesmin', 'https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js', array(), null, true);
   wp_register_script('itinerary', MY_PLUGIN_URL.'js/itinerary.js', array(), '1.4', true);
-  wp_register_script('pivoteventslider', MY_PLUGIN_URL.'js/pivoteventslider.js', array(), '1.0', true);
+  wp_register_script('pivotshortcodecarousel', MY_PLUGIN_URL.'js/pivotshortcodecarousel.js', array(), '1.0', true);
 }
 
 /**
@@ -86,6 +86,6 @@ function pivot_enqueue_script(){
     wp_enqueue_script('bootstrapmin');
     wp_enqueue_script('dataTablesmin');
     wp_enqueue_script('itinerary');
-    wp_enqueue_script('pivoteventslider');
+    wp_enqueue_script('pivotshortcodecarousel');
   }
 }

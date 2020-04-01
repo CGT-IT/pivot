@@ -281,105 +281,128 @@ i#carte {
 
 /** Slider Event **/
 /* show 2 items */
-#pivot-event-carousel .carousel-inner.nb-col-2 .active,
-#pivot-event-carousel .carousel-inner.nb-col-2 .active + .carousel-item{
+#pivot-shortcode-carousel .carousel-inner.nb-col-2 .active,
+#pivot-shortcode-carousel .carousel-inner.nb-col-2 .active + .carousel-item{
   display: block;
 }
-#pivot-event-carousel .carousel-inner.nb-col-2 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left),
-#pivot-event-carousel .carousel-inner.nb-col-2 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item{
+#pivot-shortcode-carousel .carousel-inner.nb-col-2 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left),
+#pivot-shortcode-carousel .carousel-inner.nb-col-2 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item{
   transition: none;
 }
-#pivot-event-carousel .carousel-inner.nb-col-2 .active.carousel-item + .carousel-item {
+#pivot-shortcode-carousel .carousel-inner.nb-col-2 .active.carousel-item + .carousel-item {
   z-index: -1;
   display: block;
   visibility: visible;
 }
 
 /* show 3 items */
-#pivot-event-carousel .carousel-inner.nb-col-3 .active,
-#pivot-event-carousel .carousel-inner.nb-col-3 .active + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-3 .active + .carousel-item + .carousel-item{
+#pivot-shortcode-carousel .carousel-inner.nb-col-3 .active,
+#pivot-shortcode-carousel .carousel-inner.nb-col-3 .active + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-3 .active + .carousel-item + .carousel-item{
   display: block;
 }
-#pivot-event-carousel .carousel-inner.nb-col-3 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left),
-#pivot-event-carousel .carousel-inner.nb-col-3 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-3 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item{
+#pivot-shortcode-carousel .carousel-inner.nb-col-3 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left),
+#pivot-shortcode-carousel .carousel-inner.nb-col-3 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-3 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item{
   transition: none;
 }
-#pivot-event-carousel .carousel-inner.nb-col-3 .active.carousel-item + .carousel-item + .carousel-item {
+#pivot-shortcode-carousel .carousel-inner.nb-col-3 .active.carousel-item + .carousel-item + .carousel-item {
   z-index: -1;
   display: block;
   visibility: visible;
 }
 
 /* show 4 items */
-#pivot-event-carousel .carousel-inner.nb-col-4 .active,
-#pivot-event-carousel .carousel-inner.nb-col-4 .active + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-4 .active + .carousel-item + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-4 .active + .carousel-item + .carousel-item + .carousel-item{
+#pivot-shortcode-carousel .carousel-inner.nb-col-4 .active,
+#pivot-shortcode-carousel .carousel-inner.nb-col-4 .active + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-4 .active + .carousel-item + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-4 .active + .carousel-item + .carousel-item + .carousel-item{
   display: block;
 }
-#pivot-event-carousel .carousel-inner.nb-col-4 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left),
-#pivot-event-carousel .carousel-inner.nb-col-4 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-4 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-4 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item{
+#pivot-shortcode-carousel .carousel-inner.nb-col-4 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left),
+#pivot-shortcode-carousel .carousel-inner.nb-col-4 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-4 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-4 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item{
   transition: none;
 }
-#pivot-event-carousel .carousel-inner.nb-col-4 .active.carousel-item + .carousel-item + .carousel-item + .carousel-item {
+#pivot-shortcode-carousel .carousel-inner.nb-col-4 .active.carousel-item + .carousel-item + .carousel-item + .carousel-item {
   z-index: -1;
   display: block;
   visibility: visible;
 }
 
 /* show 5 items */
-#pivot-event-carousel .carousel-inner.nb-col-5 .active,
-#pivot-event-carousel .carousel-inner.nb-col-5 .active + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-5 .active + .carousel-item + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-5 .active + .carousel-item + .carousel-item + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-5 .active + .carousel-item + .carousel-item + .carousel-item + .carousel-item{
+#pivot-shortcode-carousel .carousel-inner.nb-col-5 .active,
+#pivot-shortcode-carousel .carousel-inner.nb-col-5 .active + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-5 .active + .carousel-item + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-5 .active + .carousel-item + .carousel-item + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-5 .active + .carousel-item + .carousel-item + .carousel-item + .carousel-item{
   display: block;
 }
-#pivot-event-carousel .carousel-inner.nb-col-5 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left),
-#pivot-event-carousel .carousel-inner.nb-col-5 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-5 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-5 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-5 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item + .carousel-item{
+#pivot-shortcode-carousel .carousel-inner.nb-col-5 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left),
+#pivot-shortcode-carousel .carousel-inner.nb-col-5 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-5 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-5 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-5 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item + .carousel-item{
   transition: none;
 }
-#pivot-event-carousel .carousel-inner.nb-col-5 .active.carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item {
+#pivot-shortcode-carousel .carousel-inner.nb-col-5 .active.carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item {
   z-index: -1;
   display: block;
   visibility: visible;
 }
 
 /* show 6 items */
-#pivot-event-carousel .carousel-inner.nb-col-6 .active,
-#pivot-event-carousel .carousel-inner.nb-col-6 .active + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-6 .active + .carousel-item + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-6 .active + .carousel-item + .carousel-item + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-6 .active + .carousel-item + .carousel-item + .carousel-item + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-6 .active + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item{
+#pivot-shortcode-carousel .carousel-inner.nb-col-6 .active,
+#pivot-shortcode-carousel .carousel-inner.nb-col-6 .active + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-6 .active + .carousel-item + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-6 .active + .carousel-item + .carousel-item + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-6 .active + .carousel-item + .carousel-item + .carousel-item + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-6 .active + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item{
   display: block;
 }
-#pivot-event-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left),
-#pivot-event-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item + .carousel-item,
-#pivot-event-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item{
+#pivot-shortcode-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left),
+#pivot-shortcode-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item + .carousel-item,
+#pivot-shortcode-carousel .carousel-inner.nb-col-6 .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item{
   transition: none;
 }
-#pivot-event-carousel .carousel-inner.nb-col-6 .active.carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item {
+#pivot-shortcode-carousel .carousel-inner.nb-col-6 .active.carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item {
   z-index: -1;
   display: block;
   visibility: visible;
 }
-#pivot-event-carousel .carousel-item{
+#pivot-shortcode-carousel .carousel-item{
     margin-right: inherit!important;
 }
-
-#pivot-event-carousel .carousel-inner .carousel-item-next,
-#pivot-event-carousel .carousel-inner .carousel-item-prev {
-  position: relative;
-  transform: translate3d(0, 0, 0);
+#pivot-shortcode-carousel .carousel-inner{
+    padding: 15px;
+}
+#pivot-shortcode-carousel .carousel-control-prev,
+#pivot-shortcode-carousel .carousel-control-next {
+  /*position: relative;*/
+  /*transform: translate3d(0, 0, 0);*/
+  width: 20px;
+}
+#pivot-shortcode-carousel .carousel-control-prev-icon {
+ background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E") !important;
+}
+#pivot-shortcode-carousel .carousel-control-next-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E") !important;
+}
+/* Bootstrap card with image and text on overlay */
+.card-img-overlay {
+    background: rgba(0,0,0,0.3);
+}
+.card-img-overlay .card-title {
+    color: white;
+    font-weight: bold;
+    bottom: 0;
+    position: absolute;
+}
+.carousel-item.pivot-slide .card-img{
+    min-height: 300px;
+    object-fit: cover;
 }
