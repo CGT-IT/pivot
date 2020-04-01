@@ -386,7 +386,7 @@ function pivot_custom_shortcode($atts) {
  * Add custom meta box on all post / page types
  * This box will help to build pivot shortcode
  */
-function pivot_build_shortcode_box(){
+/*function pivot_build_shortcode_box(){
   $screens = get_post_types();
   foreach ($screens as $screen) {
     add_meta_box(
@@ -396,7 +396,7 @@ function pivot_build_shortcode_box(){
       $screen                               // Post type
     );
   }
-}
+}*/
 
 /**
  * HTML content for the custom meta box

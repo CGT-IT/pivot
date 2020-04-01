@@ -204,6 +204,15 @@ add_filter('pre_handle_404', function($preempt, $wp_query) {
   // To be sure paged case are also treated
   $request_path = rtrim(strtok($wp->request, '&'), '/');
   $key = array_search($request_path, array_column($customPages, 'path'));
+  // If Session has been too long or token is lost, reload first page
+  if(strpos($wp->request, '&paged=')){
+    $page_id = $customPages[$key]['id'];
+    if(!isset($_SESSION['pivot'][$page_id]['token'])){
+      $pos = strpos($_SERVER['REQUEST_URI'], "&paged=");
+      $url = substr($_SERVER['REQUEST_URI'], 0, $pos);
+      header('Location:'.$url);
+    }
+  }
   if (isset($key) && is_int($key)) {
     pivot_create_fake_post($customPages[$key]['title'], $customPages[$key]['path'], $customPages[$key]['description']);
     $preempt = true;
