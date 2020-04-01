@@ -497,7 +497,7 @@ function _add_section_event_dates($offre){
   }
   foreach($dates as $date){
     if(isset($date['fin']) && $date['fin'] != ''){
-      if((strtotime($date['fin']) >= strtotime('now')) && (strtotime($date['fin']) <= strtotime('+ 6months'))){
+      if((strtotime($date['fin']) >= strtotime('today')) && (strtotime($date['fin']) <= strtotime('+ 6months'))){
         $dates_output .= '<span class="time time-start">'
                       . '<span datetime="'.date("Y-M-D h:m", strtotime($date['deb'])).'">'
                       .   ' <span class="day">'.date('d', strtotime($date['deb'])).'</span>'
