@@ -1,10 +1,80 @@
 <?php
 
-add_action('add_meta_boxes', 'pivot_build_shortcode_box');
+//add_action('add_meta_boxes', 'pivot_build_shortcode_box');
 add_shortcode('pivot_shortcode', 'pivot_custom_shortcode');
-add_shortcode('pivot_shortcode_offer_details', 'pivot_custom_shortcode_offer_details');
+add_shortcode('pivot_shortcode_slider', 'pivot_custom_shortcode_slider');
 add_shortcode('pivot_shortcode_event', 'pivot_custom_shortcode_event');
 add_shortcode('pivot_shortcode_event_slider', 'pivot_custom_shortcode_event_slider');
+add_shortcode('pivot_shortcode_offer_details', 'pivot_custom_shortcode_offer_details');
+//OTH-A0-0029-05NN
+
+function pivot_custom_shortcode_slider($atts){
+  $output = '';
+  $field_params = array();
+	// Attributes
+	$atts = shortcode_atts(
+		array(
+      'query' => '',
+      'nboffers' => '6',
+      'nbcol' => '2',
+      'sortmode' => '',
+      'sortfield' => '',
+		),
+		$atts,
+		'pivot_shortcode_slider'
+	);
+
+  // Check if attribute "query" is not empty
+  if(empty($atts['query'])){
+    $text = __('The <strong>query</strong> argument is missing', 'pivot');
+    print _show_warning($text, 'danger');
+  }else{
+    if(!empty($atts['sortmode'])){
+      $field_params['sortMode'] = $atts['sortmode'];
+      if(!empty($atts['sortfield']) && $atts['sortmode'] != 'shuffle'){
+        $field_params['sortField'] = $atts['sortfield'];
+      }
+    }
+
+    $xml_query = _xml_query_construction($atts['query'], $field_params);
+
+    // Get template name depending of query type
+    $template_name = 'pivot-shortcode-slider-template';
+
+    // Get offers
+    $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query);
+
+    // Open HTML balises
+    $output = '<div class="container-fluid">
+                <div id="pivot-shortcode-carousel" class="carousel slide" data-ride="carousel">
+                  <div class="carousel-inner row w-100 mx-auto nb-col-'.$atts['nbcol'].'" data-nbcol="'.$atts['nbcol'].'">';
+
+    // Add main HTML content in output
+    $i = 0;
+    foreach($offres as $offre){
+      $offre->path = 'details';
+      $offre->nb_per_row = $atts['nbcol'];
+      // Will add an 'active' class for the first element
+      if($i == 0){
+        $offre->first = TRUE;
+      }
+      $output.= pivot_template($template_name, $offre);
+      $i++;
+    }
+
+    // Close HTML balises
+    $output .= '<a class="carousel-control-prev" href="#pivot-shortcode-carousell" role="button" data-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="sr-only">'.__('Previous').'</span>
+                </a>
+                <a class="carousel-control-next" href="#pivot-shortcode-carousel" role="button" data-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="sr-only">'.__('Next').'</span>
+                </a>
+              </div></div></div>';
+  }
+  return $output;
+}
 
 /**
  * Shortcode to display a slider of event
@@ -50,7 +120,7 @@ function pivot_custom_shortcode_event_slider($atts){
 
     // Open HTML balises
     $output = '<div class="container-fluid">
-                <div id="pivot-event-carousel" class="carousel slide" data-ride="carousel">
+                <div id="pivot-shortcode-carousel" class="carousel slide" data-ride="carousel">
                   <div class="carousel-inner row w-100 mx-auto nb-col-'.$atts['nbcol'].'" data-nbcol="'.$atts['nbcol'].'">';
 
     // Add main HTML content in output
