@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 1.5.1
+ * Version: 1.5.2
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -284,8 +284,8 @@ function pivot_menu() {
   add_action( "load-$pivot_page_submenu", 'pivot_page_screen_option');
   $pivot_filters_submenu = add_submenu_page('pivot-admin', 'Filters', 'Manage filters', 'delete_others_pages', 'pivot-filters', 'pivot_filters_settings');
   add_action( "load-$pivot_filters_submenu", 'pivot_filter_screen_option');
-  add_submenu_page('pivot-admin', 'Shortcode', 'Shortcode', 'manage_options', 'pivot-shortcode', 'pivot_build_shortcode_box_html');
-  add_submenu_page('pivot-admin', 'Shortcode Event', 'Shortcode Event', 'delete_others_pages', 'pivot-shortcode-event', 'pivot_build_shortcode_event_box_html');
+  add_submenu_page('pivot-admin', 'Shortcode', 'Shortcode', 'delete_others_pages', 'pivot-shortcode', 'pivot_build_shortcode_box_html');
+  add_submenu_page('pivot-admin', 'Shortcode Event', 'Shortcode Event', 'manage_options', 'pivot-shortcode-event', 'pivot_build_shortcode_event_box_html');
 }
 
 function init() {
@@ -536,13 +536,13 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL){
       $field_params['filters']['datefinmax']['searched_value'][] = date("d/m/Y", strtotime('+6 month'));
       $field_params['filters']['datefinmin']['name'] = 'urn:fld:date:datefin';
       $field_params['filters']['datefinmin']['operator'] = 'greaterequal';
-      $field_params['filters']['datefinmin']['searched_value'][] = date("d/m/Y", strtotime('now'));
+      $field_params['filters']['datefinmin']['searched_value'][] = date("d/m/Y", strtotime('today'));
       $field_params['filters']['datefinvalid']['name'] = 'urn:fld:datefinvalid';
       $field_params['filters']['datefinvalid']['operator'] = 'greaterequal';
-      $field_params['filters']['datefinvalid']['searched_value'][] = date("d/m/Y", strtotime('now'));
+      $field_params['filters']['datefinvalid']['searched_value'][] = date("d/m/Y", strtotime('today'));
       $field_params['filters']['datedebvalid']['name'] = 'urn:fld:datedebvalid';
       $field_params['filters']['datedebvalid']['operator'] = 'lesserequal';
-      $field_params['filters']['datedebvalid']['searched_value'][] = date("d/m/Y", strtotime('now'));
+      $field_params['filters']['datedebvalid']['searched_value'][] = date("d/m/Y", strtotime('today'));
     }
     
     if(isset($field_params['filters'])){
@@ -653,7 +653,10 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
   
   // Check current page.
   // If 0 we need to define params to get all offers (depending on filters)
-  if($current_page == 0){
+  if($current_page == 0 || !isset($_SESSION['pivot'][$page_id]['token'])){
+    if($current_page > 0 && !isset($_SESSION['pivot'][$page_id]['token'])){
+      print _show_warning('Token has been lost, reload first page');
+    }
     // Define number of offers per page
     $params['items_per_page'] = $offers_per_page;
     // Define content details we want to receive from Pivot
