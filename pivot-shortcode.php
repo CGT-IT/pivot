@@ -6,7 +6,6 @@ add_shortcode('pivot_shortcode_slider', 'pivot_custom_shortcode_slider');
 add_shortcode('pivot_shortcode_event', 'pivot_custom_shortcode_event');
 add_shortcode('pivot_shortcode_event_slider', 'pivot_custom_shortcode_event_slider');
 add_shortcode('pivot_shortcode_offer_details', 'pivot_custom_shortcode_offer_details');
-//OTH-A0-0029-05NN
 
 function pivot_custom_shortcode_slider($atts){
   $output = '';
