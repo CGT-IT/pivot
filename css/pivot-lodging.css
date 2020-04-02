@@ -403,6 +403,6 @@ i#carte {
     position: absolute;
 }
 .carousel-item.pivot-slide .card-img{
-    min-height: 300px;
+    height: 300px;
     object-fit: cover;
 }
