@@ -38,12 +38,12 @@ function _add_section($offre, $urnCat, $title, $faIcon='', $urnSubCat=0){
           }
           $content .=    '<span class="'.$cat.'-value"> ';
           if($specification->attributes()->urn->__toString() == 'urn:fld:signal'){
-            $content .= '<img class="pivot-img" src="https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/'._get_urn_value($offre, 'urn:fld:signal').';w=20"/>';
+            $content .= '<img class="pivot-img" src="'.get_option('pivot_uri').'img/'._get_urn_value($offre, 'urn:fld:signal').';w=20"/>';
           }else{
             $content .= _get_urnValue_translated($offre, $specification);
           }
           $content  .=  '</span> '
-                    .    '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'. $specification->attributes()->urn->__toString() .';h=16"/>'
+                    .    '<img class="pivot-picto" src="'.get_option('pivot_uri').'img/'. $specification->attributes()->urn->__toString() .';h=16"/>'
                     .  '</li>';
         }else{
           // Case other language than french
@@ -55,7 +55,7 @@ function _add_section($offre, $urnCat, $title, $faIcon='', $urnSubCat=0){
           $content .=     '<span class="'.$cat.'-value"> '
                   .      _get_urnValue_translated($offre, $specification)
                   .    '</span> '
-                  .    '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'. $specification->attributes()->urn->__toString() .';h=16"/>'
+                  .    '<img class="pivot-picto" src="'.get_option('pivot_uri').'img/'. $specification->attributes()->urn->__toString() .';h=16"/>'
                   .  '</li>';
            }
         }
@@ -82,7 +82,7 @@ function _add_section_language($offre){
   foreach($offre->spec as $specification){
     if($specification->urnSubCat->__toString() == 'urn:cat:accueil:langpar'){
       $language = _get_urn_documentation($specification->attributes()->urn->__toString());
-      $content .= '<img alt="'.__('Language(s)', 'pivot').' '.$language.'" title="'.$language.'"class="p-1 pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'. $specification->attributes()->urn->__toString() .';h=30"/>';
+      $content .= '<img alt="'.__('Language(s)', 'pivot').' '.$language.'" title="'.$language.'"class="p-1 pivot-picto" src="'.get_option('pivot_uri').'img/'. $specification->attributes()->urn->__toString() .';h=30"/>';
     }
   }
   // Check if there is well something to display
@@ -105,7 +105,7 @@ function _add_section_themes($offre){
       if($specification->urnCat->__toString() == 'urn:cat:classlab'){
         $content .= '<span class="ml-1 badge badge-dark"> '
                  .  _get_urnValue_translated($offre, $specification)
-                 .  '<span class="m-1 badge badge-light"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'. $specification->attributes()->urn->__toString() .';h=16"/></span>'
+                 .  '<span class="m-1 badge badge-light"><img class="pivot-picto" src="'.get_option('pivot_uri').'img/'. $specification->attributes()->urn->__toString() .';h=16"/></span>'
                  .  '</span>';
       }
     }
@@ -129,13 +129,13 @@ function _add_section_share($offre){
     data-href="'.$url_offer_details.'" 
     data-layout="button_count">cccc
   </div><div class="pivot-offer-share">'
-          .'<img class="pivot-picto fb-share-button" data-href="'.$url_offer_details.'" data-layout="button_count" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urlfacebook;h=35" alt="Facebook '.esc_attr__('Share button').'" title="Facebook '.esc_attr__('Share button').'"/>'
-//          .   '<span class="pr-3"><a class="social-icon" href="https://www.facebook.com/sharer.php?u='.$url_offer_details.'&amp;t='._get_urn_value($offre, 'urn:fld:nomofr').'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urlfacebook;h=35" alt="Facebook '.esc_attr__('Share button').'" title="Facebook '.esc_attr__('Share button').'"/></a></span>'
-          .   '<span><a class="social-icon" href="https://twitter.com/share?text='._get_urn_value($offre, 'urn:fld:nomofr').'&amp;url='.$url_offer_details.'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urltwitter;h=35" alt="Twitter '.esc_attr__('Share button').'" title="Twitter '.esc_attr__('Share button').'"/></a></span>'
+          .'<img class="pivot-picto fb-share-button" data-href="'.$url_offer_details.'" data-layout="button_count" src="'.get_option('pivot_uri').'img/urn:fld:urlfacebook;h=35" alt="Facebook '.esc_attr__('Share button').'" title="Facebook '.esc_attr__('Share button').'"/>'
+//          .   '<span class="pr-3"><a class="social-icon" href="https://www.facebook.com/sharer.php?u='.$url_offer_details.'&amp;t='._get_urn_value($offre, 'urn:fld:nomofr').'" target="_blank"><img class="pivot-picto" src="'.get_option('pivot_uri').'img/urn:fld:urlfacebook;h=35" alt="Facebook '.esc_attr__('Share button').'" title="Facebook '.esc_attr__('Share button').'"/></a></span>'
+          .   '<span><a class="social-icon" href="https://twitter.com/share?text='._get_urn_value($offre, 'urn:fld:nomofr').'&amp;url='.$url_offer_details.'" target="_blank"><img class="pivot-picto" src="'.get_option('pivot_uri').'img/urn:fld:urltwitter;h=35" alt="Twitter '.esc_attr__('Share button').'" title="Twitter '.esc_attr__('Share button').'"/></a></span>'
           . '</div>';*/
   $output = '<div class="pivot-offer-share">'
-          .   '<span class="pr-3"><a class="social-icon" href="https://www.facebook.com/sharer.php?u='.$url_offer_details.'&amp;t='._get_urn_value($offre, 'urn:fld:nomofr').'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urlfacebook;h=35" alt="Facebook '.esc_attr__('Share button').'" title="Facebook '.esc_attr__('Share button').'"/></a></span>'
-          .   '<span><a class="social-icon" href="https://twitter.com/share?text='._get_urn_value($offre, 'urn:fld:nomofr').'&amp;url='.$url_offer_details.'" target="_blank"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urltwitter;h=35" alt="Twitter '.esc_attr__('Share button').'" title="Twitter '.esc_attr__('Share button').'"/></a></span>'
+          .   '<span class="pr-3"><a class="social-icon" href="https://www.facebook.com/sharer.php?u='.$url_offer_details.'&amp;t='._get_urn_value($offre, 'urn:fld:nomofr').'" target="_blank"><img class="pivot-picto" src="'.get_option('pivot_uri').'img/urn:fld:urlfacebook;h=35" alt="Facebook '.esc_attr__('Share button').'" title="Facebook '.esc_attr__('Share button').'"/></a></span>'
+          .   '<span><a class="social-icon" href="https://twitter.com/share?text='._get_urn_value($offre, 'urn:fld:nomofr').'&amp;url='.$url_offer_details.'" target="_blank"><img class="pivot-picto" src="'.get_option('pivot_uri').'img/urn:fld:urltwitter;h=35" alt="Twitter '.esc_attr__('Share button').'" title="Twitter '.esc_attr__('Share button').'"/></a></span>'
           . '</div>';
   
   return $output;
@@ -154,31 +154,25 @@ function _add_section_contact($offre){
           .     '<ul class="list-unstyled lis-line-height-2 m-0">';
   foreach($offre->spec as $specification){
     if($specification->urnCat->__toString() == 'urn:cat:moycom' && $specification->urnSubCat->__toString() != 'urn:cat:moycom:sitereservation'){
-      $output .= '<li>'
-              . '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$specification->attributes()->urn->__toString().';h=16"/>';
-      switch ($specification->type->__toString()){
-        case 'EMail':
-          $output .= '<a class="'.$specification->type->__toString().'" href="mailto:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
-          break;
-        case 'URL':
-          $output .= '<a class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'">'.strrev(esc_url($specification->value->__toString())).'</a>';
-          break;
-        case 'GSM':
-          $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
-          break;
-        case 'Phone':
-          $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
-          break;
-        default:
-          if (esc_url($specification->value->__toString())){
+      if($specification->type->__toString() != 'StringML'){
+        $output .= '<li>'
+              . '<img class="pivot-picto" src="'.get_option('pivot_uri').'img/'.$specification->attributes()->urn->__toString().';h=16"/>';
+        switch ($specification->type->__toString()){
+          case 'EMail':
+            $output .= '<a class="'.$specification->type->__toString().'" href="mailto:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
+            break;
+          case 'URL':
             $output .= '<a class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'">'.strrev(esc_url($specification->value->__toString())).'</a>';
-          }else{
-            $output .= $specification->value->__toString();
-          }
-          break;
+            break;
+          case 'GSM':
+            $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
+            break;
+          case 'Phone':
+            $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
+            break;
+        }
+        $output .= '</li>';
       }
-
-      $output .= '</li>';
     }
   }
   $output .= '</ul>';
@@ -201,7 +195,7 @@ function _add_section_contact($offre){
  * @return string
  */
 function _add_section_contact_version2($offre){
-  $output = '<section class="pivot-contacts card lis-brd-light wow fadeInUp mb-4">'
+  $output = '<section class="pivot-contacts card lis-brd-light wow fadeInUp mb-4 shadow">'
           .   '<div class="card-body p-4">'
           .     '<h3 class="pivo-title">'._get_urn_value($offre, 'urn:fld:nomofr').'</h3>'
           . '<ul class="adr list-unstyled lis-line-height-2 m-0">'
@@ -216,31 +210,25 @@ function _add_section_contact_version2($offre){
           .     '<ul class="list-unstyled lis-line-height-2 m-0">';
   foreach($offre->spec as $specification){
     if($specification->urnCat->__toString() == 'urn:cat:moycom' && $specification->urnSubCat->__toString() != 'urn:cat:moycom:sitereservation'){
-      $output .= '<li>'
-              . '<img class="pr-2 pivot-picto" src="'.get_option('pivot_uri').'img/'.$specification->attributes()->urn->__toString().';h=20"/>';
-      switch ($specification->type->__toString()){
-        case 'EMail':
-          $output .= '<a class="'.$specification->type->__toString().'" href="mailto:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
-          break;
-        case 'URL':
-          $output .= '<a class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'">'.strrev(esc_url($specification->value->__toString())).'</a>';
-          break;
-        case 'GSM':
-          $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
-          break;
-        case 'Phone':
-          $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
-          break;
-        default:
-          if (esc_url($specification->value->__toString())){
+      if($specification->type->__toString() != 'StringML'){
+        $output .= '<li>'
+              . '<img class="pivot-picto" src="'.get_option('pivot_uri').'img/'.$specification->attributes()->urn->__toString().';h=16"/>';
+        switch ($specification->type->__toString()){
+          case 'EMail':
+            $output .= '<a class="'.$specification->type->__toString().'" href="mailto:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
+            break;
+          case 'URL':
             $output .= '<a class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'">'.strrev(esc_url($specification->value->__toString())).'</a>';
-          }else{
-            $output .= $specification->value->__toString();
-          }
-          break;
+            break;
+          case 'GSM':
+            $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
+            break;
+          case 'Phone':
+            $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
+            break;
+        }
+        $output .= '</li>';
       }
-
-      $output .= '</li>';
     }
   }
   $output .= '</ul></div></section>';
@@ -264,7 +252,7 @@ function _add_section_booking($offre){
       $booking = TRUE;
       $output .= '<li class="list-inline-item pr-3">';
       if (esc_url($specification->value->__toString())){
-        $output .= '<a title="'._get_urn_documentation($specification->attributes()->urn->__toString()).'" class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'"><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'._get_urn_default_language($specification->attributes()->urn->__toString()).';h=40"/></a>';
+        $output .= '<a title="'._get_urn_documentation($specification->attributes()->urn->__toString()).'" class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'"><img class="pivot-picto" src="'.get_option('pivot_uri').'img/'._get_urn_default_language($specification->attributes()->urn->__toString()).';h=40"/></a>';
       }
       $output .= '</li>';
     }
@@ -331,10 +319,12 @@ function _add_section_linked_offers($offre){
         $output .= '"><blockquote>'
                 .      '<a class="text-dark" title="'.esc_attr('Link to', 'pivot').' '._get_urn_value($relation->offre, 'urn:fld:nomofr').'" href="'.$url.'">'
                 .        '<div class="row">'
-                .          '<div class="col-sm-3 text-center">'
-                .            '<img class="pivot-img zoom pivot-img-list" src="https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/'.$relation->offre->attributes()->codeCgt->__toString().';w=256;h=170"/>'
+                .          '<div class="col-xl-4 col-lg-4 col-md-4 col-12 text-center">'
+                .            '<div class="container-img embed-responsive embed-responsive-4by3">'
+                .              '<img class="embed-responsive-item pivot-img card-img-top zoom pivot-img-list" src="'._get_offer_default_image($offre).'"/>'
+                .            '</div>'
                 .          '</div>'
-                .          '<div class="col-sm-9">'
+                .          '<div class="col-xl-8 col-lg-8 col-md-8 col-12 text-center">'
                 .            '<p>'._get_urn_value($relation->offre, 'urn:fld:descmarket').'</p>'
                 .            '<small><b>'._get_urn_value($relation->offre, 'urn:fld:nomofr').'</b></small>'
                 .          '</div>'
