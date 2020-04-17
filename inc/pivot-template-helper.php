@@ -78,7 +78,8 @@ function _add_section_language($offre){
   // Init var, will be used to check if there is well content or not
   $content = '';
 
-  $open_balise = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 f0fc fa-language"></i>'. __('Language(s)', 'pivot') .'</h5>';
+  $open_balise = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 f0fc fa-language"></i>'. __('Language(s)', 'pivot') .'</h5>'
+               . '<section class="mb-4">';
   foreach($offre->spec as $specification){
     if($specification->urnSubCat->__toString() == 'urn:cat:accueil:langpar'){
       $language = _get_urn_documentation($specification->attributes()->urn->__toString());
@@ -87,7 +88,8 @@ function _add_section_language($offre){
   }
   // Check if there is well something to display
   if($content != ''){
-    $output = $open_balise.$content;
+    $close_balise = '</section>';
+    $output = $open_balise.$content.$close_balise;
   }else{
     $output = '';
   }
@@ -485,36 +487,38 @@ function _add_section_event_dates($offre){
     $i++;
     }
   }
-  foreach($dates as $date){
-    if(isset($date['fin']) && $date['fin'] != ''){
-      if((strtotime($date['fin']) >= strtotime('today')) && (strtotime($date['fin']) <= strtotime('+ 6months'))){
-        $dates_output .= '<span class="time time-start">'
-                      . '<span datetime="'.date("Y-M-D h:m", strtotime($date['deb'])).'">'
-                      .   ' <span class="day">'.date('d', strtotime($date['deb'])).'</span>'
-                      .   ' <span class="month">'.date('M', strtotime($date['deb'])).'</span>'
-                      . '</span>'
-                      .'</span>';
-        $dates_output .= '<span class="time time-end">'
-                      . '<span datetime="'.date("Y-M-D h:m", strtotime($date['fin'])).'">'
-                      .   ' <i class="fas fa-angle-double-right"></i> '
-                      .   ' <span class="day">'.date('d', strtotime($date['fin'])).'</span>'
-                      .   ' <span class="month">'.date('M', strtotime($date['fin'])).'</span>'
-                      . '</span>'
-                      .'</span>';
-      }
-    }else{
-      if((strtotime($date['deb']) >= strtotime('- 1day')) && (strtotime($date['deb']) <= strtotime('+ 6months'))){
-        $dates_output .= '<span class="time time-start">'
+  if(isset($dates)){
+    foreach($dates as $date){
+      if(isset($date['fin']) && $date['fin'] != ''){
+        if((strtotime($date['fin']) >= strtotime('today')) && (strtotime($date['fin']) <= strtotime('+ 6months'))){
+          $dates_output .= '<span class="time time-start">'
                         . '<span datetime="'.date("Y-M-D h:m", strtotime($date['deb'])).'">'
                         .   ' <span class="day">'.date('d', strtotime($date['deb'])).'</span>'
                         .   ' <span class="month">'.date('M', strtotime($date['deb'])).'</span>'
                         . '</span>'
                         .'</span>';
+          $dates_output .= '<span class="time time-end">'
+                        . '<span datetime="'.date("Y-M-D h:m", strtotime($date['fin'])).'">'
+                        .   ' <i class="fas fa-angle-double-right"></i> '
+                        .   ' <span class="day">'.date('d', strtotime($date['fin'])).'</span>'
+                        .   ' <span class="month">'.date('M', strtotime($date['fin'])).'</span>'
+                        . '</span>'
+                        .'</span>';
+        }
+      }else{
+        if((strtotime($date['deb']) >= strtotime('- 1day')) && (strtotime($date['deb']) <= strtotime('+ 6months'))){
+          $dates_output .= '<span class="time time-start">'
+                          . '<span datetime="'.date("Y-M-D h:m", strtotime($date['deb'])).'">'
+                          .   ' <span class="day">'.date('d', strtotime($date['deb'])).'</span>'
+                          .   ' <span class="month">'.date('M', strtotime($date['deb'])).'</span>'
+                          . '</span>'
+                          .'</span>';
+        }
       }
+      $dates_output .= '</div>';
     }
-    $dates_output .= '</div>';
+    return $dates_output;
   }
-  return $dates_output;
 }
 
 function _add_itinerary_details($offre, $urnCat, $urnSubCat=0){
@@ -617,7 +621,7 @@ function _add_pivot_map($map = 0, $nb_col = 12, $width = '600px', $height = '800
                      integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
                      crossorigin=""></script>';
   // Create Map element
-  $output .= '<div id="mapid" style="height:'.$height.';width:'.$width.';z-index:0;"></div>';
+  $output .= '<div id="mapid" '.($single_offer?'class="mb-4"':'').' style="height:'.$height.';width:'.$width.';z-index:0;"></div>';
   
   if($single_offer == FALSE){
     // Include map custom js
