@@ -28,6 +28,7 @@
       <?php endif;?>
 <?php else: ?>
   <?php $offres = $args; ?>
+  <div class="container-fluid pivot-list">
 <?php endif; ?>
         <div class="row p-4">
           <link href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css" rel="stylesheet">
@@ -79,11 +80,9 @@
                     <td id="lien-orc-de-<?php print $i;?>" class="lien-orc-de"><?php print _get_urn_value($offre, 'de:urn:fld:orc'); ?></td>
                     <input id="link-<?php print $i;?>" type="text" class="d-none" value="<?php print _get_urn_value($offre, 'urn:fld:orc'); ?>"/>
                     <td class="details-offre">
-                      <button class="button btn-sm" onclick="copyFunction('link-<?php print $i;?>')"><i class="fa fa-copy"></i> Copier</button>
-                       // 
-                      <a href="<?php print $url;?>" target="_blank" title="<?php print __('Link to', 'pivot') .' '. $offerTitle; ?>"><i class="fa fa-eye"> Pivot</i></a>
-                       // 
-                      <a href="<?php print $orcLink;?>" target="_blank" title="<?php print __('Link to', 'pivot') .' la page ORC'; ?>"><i class="fa fa-credit-card"> ORC</i></a>
+                      <button class="button btn-sm m-2" onclick="copyFunction('link-<?php print $i;?>')" title="Copier le lien Elloha FR"><i class="fa fa-copy"></i> Copier</button>
+                      <a class="m-2" href="<?php print $url;?>" target="_blank" title="<?php print __('Link to', 'pivot') .' '. $offerTitle; ?>"><i class="fa fa-eye"> Pivot</i></a>
+                      <a class="m-2" href="<?php print $orcLink;?>" target="_blank" title="<?php print __('Link to', 'pivot') .' la page ORC'; ?>"><i class="fa fa-credit-card"> ORC</i></a>
                     </td>
                   </tr>
                   <?php $i++; ?>
@@ -92,10 +91,10 @@
             </table>
           </div>
         </div>
-<?php if(!isset($args)): ?>
       </div>
+<?php if(!isset($args)): ?>
+    </div>
   </div>
-</div>
     
   <!--Include footer-->
   <?php get_footer();?>
