@@ -6,6 +6,7 @@ add_shortcode('pivot_shortcode_slider', 'pivot_custom_shortcode_slider');
 add_shortcode('pivot_shortcode_event', 'pivot_custom_shortcode_event');
 add_shortcode('pivot_shortcode_event_slider', 'pivot_custom_shortcode_event_slider');
 add_shortcode('pivot_shortcode_offer_details', 'pivot_custom_shortcode_offer_details');
+add_shortcode('pivot_orc_list', 'pivot_custom_shortcode_orc_list');
 
 function pivot_custom_shortcode_slider($atts){
   $output = '';
@@ -170,6 +171,43 @@ function pivot_custom_shortcode_offer_details($atts){
 
     // Add main HTML content in output
     $output .= pivot_template($template_name, $offre);
+  }
+  return $output;
+}
+
+/**
+ * Define shortcode content
+ * Should look like this [pivot_orc_list query='OTH-A0-002R-07NG']
+ * @param array $atts attributes 
+ * @return string HTML content
+ */
+function pivot_custom_shortcode_orc_list($atts){
+  $output = '';
+  $field_params = array();
+	// Attributes
+	$atts = shortcode_atts(
+		array(
+      'query' => ''
+		),
+		$atts,
+		'pivot_orc_list'
+	);
+
+  // Check if attribute "query" is not empty
+  if(empty($atts['query'])){
+    $text = __('The <strong>query</strong> argument is missing', 'pivot');
+    print _show_warning($text, 'danger');
+  }else{
+    $xml_query = _xml_query_construction($atts['query'], $field_params);
+
+    // Get template name depending of query type
+    $template_name = 'pivot-orc-list-template';
+
+    // Get offers
+    $offres = pivot_construct_output('offer-search', 1000, $xml_query);
+
+    // Add main HTML content in output
+    $output .= pivot_template($template_name, $offres);
   }
   return $output;
 }
