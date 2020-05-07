@@ -12,7 +12,9 @@
  * @return string
  */
 function _add_section($offre, $urnCat, $title, $faIcon='', $urnSubCat=0){
-  $excludedUrn = array('urn:cat:accueil:attest','urn:val:attestincendie:asi','urn:val:attestincendie:acs','urn:val:attestincendie:defaut','urn:fld:attestincendie:dateech','urn:fld:dateech', 'urn:fld:idaccessi', 'urn:fld:accessi', 'urn:fld:accessi:url', 'urn:fld:accessi:perfautroul', 'urn:fld:accessi:permardif', 'urn:fld:accessi:perave', 'urn:fld:accessi:permalvoy', 'urn:fld:accessi:persou', 'urn:fld:accessi:permalent', 'urn:fld:accessi:perdifcomp');
+  $excludedUrn = array('urn:cat:accueil:attest', 'urn:val:attestincendie:asi', 'urn:val:attestincendie:acs', 'urn:val:attestincendie:defaut', 'urn:fld:attestincendie:dateech', 'urn:fld:dateech', 
+                       'urn:fld:idaccessi', 'urn:fld:accessi', 'urn:fld:accessi:url', 'urn:fld:accessi:perfautroul', 'urn:fld:accessi:permardif', 'urn:fld:accessi:perave', 'urn:fld:accessi:permalvoy', 'urn:fld:accessi:persou', 'urn:fld:accessi:permalent', 'urn:fld:accessi:perdifcomp', 
+                       'urn:val:qw:nc', 'urn:fld:datereco', 'urn:fld:class:title', 'urn:fld:class:value', 'urn:cat:classlab:qw');
   // Define if sub category or category
   $cat_or_subcat = ($urnSubCat?'urnSubCat':'urnCat');
   // Get 2 letter language code
@@ -161,16 +163,17 @@ function _add_section_contact($offre){
               . '<img class="pivot-picto" src="'.get_option('pivot_uri').'img/'.$specification->attributes()->urn->__toString().';h=16"/>';
         switch ($specification->type->__toString()){
           case 'EMail':
-            $output .= '<a class="'.$specification->type->__toString().'" href="mailto:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
+            $output .= ' <a class="'.$specification->type->__toString().'" href="mailto:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
             break;
           case 'URL':
-            $output .= '<a class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'">'.strrev(esc_url($specification->value->__toString())).'</a>';
+          case 'URLFacebook':
+            $output .= ' <a class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'">'.strrev(esc_url($specification->value->__toString())).'</a>';
             break;
           case 'GSM':
-            $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
+            $output .= ' <a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
             break;
           case 'Phone':
-            $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
+            $output .= ' <a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
             break;
         }
         $output .= '</li>';
@@ -244,26 +247,14 @@ function _add_section_contact_version2($offre){
  * @return string
  */
 function _add_section_booking($offre){
-  $booking = FALSE;
-  $output = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-credit-card"></i>'.esc_html('Booking', 'pivot').'</h5>'
-          . '<section class="pivot-booking card lis-brd-light wow fadeInUp mb-4">'
-          .   '<div class="card-body p-4">'
-          .     '<ul class="list-unstyled list-inline lis-line-height-2 m-0">';
-  foreach($offre->spec as $specification){
-    if($specification->urnSubCat->__toString() == 'urn:cat:moycom:sitereservation'){
-      $booking = TRUE;
-      $output .= '<li class="list-inline-item pr-3">';
-      if (esc_url($specification->value->__toString())){
-        $output .= '<a title="'._get_urn_documentation($specification->attributes()->urn->__toString()).'" class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'"><img class="pivot-picto" src="'.get_option('pivot_uri').'img/'._get_urn_default_language($specification->attributes()->urn->__toString()).';h=40"/></a>';
-      }
-      $output .= '</li>';
-    }
-  }
-  $output .= '</ul>';
-            
-  $output .= '</div></section>';
-  
-  if($booking === TRUE){
+  $orc = _get_urn_value($offre, 'urn:fld:urlresa:default');
+  if(esc_url($orc)){
+    $output = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-credit-card"></i>'.esc_html('Booking', 'pivot').'</h5>'
+            . '<section class="pivot-booking card lis-brd-light wow fadeInUp mb-4">'
+            .   '<div class="card-body p-4">'
+            .     '<a title="'.__('Link to', 'pivot').' '.__('booking system').'" class="button btn-block btn-lg text-center" target="_blank" href="'._get_urn_value($offre, 'urn:fld:urlresa:default').'"><i class="fa fa-credit-card"></i> '.__('Book', 'pivot').'</a>'
+            .   '</div>'
+            . '</section>';      
     return $output;
   }else{
     return '';
@@ -311,13 +302,14 @@ function _add_section_linked_offers($offre){
   $i= 0;
   foreach($offre->relOffre as $relation){
     // The linked offer shouldn't be a contact or a media
-    if(!(in_array($relation->offre->typeOffre->attributes()->idTypeOffre->__toString(), array('268', '23')))){
+    if(!(in_array($relation->offre->typeOffre->attributes()->idTypeOffre->__toString(), array('268', '23', '10')))){
       // The linked offer type should exist in "pivot offer type" otherwise no template will be used
       if(pivot_get_offer_type($relation->offre->typeOffre->attributes()->idTypeOffre->__toString())){
         $url = get_bloginfo('wpurl').'/details/'.$relation->offre->attributes()->codeCgt->__toString().'&type='.$relation->offre->typeOffre->attributes()->idTypeOffre->__toString();
-        $output .= '<div class="carousel-item ';
-        if($i++ == 0)
+        $output .= '<div class="carousel-item pivot-rel-offer ';
+        if($i++ == 0){
           $output .= 'active';
+        }
         $output .= '"><blockquote>'
                 .      '<a class="text-dark" title="'.esc_attr('Link to', 'pivot').' '._get_urn_value($relation->offre, 'urn:fld:nomofr').'" href="'.$url.'">'
                 .        '<div class="row">'
@@ -327,11 +319,15 @@ function _add_section_linked_offers($offre){
                 .            '</div>'
                 .          '</div>'
                 .          '<div class="col-xl-8 col-lg-8 col-md-8 col-12 text-center">'
-                .            '<p>'._get_urn_value($relation->offre, 'urn:fld:descmarket').'</p>'
-                .            '<small><b>'._get_urn_value($relation->offre, 'urn:fld:nomofr').'</b></small>'
+                .            '<p class="offer-description">'._get_urn_value($relation->offre, 'urn:fld:descmarket').'</p>'
+                .            '<span class="offer-title"><small><b>'._get_urn_value($relation->offre, 'urn:fld:nomofr').'</b></small></span>'
                 .          '</div>'
                 .        '</div>'
                 .      '</a>'
+                .      '<span class="pivot-id-type-offre d-none item">'.$relation->offre->typeOffre->attributes()->idTypeOffre->__toString().'</span>'
+                .      '<span class="pivot-code-cgt d-none item">'.$relation->offre->attributes()->codeCgt->__toString().'</span>'
+                .      '<span class="pivot-latitude d-none item">'.$relation->offre->adresse1->latitude->__toString().'</span>'
+                .      '<span class="pivot-longitude d-none item">'.$relation->offre->adresse1->longitude->__toString().'</span>'
                 .    '</blockquote>'
                 .  '</div>';
       }
@@ -362,6 +358,42 @@ function _add_section_linked_offers($offre){
   }
   
   return '';
+}
+
+/**
+ * Return a carousel of linked offers
+ * @param Object $offre complete offer object
+ * @return string
+ */
+function _add_section_info_points($offre){
+  $output = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-map-signs"></i>'.__('Way points info', 'pivot').'</h5>'
+          . '<section class="pivot-booking card lis-brd-light wow fadeInUp mb-4">'
+          .   '<div class="card-body p-4">';
+  $i=0;
+  foreach($offre->relOffre as $relation){
+    // The linked offer shouldn't be a contact or a media
+    if($relation->offre->typeOffre->attributes()->idTypeOffre->__toString() == 10){
+      // The linked offer type should exist in "pivot offer type" otherwise no template will be used
+      if(pivot_get_offer_type($relation->offre->typeOffre->attributes()->idTypeOffre->__toString())){
+        $i++;
+        $output .= '<div id="'.$relation->offre->attributes()->codeCgt->__toString().'" class="pivot-rel-offer">'
+                .    '<h6 class="offer-title"><b>'._get_urn_value($relation->offre, 'urn:fld:nomofr').'</b></h6>'
+                .    '<div class="offer-description"><p>'._get_urn_value($relation->offre, 'urn:fld:descmarket').'</p></div>'
+                .    '<span class="pivot-id-type-offre d-none item">'.$relation->offre->typeOffre->attributes()->idTypeOffre->__toString().'</span>'
+                .    '<span class="pivot-code-cgt d-none item">'.$relation->offre->attributes()->codeCgt->__toString().'</span>'
+                .    '<span class="pivot-latitude d-none item">'.$relation->offre->adresse1->latitude->__toString().'</span>'
+                .    '<span class="pivot-longitude d-none item">'.$relation->offre->adresse1->longitude->__toString().'</span>'
+                .  '</div>';
+      }
+    }
+  }
+  if($i > 0){
+    $output .= '</div></section>';
+    return $output;
+  }
+  
+  return '';
+  
 }
 
 function _add_section_mice_rooms($offre, $title, $faIcon=''){

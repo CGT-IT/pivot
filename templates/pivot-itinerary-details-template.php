@@ -18,9 +18,9 @@
       <div class="col-12">
         <div class="row">
           <div class="col-12">
-            <div class="row mb-2">
+            <div class="row mb-2 mt-2">
               <div class="col-10">
-                <h2 class="pivot-title"><?php print _get_urn_value($offre, 'urn:fld:nomofr'); ?></h2>
+                <h1 class="pivot-title"><?php print _get_urn_value($offre, 'urn:fld:nomofr'); ?></h1>
               </div>    
               <div class="col-2">
                 <?php print _add_section_share($offre); ?>
