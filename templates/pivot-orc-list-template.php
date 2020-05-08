@@ -34,14 +34,18 @@
           <link href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css" rel="stylesheet">
           <script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
           <script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table-locale-all.min.js"></script>
-          <script>
+          <script>  
             function copyFunction(linkID) {
+              /* Get the text field */
               var copyText = document.getElementById(linkID);
+              /* Select the text field */
               copyText.select();
-              copyText.setSelectionRange(0, 99999)
+              copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+              /* Copy the text inside the text field */
               document.execCommand("copy");
+              /* Alert the copied text */
               alert("Lien FR copié: " + copyText.value);
-            }
+            } 
           </script>
           <div class="table-responsive-xl">
 
@@ -78,7 +82,7 @@
                     <td id="lien-orc-nl-<?php print $i;?>" class="lien-orc-nl"><?php print _get_urn_value($offre, 'nl:urn:fld:orc'); ?></td>
                     <td id="lien-orc-en-<?php print $i;?>" class="lien-orc-en"><?php print _get_urn_value($offre, 'en:urn:fld:orc'); ?></td>
                     <td id="lien-orc-de-<?php print $i;?>" class="lien-orc-de"><?php print _get_urn_value($offre, 'de:urn:fld:orc'); ?></td>
-                    <input id="link-<?php print $i;?>" type="text" class="d-none" value="<?php print _get_urn_value($offre, 'urn:fld:orc'); ?>"/>
+                    <input id="link-<?php print $i;?>" style="position:fixed;top:0;left:0;width:2em;height:2em;padding:0;border:none;outline:none;box-shadow:none;background:transparent;" type="text"  value="<?php print _get_urn_value($offre, 'urn:fld:orc'); ?>"/>
                     <td class="details-offre">
                       <button class="button btn-sm m-2" onclick="copyFunction('link-<?php print $i;?>')" title="Copier le lien Elloha FR"><i class="fa fa-copy"></i> Copier</button>
                       <a class="m-2" href="<?php print $url;?>" target="_blank" title="<?php print __('Link to', 'pivot') .' '. $offerTitle; ?>"><i class="fa fa-eye"> Pivot</i></a>
