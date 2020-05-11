@@ -72,19 +72,19 @@ function map_call(){
    * + set popup on market and offer's details in it
    */
   $('.pivot-offer').each(function(){
-    // Get latitude and longitude. Parse it to float as it is text at beginning and round to 2 decimal
-    var latitude = parseFloat($(this).find('.pivot-latitude').text()).toFixed(2);
-    var longitude = parseFloat($(this).find('.pivot-longitude').text()).toFixed(2);
+    // Get latitude and longitude. Parse it to float as it is text at beginning
+    var latitude = parseFloat($(this).find('.pivot-latitude').text());
+    var longitude = parseFloat($(this).find('.pivot-longitude').text());
 
     if(latitude && longitude && latitude != 0 && longitude != 0) {
       // Construction of a point
       var point = [latitude,longitude];
       // Get offer details
-      var offerTitle = $(this).find('h6').text();
+      var offerTitle = $(this).find('h6.card-header').text();
       var contentString = "<div class='card' style='width: 13rem;'>"
                 +"<img src='https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/"+$(this).find('.pivot-code-cgt').text()+";w=193;h=128' class='card-img-top'>"
                 +"<div class='card-body text-center'>"
-                  +"<a target='_blank' href='"+$(this).find('a').attr("href")+"'><h6 class='card-title'>"+$(this).find('h6').text()+"</h6></a>"
+                  +"<a target='_blank' href='"+$(this).find('a').attr("href")+"'><h6 class='card-title'>"+offerTitle+"</h6></a>"
                 +"</div>"
             +"</div>";
 

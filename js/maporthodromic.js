@@ -60,9 +60,9 @@
     */
   function offersProcess(pivotMap, arrayOfLatLngs, mapMarkers, selector){
     $(selector).each(function(){
-      // Get latitude and longitude. Parse it to float as it is text at beginning and round to 2 decimal
-      var latitude = parseFloat($(this).find('.pivot-latitude').text()).toFixed(2);
-      var longitude = parseFloat($(this).find('.pivot-longitude').text()).toFixed(2);
+      // Get latitude and longitude. Parse it to float as it is text at beginning
+      var latitude = parseFloat($(this).find('.pivot-latitude').text());
+      var longitude = parseFloat($(this).find('.pivot-longitude').text());
 
       if(latitude && longitude && latitude != 0 && longitude != 0) {
         // Construction of a point
