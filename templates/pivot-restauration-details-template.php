@@ -28,21 +28,16 @@
               </div>      
             </div>
           </div>
-          <div class="row ml-auto mb-1">
-            <div class="col-12">
-              <?php print _add_section_themes($offre); ?>
-            </div>
-          </div>
         </div>
 
-        <h5 class="lis-font-weight-500"><i class="fas fa-align-right pr-2 lis-f-14"></i><?php esc_html_e('Description', 'pivot')?></h5>
+        <p class="section-title h5 lis-font-weight-500"><i class="fas fa-align-right pr-2 lis-f-14"></i><?php esc_html_e('Description', 'pivot')?></p>
         <section class="card lis-brd-light mb-4">
           <div class="card-body p-4">
             <p class="pivot-desc item mb-0"><?php print _get_urn_value($offre, 'urn:fld:descmarket') ;?></p>
           </div>
         </section>
 
-        <h5 class="lis-font-weight-500"><i class="fas fa-align-right pr-2 fa-thumb-tack"></i><?php esc_html_e('Equipments', 'pivot')?></h5>
+        <p class="section-title h5 lis-font-weight-500"><i class="fas fa-align-right pr-2 fa-thumb-tack"></i><?php esc_html_e('Equipments', 'pivot')?></p>
         <section class="card lis-brd-light mb-4">
           <div class="card-body p-4">
             <div class="row">

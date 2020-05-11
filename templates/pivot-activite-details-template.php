@@ -30,7 +30,7 @@
           </div>
         </div>
 
-        <h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 lis-f-14"></i><?php esc_html_e('Description', 'pivot')?></h5>
+        <p class="section-title h5 lis-font-weight-500"><i class="fa fa-align-right pr-2 lis-f-14"></i><?php esc_html_e('Description', 'pivot')?></p>
         <section class="card lis-brd-light mb-4">
           <div class="card-body p-4">
             <p class="pivot-desc item mb-0"><?php print _get_urn_value($offre, 'urn:fld:descmarket') ;?></p>
@@ -47,16 +47,17 @@
 
     <?php print _add_section_contact($offre); ?>
     
-    <h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-calendar-check-o"></i><?php esc_html_e('Dates', 'pivot')?></h5>
+    <p class="section-title h5 lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-calendar-check-o"></i><?php esc_html_e('Dates', 'pivot')?></p>
     <section class="pivot-share card lis-brd-light mb-4">
       <div class="card-body p-4">
         <?php echo _add_section_event_dates($offre); ?>
       </div>
     </section>
 
+    <?php print _add_section_booking($offre); ?>
     <?php print _add_section($offre,'urn:cat:classlab', __('Theme(s)'), 'fa-list-ol'); ?>
         
-    <h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-calendar"></i><?php esc_html_e('Add to calendar', 'pivot')?></h5>
+    <p class="section-title h5 lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-calendar"></i><?php esc_html_e('Add to calendar', 'pivot')?></p>
     <section class="pivot-share card lis-brd-light mb-4">
       <!-- Link to add event to external calendar -->
       <div class="add-to-calendar card-body p-4">
