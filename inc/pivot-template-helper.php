@@ -14,7 +14,7 @@
 function _add_section($offre, $urnCat, $title, $faIcon='', $urnSubCat=0){
   $excludedUrn = array('urn:cat:accueil:attest', 'urn:val:attestincendie:asi', 'urn:val:attestincendie:acs', 'urn:val:attestincendie:defaut', 'urn:fld:attestincendie:dateech', 'urn:fld:dateech', 
                        'urn:fld:idaccessi', 'urn:fld:accessi', 'urn:fld:accessi:url', 'urn:fld:accessi:perfautroul', 'urn:fld:accessi:permardif', 'urn:fld:accessi:perave', 'urn:fld:accessi:permalvoy', 'urn:fld:accessi:persou', 'urn:fld:accessi:permalent', 'urn:fld:accessi:perdifcomp', 
-                       'urn:val:qw:nc', 'urn:fld:datereco', 'urn:fld:class:title', 'urn:fld:class:value', 'urn:cat:classlab:qw');
+                       'urn:val:qw:nc', 'urn:fld:datereco', 'urn:fld:class:title', 'urn:fld:class:value', 'urn:val:class:echue');
   // Define if sub category or category
   $cat_or_subcat = ($urnSubCat?'urnSubCat':'urnCat');
   // Get 2 letter language code
@@ -24,14 +24,14 @@ function _add_section($offre, $urnCat, $title, $faIcon='', $urnSubCat=0){
   // Init var, will be used to check if there is well content or not
   $content = '';
 
-  $open_balise = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 f0fc '.$faIcon.'"></i>'. __($title, 'pivot') .'</h5>'
+  $open_balise = '<p class="section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 f0fc '.$faIcon.'"></i>'. __($title, 'pivot') .'</p>'
            .'<section class="pivot-'.$cat.' card lis-brd-light mb-4">'
            .'<div class="card-body p-4">'
            .'<ul class="list-unstyled lis-line-height-2 m-0">';
   foreach($offre->spec as $specification){
     // If iteration is on an URN of the cat or subcat we are looking for
     if($specification->$cat_or_subcat->__toString() == $urnCat && !empty(_get_urn_documentation($specification->attributes()->urn->__toString()))){
-      if(!in_array($specification->attributes()->urn->__toString(),$excludedUrn)){
+      if(!in_array($specification->attributes()->urn->__toString(),$excludedUrn) && !in_array($specification->value->__toString(),$excludedUrn)){
         // Case FR
         if($lang == 'fr' && 'urn' == substr($specification->attributes()->urn->__toString(), 0, 3)){
           $content .= '<li class="p-1 '. str_replace(":", "-", $specification->attributes()->urn->__toString()) .'">';
@@ -80,7 +80,7 @@ function _add_section_language($offre){
   // Init var, will be used to check if there is well content or not
   $content = '';
 
-  $open_balise = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 f0fc fa-language"></i>'. __('Language(s)', 'pivot') .'</h5>'
+  $open_balise = '<p class="section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 f0fc fa-language"></i>'. __('Language(s)', 'pivot') .'</p>'
                . '<section class="mb-4">';
   foreach($offre->spec as $specification){
     if($specification->urnSubCat->__toString() == 'urn:cat:accueil:langpar'){
@@ -100,7 +100,7 @@ function _add_section_language($offre){
 }
 
 function _add_section_themes($offre){
-  $excludedUrn = array('urn:fld:dateech', 'urn:fld:class');
+  $excludedUrn = array('urn:fld:dateech', 'urn:fld:class', 'urn:val:qw:nc', 'urn:fld:datereco', 'urn:fld:class:title', 'urn:fld:class:value', 'urn:cat:classlab:qw');
   // Init var, will be used to check if there is well content or not
   $content = '';
 
@@ -151,10 +151,10 @@ function _add_section_share($offre){
  * @return string
  */
 function _add_section_contact($offre){
-  $output = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-id-card"></i>'.esc_html('Contact', 'pivot').'</h5>'
+  $output = '<p class="section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-id-card"></i>'.esc_html('Contact', 'pivot').'</p>'
           . '<section class="pivot-contacts card lis-brd-light wow fadeInUp mb-4">'
           .   '<div class="card-body p-4">'
-          .     '<h6 class="pivo-title">'._get_urn_value($offre, 'urn:fld:nomofr').'</h6>'
+          .     '<p class="h6 pivo-title">'._get_urn_value($offre, 'urn:fld:nomofr').'</p>'
           .     '<ul class="list-unstyled lis-line-height-2 m-0">';
   foreach($offre->spec as $specification){
     if($specification->urnCat->__toString() == 'urn:cat:moycom' && $specification->urnSubCat->__toString() != 'urn:cat:moycom:sitereservation'){
@@ -202,7 +202,7 @@ function _add_section_contact($offre){
 function _add_section_contact_version2($offre){
   $output = '<section class="pivot-contacts card lis-brd-light wow fadeInUp mb-4 shadow">'
           .   '<div class="card-body p-4">'
-          .     '<h3 class="pivo-title">'._get_urn_value($offre, 'urn:fld:nomofr').'</h3>'
+          .     '<p class="h3 pivo-title">'._get_urn_value($offre, 'urn:fld:nomofr').'</p>'
           . '<ul class="adr list-unstyled lis-line-height-2 m-0">'
           .    '<li class="street-address"><i class="fas fa-map"></i> '.$offre->adresse1->rue->__toString().', '.$offre->adresse1->numero->__toString().'</li>'
           .      '<span class="postal-code">'.$offre->adresse1->cp->__toString().' </span>'
@@ -220,16 +220,17 @@ function _add_section_contact_version2($offre){
               . '<img class="pivot-picto" src="'.get_option('pivot_uri').'img/'.$specification->attributes()->urn->__toString().';h=16"/>';
         switch ($specification->type->__toString()){
           case 'EMail':
-            $output .= '<a class="'.$specification->type->__toString().'" href="mailto:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
+            $output .= ' <a class="'.$specification->type->__toString().'" href="mailto:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
             break;
           case 'URL':
-            $output .= '<a class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'">'.strrev(esc_url($specification->value->__toString())).'</a>';
+          case 'URLFacebook':
+            $output .= ' <a class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'">'.strrev(esc_url($specification->value->__toString())).'</a>';
             break;
           case 'GSM':
-            $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
+            $output .= ' <a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
             break;
           case 'Phone':
-            $output .= '<a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
+            $output .= ' <a class="'.$specification->type->__toString().'" href="tel:'.$specification->value->__toString().'">'.strrev($specification->value->__toString()).'</a>';
             break;
         }
         $output .= '</li>';
@@ -249,7 +250,7 @@ function _add_section_contact_version2($offre){
 function _add_section_booking($offre){
   $orc = _get_urn_value($offre, 'urn:fld:urlresa:default');
   if(esc_url($orc)){
-    $output = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-credit-card"></i>'.esc_html('Booking', 'pivot').'</h5>'
+    $output = '<p class="section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-credit-card"></i>'.esc_html('Booking', 'pivot').'</p>'
             . '<section class="pivot-booking card lis-brd-light wow fadeInUp mb-4">'
             .   '<div class="card-body p-4">'
             .     '<a title="'.__('Link to', 'pivot').' '.__('booking system').'" class="button btn-block btn-lg text-center" target="_blank" href="'._get_urn_value($offre, 'urn:fld:urlresa:default').'"><i class="fa fa-credit-card"></i> '.__('Book', 'pivot').'</a>'
@@ -267,7 +268,7 @@ function _add_section_booking($offre){
  */
 function _add_section_booking2($offre){
   $booking = FALSE;
-  $output = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-credit-card"></i>'.esc_html('Réservation', 'pivot').'</h5>'
+  $output = '<p class="section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-credit-card"></i>'.esc_html('Réservation', 'pivot').'</p>'
           . '<section class="pivot-booking card lis-brd-light wow fadeInUp mb-4">'
           .   '<div class="card-body p-4">';
   
@@ -295,7 +296,7 @@ function _add_section_booking2($offre){
  * @return string
  */
 function _add_section_linked_offers($offre){
-  $output = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-paperclip"></i>'.__('Linked offers', 'pivot').'</h5>'
+  $output = '<p class="section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-paperclip"></i>'.__('Linked offers', 'pivot').'</p>'
           .  '<div class="carousel slide" data-ride="carousel" id="quote-carousel">'
                 // Carousel Slides
           .     '<div class="carousel-inner">';
@@ -366,7 +367,7 @@ function _add_section_linked_offers($offre){
  * @return string
  */
 function _add_section_info_points($offre){
-  $output = '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-map-signs"></i>'.__('Way points info', 'pivot').'</h5>'
+  $output = '<p class="section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-map-signs"></i>'.__('Way points info', 'pivot').'</p>'
           . '<section class="pivot-booking card lis-brd-light wow fadeInUp mb-4">'
           .   '<div class="card-body p-4">';
   $i=0;
@@ -401,7 +402,7 @@ function _add_section_mice_rooms($offre, $title, $faIcon=''){
 
   $open_balise = '<link href="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.css" rel="stylesheet">'
                 . '<script src="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.js"></script>'
-                . '<h5 class="lis-font-weight-500"><i class="fas fas-align-right pr-2 f0fc '.$faIcon.'"></i>'. __($title, 'pivot') .'</h5>'
+                . '<p class="section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 f0fc '.$faIcon.'"></i>'. __($title, 'pivot') .'</p>'
                 . '<div class="table-responsive-xl">'
                   . '<table  data-toggle="table" data-sort-name="name" data-sort-order="asc" data-pagination="true" data-page-size="25" data-toggle="table" data-search="true"class="table table-striped">';
                     
@@ -612,7 +613,7 @@ function _add_section_accessi($offre){
     $permalent = _get_urn_value($offre, 'urn:fld:accessi:permalent');
     $perdifcomp = _get_urn_value($offre, 'urn:fld:accessi:perdifcomp');
       
-    $output .= '<h5 class="lis-font-weight-500">Access-I</h5>
+    $output .= '<p class="section-title h5 lis-font-weight-500">Access-I</p>
                 <section class="pivot-accessi card lis-brd-light mb-4">
                   <div class="card-body tetris__wrapper p-4">
                   <a alt="Access-I site" target="_blank" href="'._get_urn_value($offre, 'urn:fld:accessi:url').'">

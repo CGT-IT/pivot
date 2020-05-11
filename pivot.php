@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 1.5.9
+ * Version: 1.6.0
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -24,56 +24,6 @@ $myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
   __FILE__,
   'pivot'
 ); 
-
-add_action( 'wpseo_opengraph', 'change_yoast_seo_og_meta' );
-
-/**
-* Function to add hooks and filter out the Yoast SEO Open Graph Meta Tags
-*/
-function change_yoast_seo_og_meta() {
-  add_filter( 'wpseo_opengraph_title', 'change_title');
-//  add_filter( 'wpseo_locale', 'change_locale' );
-  add_filter( 'wpseo_opengraph_type', 'change_type' );
-  add_filter( 'wpseo_opengraph_desc', 'change_desc' );
-  add_filter( 'wpseo_opengraph_url', 'change_url' );
-//  add_action( 'wpseo_add_opengraph_images', 'add_images' );
-}
-function change_title($title){
-  global $offre_meta_data;
-  if(!is_singular()){
-    if(isset($offre_meta_data['title'])){
-      $title = $offre_meta_data['title'];
-    }
-  }
-  return $title;
-}
-function change_type($type){
-  global $offre_meta_data;
-  if(!is_singular()){
-    if(isset($offre_meta_data['type'])){
-      $type = $offre_meta_data['type'];
-    }
-  }
-  return $type;
-}
-function change_desc($desc){
-  global $offre_meta_data;
-  if(!is_singular()){
-    if(isset($offre_meta_data['description'])){
-      $desc = $offre_meta_data['description'];
-    }
-  }
-  return $desc;
-}
-function change_url($url){
-  global $offre_meta_data;
-  if(!is_singular()){
-    if(isset($offre_meta_data['url'])){
-      $url = $offre_meta_data['url'];
-    }
-  }
-  return $url;
-}
 
 // Include all files
 foreach (glob(MY_PLUGIN_PATH. "inc/*.php") as $file) {

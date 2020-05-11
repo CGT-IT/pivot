@@ -8,7 +8,7 @@
   <div class="card text-left pivot-offer">
     <div class="card-orientation <?php print ($offre->map!=1||wp_is_mobile()==1)?'':'card-horizontal';?>">
       <div class="container-img <?php print ($offre->map!=1||wp_is_mobile()==1)?'':'col-5 p-0 my-auto';?>">
-        <img class="pivot-img card-img-top zoom pivot-img-list" src="https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/<?php print $codeCGT;?>;w=444;h=296"/>
+        <img alt="<?php print $offreName; ?>" class="pivot-img card-img-top zoom pivot-img-list" src="<?php print _get_offer_default_image($offre); ?>"/>
       </div>
       <?php $offerTitle = _get_urn_value($offre, 'urn:fld:nomofr'); ?>
       <h6 class="title-header pt-1 pb-1 mb-1 card-header" <?php print ($offre->map!=1||wp_is_mobile()==1)?'':'style="display:none"';?>><?php print $offerTitle; ?></h6>

@@ -1,15 +1,15 @@
 <?php $offre = $args; ?>
 
 <div class="offers-area-col <?php print _set_nb_col($offre->map, $offre->nb_per_row).'nb-col-'.$offre->nb_per_row; ?> mb-3">
+  <?php $offerTitle = _get_urn_value($offre, 'urn:fld:nomofr'); ?>
   <?php $codeCGT = $offre->attributes()->codeCgt->__toString(); ?>
   <?php $lang = substr(get_locale(), 0, 2 ); ?>
   <?php $url = get_bloginfo('wpurl').(($lang=='fr')?'':'/'.$lang).'/'.$offre->path.'/'.$codeCGT.'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString(); ?>
   <div class="card text-left pivot-offer">
     <div class="card-orientation <?php print ($offre->map!=1||wp_is_mobile()==1)?'':'card-horizontal';?>">
       <div class="container-img embed-responsive embed-responsive-16by9 <?php print ($offre->map!=1||wp_is_mobile()==1)?'':'col-5 p-0 my-auto';?>" >
-        <img class="embed-responsive-item pivot-img card-img-top zoom pivot-img-list" src="<?php print _get_offer_default_image($offre); ?>"/>
+        <img alt="<?php print $offerTitle; ?>" class="embed-responsive-item pivot-img card-img-top zoom pivot-img-list" src="<?php print _get_offer_default_image($offre); ?>"/>
       </div>
-      <?php $offerTitle = _get_urn_value($offre, 'urn:fld:nomofr'); ?>
       <h6 class="title-header card-header" <?php print ($offre->map!=1||wp_is_mobile()==1)?'':'style="display:none"';?>><?php print $offerTitle; ?></h6>
       <div class="card-body">
         <span class="text-muted">
@@ -21,7 +21,7 @@
           <?php endforeach; ?>
           <?php print $content; ?>  
         </span>
-        <h6 class="title-no-header" <?php print ($offre->map!=1||wp_is_mobile()==1)?'style="display:none"':'';?>><?php print $offerTitle; ?></h6>
+        <p class="h6 title-no-header" <?php print ($offre->map!=1||wp_is_mobile()==1)?'style="display:none"':'';?>><?php print $offerTitle; ?></p>
         <div class="card-text text-uppercase dates"><?php print _add_section_event_dates($offre); ?></div>
         <p class="card-text text-muted city"><i class="fas fa-map-marker-alt"></i> <?php print $offre->adresse1->localite->value->__toString(); ?></p>
         <p class="card-text"><p class="pivot-desc item mb-0"><?php print wp_trim_words(_get_urn_value($offre, 'urn:fld:descmarket'), 20, '...' );?></p></p>
