@@ -468,13 +468,13 @@ function _add_meta_data($offre, $path){
 //    $bitly_url = bitly_get('shorten', $bitly_params);
 //  }
   if(isset($offre) && is_object($offre)){
-    echo  '<title>'._get_urn_value($offre, 'urn:fld:nomofr').' - '. get_bloginfo('name').'</title>'
-         .'<meta property="og:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:$url).'">'
+    $descp = preg_replace("/[^A-Za-z0-9 ]/", '', wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket')));
+    return '<meta property="og:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:$url).'">'
          .'<meta property="og:type" content="article">'
          .'<meta property="og:title" content="'._get_urn_value($offre, 'urn:fld:nomofr').'">'
-         .'<meta property="og:description" content="'.wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket')).'">'
+         .'<meta property="og:description" content="'.substr($descp, 0, strpos($descp, ' ', 160)).'">'
          .'<meta property="og:updated_time" content="'.$offre->attributes()->dateModification->__toString().'">'
-  //       .'<meta property="og:image" content="'.$meta_datas['url'].'">'
+//         .'<meta property="og:image" content="'.$meta_datas['url'].'">'
   //       .'<meta property="og:image:width" content="'.$meta_datas['img_width'].'">'
   //       .'<meta property="og:image:height" content="'.$meta_datas['img_height'].'">'
          .'<meta name="twitter:card" content="summary_large_image">'
@@ -483,6 +483,24 @@ function _add_meta_data($offre, $path){
          .'<meta property="article:published_time" content="'.$offre->attributes()->dateCreation->__toString().'">'
          .'<meta property="article:modified_time" content="'.$offre->attributes()->dateModification->__toString().'">';
   }
+}
+
+/**
+ * Create alternate hreflang for each page language
+ * For repertory language format only and assuming WPML is active.
+ * mydomainname.com/ = NL
+ * mydomainname.com/nl/ = NL
+ * @return string
+ */
+function _pivot_create_alternate_link(){
+  global $wp;
+  $output = '';
+  $languages = icl_get_languages();
+  $current_url = home_url($wp->request);
+  foreach($languages as $lang){
+    $output .= '<link rel="alternate" hreflang="'.$lang['language_code'].'" href="'.apply_filters('wpml_permalink', $current_url, $lang['language_code']).'">';
+  }
+  return $output;
 }
 
 /**
