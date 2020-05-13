@@ -1,39 +1,3 @@
-h1,h2,h3,h4,h5,h6{
-    text-transform:uppercase;
-    margin-bottom:25px;
-    color:#32313b;
-    font-family:Raleway,sans-serif;
-    text-rendering:optimizelegibility;
-    font-style:normal;
-}
-h5 .no-transform{
-    text-transform:none;
-}
-h1{
-    font-size:58px;
-    font-weight:300;
-}
-h2{
-    font-size:36px;
-    font-weight:300;
-}
-h3{
-    color:rgb(112,108,107);
-    font-size:26px;
-}
-h4{
-    font-size:18px;
-    text-transform:none;
-}
-h5{
-}
-h6{
-}
-body{
-    line-height:1.4;
-    color:rgb(112,108,107);
-    font-size:15px !important;
-}
 .error404 .ast-container{
     max-width: 100%;
 }  
@@ -103,6 +67,9 @@ body{
     column-rule-width:1px;
     column-rule-style:outset;
     column-rule-color:#ccc;
+}
+#pivot-extra-infos .list-group-item{
+    border: none;
 }
 #pivotCarousel .carousel-indicators{
     bottom: 15px !important;
