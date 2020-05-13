@@ -28,7 +28,7 @@
     <?php endif;?>
         <div class="row p-3">
           <div class="col-xs-12 col-sm-12 col-md-11 col-lg-11 col-xl-11 pt-3" style="background-color:#f5f5f5;">
-            <h5><?php echo __('There are', 'pivot') .' '. $_SESSION['pivot'][$pivot_page->id]['nb_offres'] .' '.  __('offers', 'pivot'); ?></h5>
+            <p class="h5"><?php echo __('There are', 'pivot') .' '. $_SESSION['pivot'][$pivot_page->id]['nb_offres'] .' '.  __('offers', 'pivot'); ?></p>
           </div>
           <div class="d-none d-md-block col-1" role="button">
             <i id="carte" class="float-right fas <?php print ($pivot_page->map==1)?'fa-list':'fa-map-marked-alt';?> fa-2x" role="button"></i>

@@ -1,6 +1,6 @@
 <?php $offre = $args; ?>
 
-<h5 class="lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-paperclip"></i><?php _e('Linked offers', 'pivot') ?></h5>
+<p class="h5 lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-paperclip"></i><?php _e('Linked offers', 'pivot') ?></p>
 <div class="carousel slide" data-ride="carousel" id="quote-carousel">
   <!-- Carousel Slides -->
   <div class="carousel-inner">

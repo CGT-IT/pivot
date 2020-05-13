@@ -749,7 +749,13 @@ function _get_offer_default_image($offre, $width=428, $height=285, $noimg_src=NU
       $media_offer = _get_offer_details($relation->offre->attributes()->codeCgt->__toString(), 2);
       // Check if media is publishable
       if($media_offer->estActive == 30){
-        $output = _get_urn_value($media_offer, 'urn:fld:url');
+        $mode = _get_urn_value($media_offer, 'urn:fld:mode');
+        // If media is internal
+        if($mode == 0){
+          $output = get_option('pivot_uri').'img/'.$media_offer->attributes()->codeCgt->__toString().';w='.$width.';h='.$height;
+        }else{
+          $output = _get_urn_value($media_offer, 'urn:fld:url');
+        }
       }
     }
   }
