@@ -281,7 +281,11 @@ class Pivot_Filters_List extends WP_List_Table {
          $operator = 'in';
          break;
        default:
-         $operator = $_POST['operator'];
+        if($_POST['urn'] == 'urn:fld:idorc'){
+          $operator = 'notempty';
+        }else{
+          $operator = $_POST['operator'];
+        }
          break;
      }
 

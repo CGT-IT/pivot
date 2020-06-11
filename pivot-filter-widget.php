@@ -141,7 +141,7 @@ function pivot_add_filters(){
 
     // Print footer section and close HTML form
     $output .= '</div>'
-         .   '<div class="row mt-2">'
+         .   '<div class="row mt-2 filter-buttons">'
          .     '<div class="col-xl-7 col-12">'
          .       '<button type="submit" id="filter-submit" name="filter-submit" value="'.esc_html__('Search', 'pivot').'"class="btn text-dark btn-lg btn-block form-submit" style="background-color:#f5f5f5;"><i class="fas fa-search"></i> '.esc_html__('Search', 'pivot').'</button>'
          .     '</div>'
@@ -199,14 +199,14 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL){
   }
 
   if(isset($group) && !empty($group)){
-    $output .= '<div class="text-uppercase font-weight-bolder p-2 mb-2 mt-2" style="background-color:#f5f5f5;">'.$group.'</div>';
+    $output .= '<div class="filter-group text-uppercase font-weight-bolder p-2 mb-2 mt-2 bg-light">'.$group.'</div>';
   }
   switch($filter->type){
     case 'Boolean':
         $output .= '<div class="pl-2 form-item form-item-'.$filter->filter_name.'">'
                   .  '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.__($filter->filter_title, 'pivot').'">'
                   .    '<input type="checkbox" id="edit-'.$filter->filter_name.'" name="'.$filter->id.'"  class="form-checkbox"'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?'checked':'').'> '
-                  .    '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$filter->urn.';h=12"> '.__($filter->filter_title, 'pivot')
+                  .    '<img class="pivot-picto" src="'.get_option('pivot_uri').'img/'.$filter->urn.';h=12"> '.__($filter->filter_title, 'pivot')
                   .  '</label>'
                   .'</div>';
 
@@ -217,7 +217,7 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL){
       $output .= '<div class="pl-2 form-item form-item-'.$filter->filter_name.'">'
                 .  '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.__($filter->filter_title, 'pivot').'">'
                 .    '<input type="checkbox" id="edit-'.$filter->filter_name.'" name="'.$filter->id.'"  class="form-checkbox"'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?'checked':'').'> '
-                .    '<img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$filter->urn.';h=12"> '.__($filter->filter_title, 'pivot')
+                .    '<img class="pivot-picto" src="'.get_option('pivot_uri').'img/'.$filter->urn.';h=12"> '.__($filter->filter_title, 'pivot')
                 .  '</label>'
                 .'</div>';
       return $output;
@@ -246,10 +246,19 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL){
                   .  '</select>'
                   .'</div>';
       }else{
-        $output .= '<div class="pl-2 form-item form-item-'.$filter->filter_name.'">'
-                  .  '<label title="'.__($filter->filter_title, 'pivot').'" data-toggle="tooltip" class="w-50 control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.__($filter->filter_title, 'pivot').'">'.__($filter->filter_title, 'pivot').'</label>'
-                  .  '<input type="text" id="edit-'.$filter->filter_name.'" class="w-50" name="'.$filter->id.'" value="'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?$_SESSION['pivot']['filters'][$page_id][$filter->id]:'').'">'
+        if ($filter->urn == 'urn:fld:idorc') {
+          $output .= '<div class="pl-2 form-item form-item-'.$filter->filter_name.'">'
+                  .  '<label title="" data-toggle="tooltip" class="control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.__($filter->filter_title, 'pivot').'">'
+                  .    '<input type="checkbox" id="edit-'.$filter->filter_name.'" name="'.$filter->id.'"  class="form-checkbox"'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?'checked':'').'> '
+                  .    __($filter->filter_title, 'pivot')
+                  .  '</label>'
                   .'</div>';
+        }else{
+          $output .= '<div class="pl-2 form-item form-item-'.$filter->filter_name.'">'
+                    .  '<label title="'.__($filter->filter_title, 'pivot').'" data-toggle="tooltip" class="w-50 control-label" for="edit-'.$filter->filter_name.'" data-original-title="Filter on '.__($filter->filter_title, 'pivot').'">'.__($filter->filter_title, 'pivot').'</label>'
+                    .  '<input type="text" id="edit-'.$filter->filter_name.'" class="w-50" name="'.$filter->id.'" value="'.(isset($_SESSION['pivot']['filters'][$page_id][$filter->id])?$_SESSION['pivot']['filters'][$page_id][$filter->id]:'').'">'
+                    .'</div>';
+        }
       }
       return $output;
     default:
