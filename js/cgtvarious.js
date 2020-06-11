@@ -8,7 +8,7 @@
 (function($) {
 
   $().ready(function(){
-    
+
     $('[id^=cgt-table-search-paging]').DataTable();
 
     var isInIFrame = (window.location != window.parent.location);
