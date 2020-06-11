@@ -67,7 +67,7 @@ function _get_translated_value($field){
 
 function _get_event_categories(){
   
-  $uri = 'https://pivotweb.tourismewallonie.be/PivotWeb-3.1/thesaurus/typeofr/9/urn:cat:classlab:classif;pretty=true;fmt=xml;';
+  $uri = get_option('pivot_uri').'thesaurus/typeofr/9/urn:cat:classlab:classif;pretty=true;fmt=xml;';
 
   $ssl_options=array(
     "ssl"=>array(
@@ -170,7 +170,7 @@ function _search_specific_urn_img($offre, $urn, $height, $color = '', $original 
       $alt_attribute = 'alt="image '._get_urn_documentation($urn).'"';
 
       // Construct <img/> tag
-      $img = '<img '.$title_attribute.' '.$alt_attribute.' class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$urn.';h='.$height;
+      $img = '<img '.$title_attribute.' '.$alt_attribute.' class="pivot-picto" src="'.get_option('pivot_uri').'img/'.$urn.';h='.$height;
       if(!empty($color) && $color != ''){
         $img .= ';c='.$color;
       }
@@ -212,7 +212,7 @@ function _search_specific_urn($offre, $urn){
  * @param string $color color in hexadecimal format without # (null by default)
  * @return string
  */
-function _get_ranking_picto($offre, $color = null){
+function _get_ranking_picto($offre, $color = null, $height = 20){
   $urn = 'urn:fld:class';
   // Loop on each specific field
   foreach($offre->spec as $specification){
@@ -226,9 +226,8 @@ function _get_ranking_picto($offre, $color = null){
       $title_attribute = 'title="'.$urn_doc.'"';
       // prepare img alt attribute
       $alt_attribute = 'alt="image '.$urn_doc.'"';
-      $height = 20;
       // Construct <img/> tag
-      $img = '<img '.$title_attribute.' '.$alt_attribute.' class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/'.$urn.(($color)?';c='.$color:'').';h='.$height;
+      $img = '<img height="'.$height.'" '.$title_attribute.' '.$alt_attribute.' class="pivot-picto" src="'.get_option('pivot_uri').'img/'.$urn.(($color)?';c='.$color:'').';h='.$height;
       $img .= '"/>';
 
       $output .= $img.'</span>';
@@ -287,7 +286,7 @@ function _get_address_one_line($offre){
 }
 
 function _get_list_mdt(){
-  $uri = 'https://pivotweb.tourismewallonie.be/PivotWeb-3.1/thesaurus/tmdts;pretty=true;fmt=xml';
+  $uri = get_option('pivot_uri').'thesaurus/tmdts;pretty=true;fmt=xml';
 
   $ssl_options=array(
     "ssl"=>array(
@@ -311,7 +310,7 @@ function _get_list_mdt(){
 }
 
 function _get_list_typeofr($selected_id = NULL){
-  $uri = 'https://pivotweb.tourismewallonie.be/PivotWeb-3.1/thesaurus/typeofr;fmt=xml';
+  $uri = get_option('pivot_uri').'thesaurus/typeofr;fmt=xml';
 
   $ssl_options=array(
     "ssl"=>array(
@@ -349,7 +348,7 @@ function _get_list_typeofr($selected_id = NULL){
  */
 function _get_commune_from_pivot($type, $value, $selected_value = NULL){
   // Construction of request uri
-  $uri = 'https://pivotweb.tourismewallonie.be/PivotWeb-3.1/thesaurus/tins/'.$type.'/'.$value.';pretty=true;fmt=xml';
+  $uri = get_option('pivot_uri').'thesaurus/tins/'.$type.'/'.$value.';pretty=true;fmt=xml';
   $ssl_options=array(
     "ssl"=>array(
       "verify_peer"=>false,
@@ -362,7 +361,7 @@ function _get_commune_from_pivot($type, $value, $selected_value = NULL){
 
   // Init vars
   $commune_list = array();
-  $output = '<option '.(isset($selected_value)?'':'selected').' disabled hidden>'.esc_html__('Choose a town', 'pivot').'</option>';
+  $output = '<option value="all" '.(isset($selected_value)?'':'selected').' >'.esc_html__('Choose a town', 'pivot').'</option>';
 
   // Construct list
   foreach($communes as $commune){
@@ -413,41 +412,16 @@ function _get_offer_types($edit_page= null){
  */
 function _overide_yoast_seo_meta_data($offre, $path){
   global $offre_meta_data;
-//  if(strpos(get_bloginfo('wpurl'), 'localhost') !== false) {
-    $url = get_bloginfo('wpurl').'/'.$path.'/'.$offre->attributes()->codeCgt->__toString();
-//  }else{
-//    $bitly_params = array();
-//    $bitly_params['access_token'] = get_option('pivot_bitly');
-//    $bitly_params['domain'] = 'bit.ly';
-//    $bitly_params['longUrl'] = get_bloginfo('wpurl').'/'.$path.'/'.$offre->attributes()->codeCgt->__toString(); 
-//    $bitly_url = bitly_get('shorten', $bitly_params);
-//  }
   if(isset($offre) && is_object($offre)){
-    $offre_meta_data['title'] = _get_urn_value($offre, 'urn:fld:nomofr').' - '. get_bloginfo('name');
+    $url = get_bloginfo('wpurl').'/'.$path.'/'.$offre->attributes()->codeCgt->__toString().'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString();
+    $offre_meta_data['title'] = _get_urn_value($offre, 'urn:fld:nomofr');
     $offre_meta_data['type'] = 'article';
-    $offre_meta_data['url'] = (isset($bitly_url['data']['url'])?$bitly_url['data']['url']:$url);
+    $offre_meta_data['url'] = $url;
     $offre_meta_data['description'] = wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket'));
     $offre_meta_data['updated_time'] = $offre->attributes()->dateModification->__toString();
     $offre_meta_data['published_time'] = $offre->attributes()->dateCreation->__toString();
     $offre_meta_data['modified_time'] = $offre->attributes()->dateModification->__toString();
 //    $offre_meta_data['image'] = ;
-//    $offre_meta_data['image_width'] = ;
-//    $offre_meta_data['image_height'] = ;
-//    $offre_meta_data[''] = ;
-    /*echo  '<title>'._get_urn_value($offre, 'urn:fld:nomofr').' - '. get_bloginfo('name').'</title>'
-         .'<meta property="og:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:$url).'">'
-         .'<meta property="og:type" content="article">'
-         .'<meta property="og:title" content="'._get_urn_value($offre, 'urn:fld:nomofr').'">'
-         .'<meta property="og:description" content="'.wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket')).'">'
-         .'<meta property="og:updated_time" content="'.$offre->attributes()->dateModification->__toString().'">'
-  //       .'<meta property="og:image" content="'.$meta_datas['url'].'">'
-  //       .'<meta property="og:image:width" content="'.$meta_datas['img_width'].'">'
-  //       .'<meta property="og:image:height" content="'.$meta_datas['img_height'].'">'
-         .'<meta name="twitter:card" content="summary_large_image">'
-         .'<meta name="twitter:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:$url).'">'
-         .'<meta name="twitter:title" content="'._get_urn_value($offre, 'urn:fld:nomofr').'">'
-         .'<meta property="article:published_time" content="'.$offre->attributes()->dateCreation->__toString().'">'
-         .'<meta property="article:modified_time" content="'.$offre->attributes()->dateModification->__toString().'">';*/
   }
 }
 
@@ -457,31 +431,45 @@ function _overide_yoast_seo_meta_data($offre, $path){
  * @param Object $offre Complete Offer object
  * @param String $path path to join the offer
  */
-function _add_meta_data($offre, $path){
-//  if(strpos(get_bloginfo('wpurl'), 'localhost') !== false) {
-    $url = get_bloginfo('wpurl').'/'.$path.'/'.$offre->attributes()->codeCgt->__toString();
-//  }else{
-//    $bitly_params = array();
-//    $bitly_params['access_token'] = get_option('pivot_bitly');
-//    $bitly_params['domain'] = 'bit.ly';
-//    $bitly_params['longUrl'] = get_bloginfo('wpurl').'/'.$path.'/'.$offre->attributes()->codeCgt->__toString(); 
-//    $bitly_url = bitly_get('shorten', $bitly_params);
-//  }
+function _add_meta_data($offre, $path, $default_image=null){
+  $url = get_bloginfo('wpurl').'/'.$path.'/'.$offre->attributes()->codeCgt->__toString().'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString();
   if(isset($offre) && is_object($offre)){
-    $descp = preg_replace("/[^A-Za-z0-9 ]/", '', wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket')));
-    return '<meta property="og:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:$url).'">'
+//    $descp = preg_replace("/[^A-Za-z0-9 ]/", '', wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket')));
+    $descp =  wp_strip_all_tags( get_the_excerpt(), true );
+    return '<meta name="description" content="'.substr($descp, 0, strpos($descp, ' ', 160)).'"/>'
+         .'<meta property="og:url" content="'.$url.'">'
          .'<meta property="og:type" content="article">'
          .'<meta property="og:title" content="'._get_urn_value($offre, 'urn:fld:nomofr').'">'
          .'<meta property="og:description" content="'.substr($descp, 0, strpos($descp, ' ', 160)).'">'
          .'<meta property="og:updated_time" content="'.$offre->attributes()->dateModification->__toString().'">'
-//         .'<meta property="og:image" content="'.$meta_datas['url'].'">'
-  //       .'<meta property="og:image:width" content="'.$meta_datas['img_width'].'">'
-  //       .'<meta property="og:image:height" content="'.$meta_datas['img_height'].'">'
+         .'<meta property="og:image" content="'.$default_image.'">'
          .'<meta name="twitter:card" content="summary_large_image">'
-         .'<meta name="twitter:url" content="'.(isset($bitly_url['data']['url'])?$bitly_url['data']['url']:$url).'">'
+         .'<meta name="twitter:url" content="'.$url.'">'
          .'<meta name="twitter:title" content="'._get_urn_value($offre, 'urn:fld:nomofr').'">'
          .'<meta property="article:published_time" content="'.$offre->attributes()->dateCreation->__toString().'">'
          .'<meta property="article:modified_time" content="'.$offre->attributes()->dateModification->__toString().'">';
+  }
+}
+
+/**
+ * Override page title with offer name + site name
+ * Add metadata for twitter and og (facebook, google, ...)
+ * @param Object $offre Complete Offer object
+ * @param String $path path to join the offer
+ */
+function _add_meta_data_list_page($pivot_page){
+  if(isset($pivot_page) && is_object($pivot_page)){
+    $url = get_bloginfo('wpurl').'/'.$pivot_page->path;
+//    $descp = preg_replace("/[^A-Za-z0-9 ]/", '', wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket')));
+    $descp =  wp_strip_all_tags($pivot_page->description, true );
+    return '<meta name="description" content="'.substr($descp, 0, strpos($descp, ' ', 160)).'"/>'
+         .'<meta property="og:url" content="'.$url.'">'
+         .'<meta property="og:type" content="page">'
+         .'<meta property="og:title" content="'.__($pivot_page->title, 'pivot').'">'
+         .'<meta property="og:image" content="'.$pivot_page->image.'">'
+         .'<meta name="twitter:card" content="summary_large_image">'
+         .'<meta name="twitter:url" content="'.$url.'">'
+         .'<meta name="twitter:title" content="'.__($pivot_page->title, 'pivot').'">';
   }
 }
 
@@ -702,46 +690,50 @@ function _check_is_offer_active($offre){
  * @param int $page_id
  */
 function _construct_filters_array($field_params,$filter, $key = 'shortcode', $page_id = NULL){
-  switch($filter->type){
-    case 'Type':
-      $field_params['filters']['urn:fld:typeofr']['name'] = 'urn:fld:typeofr';
-      $field_params['filters']['urn:fld:typeofr']['operator'] = $filter->operator;
-      $field_params['filters']['urn:fld:typeofr']['searched_value'][] = $filter->filter_name;
-      break;
-    case 'Value':
-      $parent_urn = preg_replace("'\:.*?:'" ,':fld:',substr($filter->urn, 0, strripos($filter->urn, ':')));
-      $field_params['filters'][$parent_urn]['name'] = $parent_urn;
-      $field_params['filters'][$parent_urn]['operator'] = $filter->operator;
-      $field_params['filters'][$parent_urn]['searched_value'][] = $filter->urn;
-      break;
-    default:
-      $field_params['filters'][$key]['name'] = $filter->urn;
-      $field_params['filters'][$key]['operator'] = $filter->operator;
-      break;
-  }
+  if($filter->urn == 'urn:fld:adrcom' && $_SESSION['pivot']['filters'][$page_id][$key] == 'all'){
+    return $field_params;
+  }else{
+    switch($filter->type){
+      case 'Type':
+        $field_params['filters']['urn:fld:typeofr']['name'] = 'urn:fld:typeofr';
+        $field_params['filters']['urn:fld:typeofr']['operator'] = $filter->operator;
+        $field_params['filters']['urn:fld:typeofr']['searched_value'][] = $filter->filter_name;
+        break;
+      case 'Value':
+          $parent_urn = preg_replace("'\:.*?:'" ,':fld:',substr($filter->urn, 0, strripos($filter->urn, ':')));
+          $field_params['filters'][$parent_urn]['name'] = $parent_urn;
+          $field_params['filters'][$parent_urn]['operator'] = $filter->operator;
+          $field_params['filters'][$parent_urn]['searched_value'][] = $filter->urn;
+        break;
+      default:
+        $field_params['filters'][$key]['name'] = $filter->urn;
+        $field_params['filters'][$key]['operator'] = $filter->operator;
+        break;
+    }
 
-  // If operator is no "exist", we need the field comparison
-  if($filter->operator != 'exist' && (!isset($parent_urn) || $parent_urn == '') && !isset($field_params['filters']['urn:fld:typeofr'])){
-    // Set value by default
-    if(!empty($_SESSION['pivot']['filters'][$page_id])){
-      $value = $_SESSION['pivot']['filters'][$page_id][$key];
-    }else{
-      $value = $filter->filter_name;
+    // If operator is no "exist", we need the field comparison
+    if($filter->operator != 'exist' && (!isset($parent_urn) || $parent_urn == '') && !isset($field_params['filters']['urn:fld:typeofr'])){
+      // Set value by default
+      if(!empty($_SESSION['pivot']['filters'][$page_id])){
+        $value = $_SESSION['pivot']['filters'][$page_id][$key];
+      }else{
+        $value = $filter->filter_name;
+      }
+      // If the filter is a Date
+      if($filter->type === 'Date'){
+        // Override value with the requested date format
+        $value = date("d/m/Y", strtotime($value));
+        $field_params['filters'][$key]['searched_value'][] = $value;
+      }else{
+        $field_params['filters'][$key]['searched_value'][] = $value;
+      }
     }
-    // If the filter is a Date
-    if($filter->type === 'Date'){
-      // Override value with the requested date format
-      $value = date("d/m/Y", strtotime($value));
-      $field_params['filters'][$key]['searched_value'][] = $value;
-    }else{
-      $field_params['filters'][$key]['searched_value'][] = $value;
+    if($filter->operator == 'exist'){
+      $field_params['filters'][$key]['operator'] = 'equal';
+      $field_params['filters'][$key]['searched_value'][] = 'true';
     }
+    return $field_params;
   }
-  if($filter->operator == 'exist'){
-    $field_params['filters'][$key]['operator'] = 'equal';
-    $field_params['filters'][$key]['searched_value'][] = 'true';
-  }
-  return $field_params;
 }
 
 function _get_urnValue_translated($offre, $specification){
