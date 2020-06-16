@@ -116,10 +116,10 @@ function _add_section_themes($offre){
   }
   // Check if there is well something to display
   if($content != ''){
-    $output = $content;
+    return $content;
+  }else{
+    return '';
   }
-  
-  return $output;
 }
 
 /**
@@ -754,7 +754,10 @@ function _get_offer_default_image($offre, $width=428, $height=285, $noimg_src=NU
         if($mode == 0){
           $output = get_option('pivot_uri').'img/'.$media_offer->attributes()->codeCgt->__toString().';w='.$width.';h='.$height;
         }else{
-          $output = _get_urn_value($media_offer, 'urn:fld:url');
+          $media_url = _get_urn_value($media_offer, 'urn:fld:url');
+          if(strpos(_get_urn_value($media_offer, 'urn:fld:url'), 'servlet/Repository') == FALSE){
+            $output = _get_urn_value($media_offer, 'urn:fld:url');
+          }
         }
       }
     }
