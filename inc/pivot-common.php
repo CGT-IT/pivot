@@ -219,20 +219,25 @@ function _get_ranking_picto($offre, $color = null, $height = 20){
     // Check if it's the one we are looking for
     if($specification->attributes()->urn->__toString() == $urn){
       $urn = $specification->value->__toString();
-      // add specific class to allow overriding. Replace : by -
-      $output = '<span class="pivot-ranking">';
-      $urn_doc = _get_urn_documentation($urn);
-      // prepare img title attribute
-      $title_attribute = 'title="'.$urn_doc.'"';
-      // prepare img alt attribute
-      $alt_attribute = 'alt="image '.$urn_doc.'"';
-      // Construct <img/> tag
-      $img = '<img height="'.$height.'" '.$title_attribute.' '.$alt_attribute.' class="pivot-picto" src="'.get_option('pivot_uri').'img/'.$urn.(($color)?';c='.$color:'').';h='.$height;
-      $img .= '"/>';
+      $useless = array('urn:val:class:cessation', 'urn:val:class:ecc', 'urn:val:class:echue', 'urn:val:class:nc');
+      if(!in_array($urn, $useless)){
+        // add specific class to allow overriding. Replace : by -
+        $output = '<span class="pivot-ranking">';
+        $urn_doc = _get_urn_documentation($urn);
+        // prepare img title attribute
+        $title_attribute = 'title="'.$urn_doc.'"';
+        // prepare img alt attribute
+        $alt_attribute = 'alt="image '.$urn_doc.'"';
+        // Construct <img/> tag
+        $img = '<img height="'.$height.'" '.$title_attribute.' '.$alt_attribute.' class="pivot-picto" src="'.get_option('pivot_uri').'img/'.$urn.(($color)?';c='.$color:'').';h='.$height;
+        $img .= '"/>';
 
-      $output .= $img.'</span>';
+        $output .= $img.'</span>';
 
-      return $output;
+        return $output;
+      }else{
+        return '';
+      }
     }
   }
 }
