@@ -664,6 +664,9 @@ function _set_nb_col($map, $nb_col){
     $output = 'col-12 ';
   }else{
     switch($nb_col){
+      case 1:
+        $output = 'col-12 ';
+        break;
       case 2:
         $output = 'col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12 ';
         break;
