@@ -674,16 +674,92 @@ function _get_offer_details($offer_id = NULL, $details = 3){
   return $offre;
 }
 
+/**
+ * Return an array of dates in a workable format.
+ * 
+ * @param Object $offre the complete Object Offre
+ * @return array contains all dates details in a more workable format
+ */
+function _get_dates_details($offre){
+  $i=0;
+  foreach($offre->spec as $specification){
+    if($specification->attributes()->urn->__toString() == 'urn:obj:date'){
+      foreach($specification->spec as $dateObj){
+        if($dateObj->attributes()->urn->__toString() == 'urn:fld:date:datefin' 
+          || $dateObj->attributes()->urn->__toString() == 'urn:fld:date:datedeb'
+          || $dateObj->attributes()->urn->__toString() == 'urn:fld:date:houv1'
+          || $dateObj->attributes()->urn->__toString() == 'urn:fld:date:hferm1'
+          || (strpos($dateObj->attributes()->urn->__toString(),'urn:fld:date:detailouv')!== false)){
+          if($dateObj->attributes()->urn->__toString() == 'urn:fld:date:datedeb'){
+            $dates[$i]['deb'] = date("Y-m-d", strtotime(str_replace('/', '-', $dateObj->value->__toString())));
+          }
+          if($dateObj->attributes()->urn->__toString() == 'urn:fld:date:datefin'){
+            $dates[$i]['fin'] = date("Y-m-d", strtotime(str_replace('/', '-', $dateObj->value->__toString())));
+          }
+          if($dateObj->attributes()->urn->__toString() == 'urn:fld:date:houv1'){
+            $dates[$i]['houv1'] = $dateObj->value->__toString();
+          }
+          if($dateObj->attributes()->urn->__toString() == 'urn:fld:date:hferm1'){
+            $dates[$i]['hferm1'] = $dateObj->value->__toString();
+          }
+          if(strpos($dateObj->attributes()->urn->__toString(),'urn:fld:date:detailouv') !== false){
+            $lang = substr(get_locale(), 0, 2 );
+            if($lang && $lang != 'fr'){
+              if($lang.':'.'urn:fld:date:detailouv' == $dateObj->attributes()->urn->__toString()){
+                $dates[$i]['detailouv'] = $dateObj->value->__toString();
+              }
+            }else{
+              if('urn:fld:date:detailouv' == $dateObj->attributes()->urn->__toString()){
+                $dates[$i]['detailouv'] = $dateObj->value->__toString();
+              }
+            }
+          }
+        }
+      }
+      $i++;
+    }
+  }
+  return $dates;
+}
+
+/**
+ * Check if an is active or not.
+ * If not redirect to main url if accessed via shortcode, just display an error.
+ * 
+ * @global Object $wp_query
+ * @param Object $offre Complete object offer
+ */
 function _check_is_offer_active($offre){
   // Check if offer is publishable, if not redirect to 404 page.
   if($offre->estActive != 30){
-    $warning_text = __("This offer doesn't exist or is not publishable anymore", "pivot");
-    echo _show_warning($warning_text);
     global $wp_query;
-    $wp_query->set_404();
-    status_header(404);
-    get_template_part(404);
-    exit();
+    // Get path to return to = listing page
+    $path = key($wp_query->query);
+    if($path == 'details'){
+      $warning_text = __("This offer doesn't exist or is not publishable anymore", "pivot");
+      echo _show_warning($warning_text);
+      $wp_query->set_404();
+      status_header(404);
+      get_template_part(404);
+      exit();
+    }else{
+      $codeCGT = $offre->attributes()->codeCgt->__toString();
+      $lang = substr(get_locale(), 0, 2 );
+      $url = get_bloginfo('wpurl').(($lang=='fr')?'':'/'.$lang).'/'.$path;
+      switch($offre->estActive){
+        // archive
+        case 5:
+          $redirect_mode = 301;
+          break;
+        // unpublishable and in-edition
+        case 10:
+        case 20:
+          $redirect_mode = 302;
+          break;
+      }
+      wp_redirect($url, $redirect_mode);
+      exit;
+    }
   }
 }
 
