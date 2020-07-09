@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 1.6.8
+ * Version: 1.6.9
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -454,11 +454,17 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL){
   $typeAttribute->value = 'and';
   $criteriaGroupElement->appendChild($typeAttribute);
   
+  $criteriaGroupSubElement = $domDocument->createElement('CriteriaGroup');
+  
+  $typeAttribute = $domDocument->createAttribute('type');
+  $typeAttribute->value = 'and';
+  $criteriaGroupSubElement->appendChild($typeAttribute);
+  
   if(isset($field_params['criterafield']) && $field_params['criterafield'] == TRUE){
     if(isset($field_params['filters'])){
       foreach ($field_params['filters'] as $filter){
         $criteriaFieldElement = _create_dom_criteria_field_element($domDocument, $filter);
-        $criteriaGroupElement->appendChild($criteriaFieldElement);
+        $criteriaGroupSubElement->appendChild($criteriaFieldElement);
       }
     }
   }
@@ -470,14 +476,14 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL){
     $radiusValueElement = $domDocument->createElement('radius', $field_params['radius']);
     $criteriaOrthodromicElement->appendChild($radiusValueElement);
     
-    $criteriaGroupElement->appendChild($criteriaOrthodromicElement);
+    $criteriaGroupSubElement->appendChild($criteriaOrthodromicElement);
   }
 
   if(isset($query_id)){
     $criteriaQueryElement = $domDocument->createElement('CriteriaQuery');
     $queryValueElement = $domDocument->createElement('value', $query_id);
     $criteriaQueryElement->appendChild($queryValueElement);
-    $criteriaGroupElement->appendChild($criteriaQueryElement);
+    $criteriaGroupSubElement->appendChild($criteriaQueryElement);
     
     // For event check only those where "date fin publication" is between now and +6month
     if(isset($field_params['page_type']) && $field_params['page_type'] == 'activite'){
@@ -497,15 +503,57 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL){
     
     if(isset($field_params['filters'])){
       foreach ($field_params['filters'] as $filter){
-        $criteriaFieldElement = _create_dom_criteria_field_element($domDocument, $filter);
-        $criteriaGroupElement->appendChild($criteriaFieldElement);
+          $criteriaFieldElement = _create_dom_criteria_field_element($domDocument, $filter);
+          $criteriaGroupSubElement->appendChild($criteriaFieldElement);
       }
     }
   }
   
-  $queryElement->appendChild($criteriaGroupElement);
-  $domDocument->appendChild($queryElement);
+  $criteriaGroupElement->appendChild($criteriaGroupSubElement);
+  
+  // Add OR for date comparison
+  if(isset($field_params['or'])){
+    $criteriaGroupSubElement = $domDocument->createElement('CriteriaGroup');
 
+    $typeAttribute = $domDocument->createAttribute('type');
+    $typeAttribute->value = 'or';
+    $criteriaGroupSubElement->appendChild($typeAttribute);
+    
+    if(isset($field_params['or'][1])){
+      $criteriaGroupSubSubElement = $domDocument->createElement('CriteriaGroup');
+
+      $typeAttribute = $domDocument->createAttribute('type');
+      $typeAttribute->value = 'and';
+      $criteriaGroupSubSubElement->appendChild($typeAttribute);
+
+      foreach ($field_params['or'][1] as $filter){
+        $criteriaFieldElement = _create_dom_criteria_field_element($domDocument, $filter);
+        $criteriaGroupSubSubElement->appendChild($criteriaFieldElement);
+      }
+      $criteriaGroupSubElement->appendChild($criteriaGroupSubSubElement);
+    }
+    
+    if(isset($field_params['or'][2])){
+      $criteriaGroupSubSubElement = $domDocument->createElement('CriteriaGroup');
+
+      $typeAttribute = $domDocument->createAttribute('type');
+      $typeAttribute->value = 'and';
+      $criteriaGroupSubSubElement->appendChild($typeAttribute);
+
+      foreach ($field_params['or'][2] as $filter){
+        $criteriaFieldElement = _create_dom_criteria_field_element($domDocument, $filter);
+        $criteriaGroupSubSubElement->appendChild($criteriaFieldElement);
+      }
+      $criteriaGroupSubElement->appendChild($criteriaGroupSubSubElement);
+    }
+
+    $criteriaGroupElement->appendChild($criteriaGroupSubElement);
+  }// End OR
+
+  $queryElement->appendChild($criteriaGroupElement);
+  
+  $domDocument->appendChild($queryElement);
+  
   return $domDocument->saveXML();
 }
 
@@ -565,14 +613,31 @@ function pivot_lodging_page($page_id, $details=2, $offers_per_page=null) {
   
   // Check if there is at least ONE active filter
   if(isset($_SESSION['pivot']['filters'][$page_id]) && count($_SESSION['pivot']['filters'][$page_id]) > 0){
+    $between = array();
     foreach($_SESSION['pivot']['filters'][$page_id] as $key => $value){
       // Get details of filter based on his ID
       $filter = pivot_get_filter($key);
-      
+
       $field_params = _construct_filters_array($field_params, $filter, $key, $page_id);
+      
+      // If dateDeb or dateFin has been set, we save it to check what to do at the end of the foreach
+      if($filter->urn == 'urn:fld:date:datedeb' || $filter->urn == 'urn:fld:date:datefin'){
+        $between[$key] = $filter->urn;
+      }
       
       // Reset var
       $parent_urn = '';
+    }
+
+    // If dateDeb and dateFin has been set we remove them from classic filters
+    // They are in a OR condition
+    if(count($between) == 2){
+      foreach($between as $key => $date){
+        unset($field_params['filters'][$key]);
+      }
+    }else{
+      // If dateDeb and dateFin has not both been set we remove them from the OR condition
+      unset($field_params['or']);
     }
   }
 
