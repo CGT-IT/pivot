@@ -804,6 +804,25 @@ function _construct_filters_array($field_params,$filter, $key = 'shortcode', $pa
       if($filter->type === 'Date'){
         // Override value with the requested date format
         $value = date("d/m/Y", strtotime($value));
+        
+        // Will add a OR condition on date if both dateDeb and dateFin has been set.
+        if($filter->urn == 'urn:fld:date:datedeb'){
+          $field_params['or'][1]['datedeb']['name'] = 'urn:fld:date:datedeb';
+          $field_params['or'][1]['datedeb']['operator'] = 'lesserequal';
+          $field_params['or'][1]['datedeb']['searched_value'][] = $value;
+          $field_params['or'][2]['datedeb']['name'] = 'urn:fld:date:datedeb';
+          $field_params['or'][2]['datedeb']['operator'] = 'greaterequal';
+          $field_params['or'][2]['datedeb']['searched_value'][] = $value;
+        }
+        if($filter->urn == 'urn:fld:date:datefin'){
+          $field_params['or'][1]['datefin']['name'] = 'urn:fld:date:datefin';
+          $field_params['or'][1]['datefin']['operator'] = 'greaterequal';
+          $field_params['or'][1]['datefin']['searched_value'][] = $value;
+          $field_params['or'][2]['datefin']['name'] = 'urn:fld:date:datefin';
+          $field_params['or'][2]['datefin']['operator'] = 'lesserequal';
+          $field_params['or'][2]['datefin']['searched_value'][] = $value;
+        }
+        
         $field_params['filters'][$key]['searched_value'][] = $value;
       }else{
         $field_params['filters'][$key]['searched_value'][] = $value;
