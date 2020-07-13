@@ -592,8 +592,8 @@ function _add_pagination($nb_offres, $nbcol){
  * @return string HTML containing pagination
  */
 function _display_pagination($pagination){
-  $output = '<nav aria-label="Page navigation example">';
-  $output .= '<ul class="pagination justify-content-center">';
+  $output = '<nav aria-label="Page navigation">';
+  $output .= '<ul class="pagination justify-content-center m-0">';
   foreach($pagination as $key => $page_link){
     $output .= '<li class="page-item ';
     if(strpos($page_link, 'current') !== false){
