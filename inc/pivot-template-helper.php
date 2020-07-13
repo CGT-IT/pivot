@@ -650,10 +650,10 @@ function _add_pivot_map($map = 0, $nb_col = 12, $width = '600px', $height = '800
   
   if($single_offer == FALSE){
     // Include map custom js
-    $output .= '<script src="'.get_stylesheet_directory_uri().'/js/mapcardorientation.js"></script>';
+    $output .= '<script src="'.plugins_url('js/mapcardorientation.js', dirname(__FILE__)).'"></script>';
     $output .= '</div>';
   }else{
-    $output .= '<script src="'.get_stylesheet_directory_uri().'/js/mapsingleoffer.js"></script>';
+    $output .= '<script src="'.plugins_url('js/mapsingleoffer.js', dirname(__FILE__)).'"></script>';
   }
   
   return $output;
