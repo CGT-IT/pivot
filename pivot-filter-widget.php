@@ -199,7 +199,7 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL){
   }
 
   if(isset($group) && !empty($group)){
-    $output .= '<div class="filter-group text-uppercase font-weight-bolder p-2 mb-2 mt-2 bg-light">'.$group.'</div>';
+    $output .= '<div class="filter-group text-uppercase font-weight-bolder p-2 mb-2 mt-2 bg-light">'.__($group, 'pivot').'</div>';
   }
   // check if current language is different from fr
   if(substr(get_locale(), 0, 2 ) != 'fr'){
