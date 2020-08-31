@@ -352,6 +352,7 @@ class Pivot_Filters_List extends WP_List_Table {
        // IF WPML is active add title in translatable string
        if(is_plugin_active('wpml-string-translation/plugin.php')){
          icl_register_string('pivot', 'filter-title-'.$urn.'-'.$_POST['page_id'], $title, false, substr(get_locale(), 0, 2 ));
+         icl_register_string('pivot', 'filter-group-'.preg_replace("/[^a-zA-Z]+/", "", $group), $group, false, substr(get_locale(), 0, 2 ));
        }
        $message = __('Record was inserted / updated successfully', 'pivot');
        echo _show_admin_notice($message, 'info');
@@ -655,6 +656,11 @@ function pivot_filter_csv_import($page_id) {
           ), 
           array('%d','%s','%s','%s','%s','%s','%s') 
         );
+      }
+      // IF WPML is active add title in translatable string
+      if(is_plugin_active('wpml-string-translation/plugin.php')){
+        icl_register_string('pivot', 'filter-title-'.$urn.'-'.$page_id, $title, false, substr(get_locale(), 0, 2 ));
+        icl_register_string('pivot', 'filter-group-'.preg_replace("/[^a-zA-Z]+/", "", $group), $group, false, substr(get_locale(), 0, 2 ));
       }
     }
   }
