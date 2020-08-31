@@ -208,7 +208,12 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL){
       $title = __($filter->filter_title, 'pivot');
     }else{
       // Otherwise, Get translated title from Pivot
-      $title = _get_urn_documentation($filter->urn);
+      if(empty(_get_urn_documentation($filter->urn))){
+        // If Pivot translation is empty, display title event if same in differents languages
+        $title = __($filter->filter_title, 'pivot');
+      }else{
+        $title = _get_urn_documentation($filter->urn);
+      }
     }
   }else{
     $title = $filter->filter_title;
