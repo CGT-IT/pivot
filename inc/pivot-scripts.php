@@ -13,7 +13,7 @@ add_action('wp_enqueue_scripts', 'pivot_enqueue_script');
  * Init Session
  */
 function pivot_start_session() {
-  if(!session_id()) {
+  if (session_status() == PHP_SESSION_NONE) {
     session_start();
   }
 }
@@ -85,7 +85,7 @@ function pivot_enqueue_script(){
     wp_enqueue_script('poppermin');
     wp_enqueue_script('bootstrapmin');
     wp_enqueue_script('dataTablesmin');
-    wp_enqueue_script('itinerary');
+//    wp_enqueue_script('itinerary');
     wp_enqueue_script('pivotshortcodecarousel');
   }
 }
