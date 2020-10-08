@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 1.7.3
+ * Version: 1.7.4
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -51,22 +51,21 @@ add_action('admin_menu', 'pivot_menu');
 add_action('admin_init', 'pivot_settings');
 add_action('init', 'pivot_load_textdomain');
 function pivot_load_textdomain() {
-	load_plugin_textdomain('pivot', false, basename( dirname( __FILE__ ) ) . '/languages' );
+  load_plugin_textdomain('pivot', false, basename( dirname( __FILE__ ) ) . '/languages' );
 }
 
 function set_plugin_meta($links, $file){
-	$plugin = plugin_basename(__FILE__);
-	
-  // create link
-	if($file == $plugin){
-		return array_merge(
-			$links,
-			array(sprintf( '<a target="_blank" href="https://github.com/CGT-IT/pivot">GitHub</a>' ),
-            sprintf( '<a target="_blank" href="https://github.com/CGT-IT/pivot/wiki">Documentation</a>' ))
+  $plugin = plugin_basename(__FILE__);
+
+  // Create link
+  if($file == $plugin){
+    return array_merge(
+      $links,
+      array(sprintf('<a target="_blank" href="https://github.com/CGT-IT/pivot">GitHub</a>'),
+            sprintf('<a target="_blank" href="https://github.com/CGT-IT/pivot/wiki">Documentation</a>'))
     );
   }
-  
-	return $links;
+  return $links;
 }
 add_filter( 'plugin_row_meta', 'set_plugin_meta', 10, 2 );
 
@@ -553,7 +552,7 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL){
   $queryElement->appendChild($criteriaGroupElement);
   
   $domDocument->appendChild($queryElement);
-  
+
   return $domDocument->saveXML();
 }
 

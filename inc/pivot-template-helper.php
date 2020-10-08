@@ -159,6 +159,7 @@ function _add_section_contact($offre){
             break;
           case 'URL':
           case 'URLFacebook':
+          case 'URLInstagram':
             $output .= ' <a class="'.$specification->type->__toString().'" target="_blank" href="'.esc_url($specification->value->__toString()).'">'.strrev(esc_url($specification->value->__toString())).'</a>';
             break;
           case 'GSM':
@@ -632,6 +633,15 @@ function _add_section_accessi($offre){
   return $output;
 }
 
+/**
+ * Add map
+ * @param boolean $map
+ * @param int $nb_col number of column (use bootstrap)
+ * @param string $width in px or %
+ * @param string $height in px or %
+ * @param boolean $single_offer single offer or listing
+ * @return string
+ */
 function _add_pivot_map($map = 0, $nb_col = 12, $width = '600px', $height = '800px', $single_offer = FALSE){
   $output = '';
   if($single_offer == FALSE){
