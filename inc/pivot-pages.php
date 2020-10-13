@@ -517,7 +517,7 @@ function pivot_action(){
         icl_unregister_string('pivot', 'title-for-'.$page_details->query);
         icl_unregister_string('pivot', 'description-for-'.$page_details->query);
       }
-        // First delete dependencies (filters linked to this page)
+      // First delete dependencies (filters linked to this page)
       $wpdb->delete($wpdb->prefix.'pivot_filter', array('page_id' => $_GET['delete']), array('%d'));
       // Delete the page
       $wpdb->delete($wpdb->prefix.'pivot_pages', array('id' => $_GET['delete']), array('%d'));
@@ -607,8 +607,8 @@ function pivot_action(){
       }
       // IF WPML is active add title in translatable string
       if(is_plugin_active('wpml-string-translation/plugin.php')){
-        icl_register_string('pivot', 'title-for-'.$query, $title, false, substr(get_locale(), 0, 2 ));
-        icl_register_string('pivot', 'description-for-'.$query, $description, false, substr(get_locale(), 0, 2 ));
+        icl_register_string('pivot', 'title-for-'.$query, stripslashes($title), false, substr(get_locale(), 0, 2 ));
+        icl_register_string('pivot', 'description-for-'.$query, stripslashes($description), false, substr(get_locale(), 0, 2 ));
       }
     }else{
       $text = esc_html__('This path already exists', 'pivot').': <a href="'.get_permalink( $pivot_page->ID ).'">'.get_permalink( $pivot_page->ID ).'</a>';
