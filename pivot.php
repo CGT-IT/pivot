@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 1.7.5
+ * Version: 1.7.6
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -669,14 +669,14 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
   // Check current page.
   // If 0 we need to define params to get all offers (depending on filters)
   if($current_page == 0 || !isset($_SESSION['pivot'][$page_id]['token'])){
-    if($current_page > 0 && !isset($_SESSION['pivot'][$page_id]['token'])){
+    if($current_page > 0 && !isset($_SESSION['pivot'][$page_id]['token']) && $page_id != 999){
       print _show_warning('Token has been lost, reload first page');
     }
     // Define number of offers per page
     $params['items_per_page'] = $offers_per_page;
     // Define content details we want to receive from Pivot
     $params['content_details'] = ';content=2';
-    if($page_id != NULL){
+    if($page_id != NULL & $page_id != 999){
       $page = pivot_get_page($page_id);
     }
     if(isset($page->sortMode) && $page->sortMode == 'shuffle'){
@@ -684,10 +684,12 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
     }
     // Get offers
     $xml_object = _pivot_request($case, $details, $params, $xml_query);
-    // Store number of offers
-    $_SESSION['pivot'][$page_id]['nb_offres'] = str_replace(',', '', $xml_object->attributes()->count->__toString());
-    // Store the token to get next x items
-    $_SESSION['pivot'][$page_id]['token'] = $xml_object->attributes()->token->__toString();
+    if($page_id != 999){
+      // Store number of offers
+      $_SESSION['pivot'][$page_id]['nb_offres'] = str_replace(',', '', $xml_object->attributes()->count->__toString());
+      // Store the token to get next x items
+      $_SESSION['pivot'][$page_id]['token'] = $xml_object->attributes()->token->__toString();
+    }
 
     $offres = $xml_object->offre;
   }else{
