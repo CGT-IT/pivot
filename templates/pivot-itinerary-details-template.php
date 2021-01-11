@@ -20,7 +20,8 @@
           <div class="col-12">
             <div class="row mb-2 mt-2">
               <div class="col-10">
-                <h1 class="pivot-title"><?php print _get_urn_value($offre, 'urn:fld:nomofr'); ?></h1>
+                <?php $offerTitle = _get_urn_value($offre, 'urn:fld:nomofr'); ?>
+                <h1 class="pivot-title"><?php print $offerTitle; ?></h1>
               </div>    
               <div class="col-2">
                 <?php print _add_section_share($offre); ?>
@@ -56,7 +57,7 @@
             <?php if($spec->value->__toString() == "urn:val:typmed:gpx"): ?>
               <div id="gpx-file-id" class="d-none"><?php print $relation->offre->attributes()->codeCgt; ?></div>
               <p><button class="btn"><i class="fa fa-download"></i>
-                <a id="gpx-file" href="<?php print _get_urn_value($relation->offre, 'urn:fld:url'); ?>" download target="_blank" type="application/octet-stream">
+                <a id="gpx-file" href="<?php print MY_PLUGIN_URL;?>inc/external/gpxdownloader.php?n=<?php print preg_replace('/[^A-Za-z0-9]/', "", $offerTitle);?>&f=<?php print _get_urn_value($relation->offre, 'urn:fld:url');?>" download="gpxfile.gpx" target="_blank" type="application/octet-stream">
                   <?php _e('Download GPX file','pivot'); ?>
                 </a>
               </button></p>

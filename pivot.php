@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 1.7.6
+ * Version: 1.7.7
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -31,7 +31,11 @@ foreach (glob(MY_PLUGIN_PATH. "inc/*.php") as $file) {
 }
 // Include all external files
 foreach (glob(MY_PLUGIN_PATH. "inc/external/*.php") as $file) {
-  require_once $file;
+  // Not automatically include the gpxdownloader.php file.
+  // Will be include when necessary on itinerary details template
+  if(strpos($file, 'gpxdownloader.php') === false){
+    require_once $file;
+  }
 }
 
 require_once(MY_PLUGIN_PATH. 'pivot-filter-widget.php');
