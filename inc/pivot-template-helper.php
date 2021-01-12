@@ -748,9 +748,10 @@ function _add_banner_image($image, $height='400px'){
  */
 function _get_offer_default_image($offre, $width=428, $height=285, $noimg_src=NULL){
   $output = '';
+  $i = 0;
   foreach($offre->relOffre as $relation){
-    // Check if it's well a media (268) and the default 
-    if($relation->offre->typeOffre->attributes()->idTypeOffre->__toString() == '268' && $relation->attributes()->urn == 'urn:lnk:media:defaut'){
+    // Check if it's well a media (268)
+    if($relation->offre->typeOffre->attributes()->idTypeOffre->__toString() == '268'){
       $media_offer = _get_offer_details($relation->offre->attributes()->codeCgt->__toString(), 2);
       // Check if media is publishable
       if($media_offer->estActive == 30){
@@ -759,19 +760,32 @@ function _get_offer_default_image($offre, $width=428, $height=285, $noimg_src=NU
         if($mode == 0){
           $output = get_option('pivot_uri').'img/'.$media_offer->attributes()->codeCgt->__toString().';w='.$width.';h='.$height;
         }else{
-          $media_url = _get_urn_value($media_offer, 'urn:fld:url');
-          if(strpos(_get_urn_value($media_offer, 'urn:fld:url'), 'servlet/Repository') == FALSE){
-            $output = _get_urn_value($media_offer, 'urn:fld:url');
+          $media_url[$i] = _get_urn_value($media_offer, 'urn:fld:url');
+          if(strpos($media_url[$i], 'servlet/Repository') == FALSE){
+            $output = $media_url[$i];
           }
         }
       }
+      // If found the default media, return it
+      if($relation->attributes()->urn == 'urn:lnk:media:defaut'){
+        return $output;
+      }else{
+        $output = '';  
+      }
+      $i++;
     }
+     
   }
   if($output == ''){
     if($noimg_src != NULL){
       $output = $noimg_src;
     }else{
-      $output = get_option('pivot_uri').'img/'.$offre->attributes()->codeCgt->__toString().';w='.$width.';h='.$height;
+      // If more than 1 media, get first 
+      if($i > 0){
+        $output = $media_url[0];
+      }else{
+        $output = get_option('pivot_uri').'img/'.$offre->attributes()->codeCgt->__toString().';w='.$width.';h='.$height;
+      }
     }
   }
   return $output;
