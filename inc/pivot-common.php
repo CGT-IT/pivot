@@ -445,7 +445,7 @@ function _add_meta_data($offre, $path, $default_image=null){
          .'<meta property="og:url" content="'.$url.'">'
          .'<meta property="og:type" content="article">'
          .'<meta property="og:title" content="'._get_urn_value($offre, 'urn:fld:nomofr').'">'
-         .'<meta property="og:description" content="'.substr($descp, 0, strpos($descp, ' ', 160)).'">'
+         .'<meta property="og:description" content="'.((strlen($descp)>160)?substr($descp, 0, strpos($descp, ' ', 160)):$descp).'">'
          .'<meta property="og:updated_time" content="'.$offre->attributes()->dateModification->__toString().'">'
          .'<meta property="og:image" content="'.$default_image.'">'
          .'<meta name="twitter:card" content="summary_large_image">'

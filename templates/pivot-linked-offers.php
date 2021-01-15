@@ -19,7 +19,7 @@
               <a class="text-dark" title="<?php echo esc_attr('Link to', 'pivot') .' '. $offerTitle; ?>" href="<?php print $url; ?>">
                 <div class="row">
                   <div class="col-sm-3 text-center">
-                    <img class="pivot-img zoom pivot-img-list" src="https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/<?php print $codeCGT;?>;w=256;h=170"/>
+                    <img class="pivot-img zoom pivot-img-list" src="<?php print get_option('pivot_uri').'img/'.$codeCGT;?>;w=256;h=170"/>
                   </div>
                   <div class="col-sm-9">
                     <p><?php print _get_urn_value($relation->offre, 'urn:fld:descmarket'); ?></p>

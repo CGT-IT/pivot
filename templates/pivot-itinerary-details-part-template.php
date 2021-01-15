@@ -14,8 +14,8 @@
       <div class="card-body <?php print ($offre->map!=1||wp_is_mobile()==1)?'':'col-7 pt-2 pb-0';?>">
         <p class="h6 title-no-header" <?php print ($offre->map!=1||wp_is_mobile()==1)?'style="display:none"':'';?>><?php print $offerTitle; ?></p>
         <p class="card-text">
-          <img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:typ:8;h=18"> <?php print round(_get_urn_value($offre, 'urn:fld:dist'), 2); ?> km
-          &nbsp;<img class="pivot-img" src="https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/<?php print _get_urn_value($offre, 'urn:fld:signal') ;?>;w=20"/>
+          <img class="pivot-picto" src="<?php print get_option('pivot_uri');?>img/urn:typ:8;h=18"> <?php print round(_get_urn_value($offre, 'urn:fld:dist'), 2); ?> km
+          &nbsp;<img class="pivot-img" src="<?php print get_option('pivot_uri').'img/'._get_urn_value($offre, 'urn:fld:signal') ;?>;w=20"/>
         </p>
         <?php print _add_itinerary_details($offre, 'urn:cat:accueil'); ?>
         <p class="card-text">

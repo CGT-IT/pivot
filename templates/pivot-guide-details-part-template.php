@@ -8,7 +8,7 @@
   <td>
     <?php foreach($offre->spec as $specification): ?>
       <?php if($specification->urnCat->__toString() == 'urn:cat:moycom'): ?>
-          <img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $specification->attributes()->urn->__toString(); ?>;h=16"/>
+          <img class="pivot-picto" src="<?php print get_option('pivot_uri').'img/'.$specification->attributes()->urn->__toString(); ?>;h=16"/>
           <?php switch ($specification->type->__toString()): 
             case 'EMail': ?>
               <a class="<?php print $specification->type->__toString(); ?>" href="mailto:<?php print $specification->value->__toString(); ?>"><?php print $specification->value->__toString(); ?></a>
@@ -47,7 +47,7 @@
       <?php if($specification->urnCat->__toString() == 'urn:cat:accueil' && $specification->urnSubCat->__toString() == 'urn:cat:accueil:langpar'): ?>
           <span class="pivot-acceuil <?php print str_replace(":", "-", $specification->attributes()->urn->__toString()); ?>">
             <?php if($specification->type->__toString() == 'Boolean'): ?>
-              <img class="pivot-picto" title="<?php print _get_urn_documentation($specification->attributes()->urn->__toString()); ?>" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $specification->attributes()->urn->__toString(); ?>;h=16"/>
+              <img class="pivot-picto" title="<?php print _get_urn_documentation($specification->attributes()->urn->__toString()); ?>" src="<?php print get_option('pivot_uri').'img/'.$specification->attributes()->urn->__toString(); ?>;h=16"/>
             <?php else: ?>
               : <span class="pivot-desc item"><?php print _get_urn_value($offre, $specification->attributes()->urn->__toString()) ;?></span>
             <?php endif ?>

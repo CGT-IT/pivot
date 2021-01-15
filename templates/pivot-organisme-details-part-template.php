@@ -23,7 +23,7 @@
         <?php print $offre->adresse1->localite->value->__toString(); ?>
         <p class="card-text">
           <?php if(_get_urn_value($offre, 'urn:fld:urlweb')): ?>
-            <img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:fld:urlweb;h=16"/>
+            <img class="pivot-picto" src="<?php print get_option('pivot_uri');?>img/urn:fld:urlweb;h=16"/>
             <a target="_blank" href="<?php print _get_urn_value($offre, 'urn:fld:urlweb'); ?>"><?php esc_html_e('Website', 'pivot');?></a>
           <?php endif; ?>
         </p>

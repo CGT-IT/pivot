@@ -393,7 +393,7 @@ function pivot_meta_box() {
   <div class="form-item form-type-textfield form-item-pivot-map">
     <input type="checkbox" id="edit-pivot-map" name="map" class="form-checkbox" <?php echo (isset($edit_page) && $edit_page->map == 1?'checked':'');?>>
     <label for="edit-pivot-map"><strong><?php esc_html_e('Show map', 'pivot') ?></strong> </label>
-    <img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/urn:typ:269;modifier=orig;h=20"/>
+    <img class="pivot-picto" src="<?php print get_option('pivot_uri');?>img/urn:typ:269;modifier=orig;h=20"/>
     <p class="description"><?php esc_html_e('Define if you want to show a map on this page or not', 'pivot') ?></p>
   </div>  
   <div class="form-item form-type-textfield form-item-pivot-title">

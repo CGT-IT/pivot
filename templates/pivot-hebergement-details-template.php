@@ -47,7 +47,7 @@
                     <?php if($specification->urnCat->__toString() == 'urn:cat:eqpsrv'): ?>
                       <?php $urn_value = _get_urn_documentation($specification->attributes()->urn->__toString()); ?>
                       <li class="pivot-service <?php print str_replace(":", "-", $specification->attributes()->urn->__toString()); ?>">
-                          <i class="pr-2"><img alt="<?php print $urn_value; ?>" title="<?php print $urn_value; ?>" class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $specification->attributes()->urn->__toString(); ?>;h=16"/></i>
+                          <i class="pr-2"><img alt="<?php print $urn_value; ?>" title="<?php print $urn_value; ?>" class="pivot-picto" src="<?php print get_option('pivot_uri').'img/'.$specification->attributes()->urn->__toString(); ?>;h=16"/></i>
                         <?php print $urn_value; ?>
                       </li>
                     <?php endif ?>
@@ -68,7 +68,7 @@
                     <span>
                       <?php print _get_urn_documentation($specification->attributes()->urn->__toString()); ?>
                       <?php if($specification->type->__toString() == 'Boolean'): ?>
-                        <img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $specification->attributes()->urn->__toString(); ?>;h=16"/>
+                        <img class="pivot-picto" src="<?php print get_option('pivot_uri').'img/'.$specification->attributes()->urn->__toString(); ?>;h=16"/>
                       <?php else: ?>
                         : <span class="pivot-desc item"><?php print _get_urn_value($offre, $specification->attributes()->urn->__toString()) ;?></span>
                       <?php endif ?>

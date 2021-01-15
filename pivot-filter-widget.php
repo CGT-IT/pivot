@@ -75,8 +75,9 @@ function pivot_display_widget($instance = NULL){
     }
 
     // Print head section and HTML Form
+    $lang = substr(get_locale(), 0, 2 );
     $output = '<section id="block-pivot-filters" class="block block-pivot block-pivot-filter clearfix">'
-         . '<form action="'.get_site_url().'/'.$pivot_page->path.'" method="post" id="pivot-filter-form" accept-charset="UTF-8">';
+         . '<form action="'.get_site_url().'/'.(($lang=='fr')?'':$lang.'/').$pivot_page->path.'" method="post" id="pivot-filter-form" accept-charset="UTF-8">';
 
     foreach($filters as $filter){
       // if not first iteration and filter is member of a group already inserted, we do not recreate this group
@@ -123,9 +124,10 @@ function pivot_add_filters(){
       return;
     }
 
+    $lang = substr(get_locale(), 0, 2 );
     // Print head section and HTML Form
     $output = '<section id="block-pivot-filters" class="block block-pivot block-pivot-filter clearfix">'
-         . '<form action="'.get_site_url().'/'.$pivot_page->path.'" method="post" id="pivot-filter-form" accept-charset="UTF-8">'
+         . '<form action="'.get_site_url().'/'.(($lang=='fr')?'':$lang.'/').$pivot_page->path.'" method="post" id="pivot-filter-form" accept-charset="UTF-8">'
          .   '<div  id="edit-filter-body">';
 
     foreach($filters as $filter){

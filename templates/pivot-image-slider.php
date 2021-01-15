@@ -33,7 +33,7 @@
                     <?php $media_name = _get_urn_value($specification, 'urn:fld:nomofr'); ?>
                     <?php if(strpos(_get_urn_value($specification, 'urn:fld:url'), 'pivotmedia')): ?>
                       <figure class="embed-responsive embed-responsive-16by9">
-                        <img alt="<?php print $specification->nom->__toString();?>" class="embed-responsive-item pivot-img pivot-img-details" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $relation->offre->attributes()->codeCgt->__toString(); ?>;w=1920"/>
+                        <img alt="<?php print $specification->nom->__toString();?>" class="embed-responsive-item pivot-img pivot-img-details" src="<?php print get_option('pivot_uri').'img/'.$relation->offre->attributes()->codeCgt->__toString(); ?>;w=1920"/>
                         <?php if($copyright = _get_urn_value($specification, 'urn:fld:copyr')): ?>
                           <figcaption><small><?php print _construct_media_copyright($copyright, _get_urn_value($specification, 'urn:fld:date'));?></small></figcaption>
                         <?php endif; ?>

@@ -36,7 +36,7 @@
           <!--if it's well an image-->
           <?php if($relation->offre->typeOffre->attributes()->idTypeOffre->__toString() == '268'): ?>
             <div class="carousel-item <?php if($i == 0) {print 'active';}?>">
-              <img class="pivot-img pivot-img-details" src="https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/<?php print $relation->offre->attributes()->codeCgt->__toString(); ?>;w=1035;h=517"/>
+              <img class="pivot-img pivot-img-details" src="<?php print get_option('pivot_uri').'img/'.$relation->offre->attributes()->codeCgt->__toString(); ?>;w=1035;h=517"/>
             </div>
             <?php $i++; ?>
           <?php endif; ?>
@@ -65,7 +65,7 @@
         <?php foreach($offre->spec as $specification): ?>
           <?php if($specification->urnCat->__toString() == 'urn:cat:moycom'): ?>
             <dd>
-              <img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $specification->attributes()->urn->__toString(); ?>;h=16"/>
+              <img class="pivot-picto" src="<?php print get_option('pivot_uri').'img/'.$specification->attributes()->urn->__toString(); ?>;h=16"/>
               <?php switch ($specification->type->__toString()): 
                 case 'EMail': ?>
                   <a class="<?php print $specification->type->__toString(); ?>" href="mailto:<?php print $specification->value->__toString(); ?>"><?php print $specification->value->__toString(); ?></a>
@@ -104,7 +104,7 @@
             <?php if(strpos($specification->value->__toString(),'urn:') !== FALSE): ?>
               <span class="ranking-value"><?php print _get_urn_documentation($specification->value->__toString()); ?></span>
             <?php endif; ?>
-            <img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $specification->attributes()->urn->__toString(); ?>;h=16"/>
+            <img class="pivot-picto" src="<?php print get_option('pivot_uri').'img/'.$specification->attributes()->urn->__toString(); ?>;h=16"/>
           </li>
         <?php endif; ?>
       <?php endforeach; ?>
@@ -118,7 +118,7 @@
           <?php foreach($offre->spec as $specification): ?>
             <?php if($specification->urnCat->__toString() == 'urn:cat:eqpsrv'): ?>
               <tr class="pivot-service <?php print str_replace(":", "-", $specification->attributes()->urn->__toString()); ?> list-group-item">
-                <td><img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $specification->attributes()->urn->__toString(); ?>;h=16"/>
+                <td><img class="pivot-picto" src="<?php print get_option('pivot_uri').'img/'.$specification->attributes()->urn->__toString(); ?>;h=16"/>
                 <?php print _get_urn_documentation($specification->attributes()->urn->__toString()); ?></td>
               </tr>
             <?php endif ?>
@@ -150,7 +150,7 @@
               <span>
                 <?php print _get_urn_documentation($specification->attributes()->urn->__toString()); ?>
                 <?php if($specification->type->__toString() == 'Boolean'): ?>
-                  <img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $specification->attributes()->urn->__toString(); ?>;h=16"/>
+                  <img class="pivot-picto" src="<?php print get_option('pivot_uri').'img/'.$specification->attributes()->urn->__toString(); ?>;h=16"/>
                 <?php else: ?>
                   : <span class="pivot-desc item"><?php print _get_urn_value($offre, $specification->attributes()->urn->__toString()) ;?></span>
                 <?php endif ?>
@@ -168,7 +168,7 @@
         <?php foreach($offre->spec as $specification): ?>
           <?php if($specification->urnCat->__toString() == 'urn:cat:moycom'): ?>
             <dd>
-              <img class="pivot-picto" src="https://pivotweb.tourismewallonie.be:443/PivotWeb-3.1/img/<?php print $specification->attributes()->urn->__toString(); ?>;h=16"/>
+              <img class="pivot-picto" src="<?php print get_option('pivot_uri').'img/'.$specification->attributes()->urn->__toString(); ?>;h=16"/>
               <?php switch ($specification->type->__toString()): 
                 case 'EMail': ?>
                   <a class="<?php print $specification->type->__toString(); ?>" href="mailto:<?php print $specification->value->__toString(); ?>"><?php print $specification->value->__toString(); ?></a>
