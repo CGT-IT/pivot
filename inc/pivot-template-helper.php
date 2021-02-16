@@ -318,7 +318,7 @@ function _add_section_linked_offers($offre){
                 .          '</div>'
                 .        '</div>'
                 .      '</a>'
-                .      '<span class="pivot-id-type-offre d-none item">'.$relation->offre->typeOffre->attributes()->idTypeOffre->__toString().'</span>'
+                .      '<span class="pivot-id-type d-none item">'.$relation->offre->typeOffre->attributes()->idTypeOffre->__toString().'</span>'
                 .      '<span class="pivot-code-cgt d-none item">'.$relation->offre->attributes()->codeCgt->__toString().'</span>'
                 .      '<span class="pivot-latitude d-none item">'.$relation->offre->adresse1->latitude->__toString().'</span>'
                 .      '<span class="pivot-longitude d-none item">'.$relation->offre->adresse1->longitude->__toString().'</span>'
@@ -520,14 +520,14 @@ function _add_section_event_dates($offre){
           $dates_output .= '<span class="time time-start">'
                         . '<span datetime="'.date("Y-M-D h:m", strtotime($date['deb'])).'">'
                         .   ' <span class="day">'.date('d', strtotime($date['deb'])).'</span>'
-                        .   ' <span class="month">'.date('M', strtotime($date['deb'])).'</span>'
+                        .   ' <span class="month">'.date_i18n( __( 'M' ), strtotime($date['deb'])).'</span>'
                         . '</span>'
                         .'</span>';
           $dates_output .= '<span class="time time-end">'
                         . '<span datetime="'.date("Y-M-D h:m", strtotime($date['fin'])).'">'
                         .   ' <i class="fas fa-angle-double-right"></i> '
                         .   ' <span class="day">'.date('d', strtotime($date['fin'])).'</span>'
-                        .   ' <span class="month">'.date('M', strtotime($date['fin'])).'</span>'
+                        .   ' <span class="month">'.date_i18n( __( 'M' ), strtotime($date['fin'])).'</span>'
                         . '</span>'
                         .'</span>';
         }
@@ -536,7 +536,7 @@ function _add_section_event_dates($offre){
           $dates_output .= '<span class="time time-start">'
                           . '<span datetime="'.date("Y-M-D h:m", strtotime($date['deb'])).'">'
                           .   ' <span class="day">'.date('d', strtotime($date['deb'])).'</span>'
-                          .   ' <span class="month">'.date('M', strtotime($date['deb'])).'</span>'
+                          .   ' <span class="month">'.date_i18n( __( 'M' ), strtotime($date['deb'])).'</span>'
                           . '</span>'
                           .'</span>';
         }
@@ -759,12 +759,12 @@ function _get_offer_default_image($offre, $width=428, $height=285, $noimg_src=NU
         // If media is internal
         if($mode == 0){
           $output = get_option('pivot_uri').'img/'.$media_offer->attributes()->codeCgt->__toString().';w='.$width.';h='.$height;
+          $media_url[$i] = $output;
         }else{
           $media_url[$i] = _get_urn_value($media_offer, 'urn:fld:url');
-          if(strpos($media_url[$i], 'servlet/Repository') == FALSE){
-            $output = $media_url[$i];
-          }
+          $output = $media_url[$i];
         }
+        $i++;
       }
       // If found the default media, return it
       if($relation->attributes()->urn == 'urn:lnk:media:defaut'){
@@ -772,17 +772,16 @@ function _get_offer_default_image($offre, $width=428, $height=285, $noimg_src=NU
       }else{
         $output = '';  
       }
-      $i++;
     }
      
   }
   if($output == ''){
-    if($noimg_src != NULL){
-      $output = $noimg_src;
+    // If more than 1 media, get first 
+    if($i > 0){
+      $output = $media_url[0];
     }else{
-      // If more than 1 media, get first 
-      if($i > 0){
-        $output = $media_url[0];
+      if($noimg_src != NULL && $noimg_src != ''){
+        $output = $noimg_src;
       }else{
         $output = get_option('pivot_uri').'img/'.$offre->attributes()->codeCgt->__toString().';w='.$width.';h='.$height;
       }
