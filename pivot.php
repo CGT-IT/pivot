@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 1.8.2
+ * Version: 1.8.3
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -399,21 +399,31 @@ function _pivot_request($type, $detail, $params = NULL, $postfields = NULL){
      */
     if(strpos($response, '<?xml') !== FALSE){
       // Load XML response in an Object
-      $xml_object = simplexml_load_string($response); 
-
+      $xml_object = simplexml_load_string($response);
+      // Check type of response
+      if(($xml_object->attributes())!==null){
+        // Check if case there is no result
+        if(isset($xml_object->attributes()->count) && $xml_object->attributes()->count->__toString() == 0){
+          $error = __('No offer at this time ! Come back later ...', 'pivot');
+          print _show_warning($error);
+        }
+      }
       return $xml_object;
     }else{
-      print pivot_template('pivot-problem-template', $response);
-//      global $wp_query;
-//      $wp_query->set_404();
-//      status_header( 404 );
-//      get_template_part( 404 );
-//      $page= pivot_get_page($params['page_id']);
-//      if($page->type == 'activite'){
-//        _e('There is no event in the next 6 months', 'pivot');
-//      }else{
-//        print pivot_template('pivot-problem-template', $response);
-//      }    
+      $page= pivot_get_page($params['page_id']);
+      // If it is event, show a specific error message
+      if($page->type == 'activite'){
+        $error = __('Too bad, no event planned at this time ! Come back later ...', 'pivot');
+        $output = '<div class="container">'
+                . '<div class="row">'
+                . '<div class="col mx-auto my-5">'
+                ._show_warning($error)
+                .'</div></div></div>';
+        print $output;
+        get_footer();
+      }else{
+        print pivot_template('pivot-problem-template', $response);
+      }
       exit();
     }
   }

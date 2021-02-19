@@ -558,13 +558,19 @@ function _define_nb_offers_per_page($nbcol){
   return $offers_per_page;
 }
 /**
- * 
- * @param int $nb_offres
+ * Will display pagination
+ * @param int $nb_offres total number of offers
+ * @param int $nbcol based on col bootstrap, will count how many offers per page
+ * @param int $offers_per_page in case function force number of offers per page
  * @return string HTML containing pagination
  */
-function _add_pagination($nb_offres, $nbcol){
-  /* Init pagination */
-  $total = ceil($nb_offres/_define_nb_offers_per_page($nbcol));
+function _add_pagination($nb_offres, $nbcol, $offers_per_page=null){
+  if($offers_per_page == null){
+     /* Init pagination */
+    $total = ceil($nb_offres/_define_nb_offers_per_page($nbcol));
+  }else{
+    $total = ceil($nb_offres/$offers_per_page);
+  }
 
   // Check if we have more than 1 page!
   if($total > 1)  {
