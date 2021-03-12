@@ -416,8 +416,8 @@ function pivot_meta_box() {
     <?php wp_nonce_field( 'my_image_upload', 'my_image_upload_nonce' ); ?>
     <p class="description"><?php esc_html_e('This image will be displayed full width between menu and page title', 'pivot') ?></p>
     <p class="description"><b><?php esc_html_e('Perfect format would be 1920x400 px', 'pivot') ?></b></p>
-    <p><label><strong><?php esc_html_e('Current image', 'pivot');?></strong></label></p>
-    <input type="hidden" id="imageUrl" name="imageUrl" value="<?php if(isset($edit_page)) echo $edit_page->image;?>">
+    <p><label><strong><?php esc_html_e('Current image or link', 'pivot');?></strong></label></p>
+    <input type="url" id="imageUrl" name="imageUrl" value="<?php if(isset($edit_page)) echo $edit_page->image;?>">
     <a class="imageUrl" target="_blank" href="<?php if(isset($edit_page)) echo $edit_page->image;?>">
       <img width="300px" src="<?php if(isset($edit_page)) echo $edit_page->image;?>"/>
     </a>
