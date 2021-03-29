@@ -667,12 +667,30 @@ function _get_offer_details($offer_id = NULL, $details = 3){
     $path = $_SERVER['REQUEST_URI'];
     if((strpos($path, "&type=")) !== FALSE){
       if (preg_match('/\/(.*?)&type=/', $path, $match) == 1) {
-        $params['offer_code'] = substr($match[1], strrpos($match[1], '/' )+1);
-        $params['type'] = 'offer';
-        $xml_object = _pivot_request('offer-details', $details, $params);
-        $offre = $xml_object->offre;
-        $url = get_bloginfo('wpurl').((substr(get_locale(), 0, 2 )=='fr')?'':'/'.substr(get_locale(), 0, 2 )).'/'.$offre->path.'/'.$params['offer_code'].'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString();
-        pivot_create_fake_post(_get_urn_value($offre, 'urn:fld:nomofr'), $url, _get_urn_value($offre, 'urn:fld:descmarket'), 'post');
+        $offer_id = substr($match[1], strrpos($match[1], '/' )+1);
+        $lang = substr(get_locale(), 0, 2 );
+        if(get_option('pivot_transient') == 'on'){
+          $key = 'pivot_offer_'.$lang.'_'.$offer_id;
+          if(get_transient($key) === false){
+            $params['offer_code'] = $offer_id;
+            $params['type'] = 'offer';
+            $xml_object = _pivot_request('offer-details', $details, $params);
+            $offre = $xml_object->offre;
+            $url = get_bloginfo('wpurl').(($lang=='fr')?'':'/'.$lang).'/'.$offre->path.'/'.$params['offer_code'].'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString();
+            pivot_create_fake_post(_get_urn_value($offre, 'urn:fld:nomofr'), $url, _get_urn_value($offre, 'urn:fld:descmarket'), 'post');
+            $data = pivot_template('pivot-hebergement-details-template', $offre);
+            set_transient($key, $data, get_option('pivot_transient_time'));
+          }else{
+            $offre = array('offerid' => $offer_id, 'transient' => true, 'content' => get_transient($key));
+          }
+        }else{
+          $params['offer_code'] = $offer_id;
+          $params['type'] = 'offer';
+          $xml_object = _pivot_request('offer-details', $details, $params);
+          $offre = $xml_object->offre;
+          $url = get_bloginfo('wpurl').(($lang=='fr')?'':'/'.$lang).'/'.$offre->path.'/'.$params['offer_code'].'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString();
+          pivot_create_fake_post(_get_urn_value($offre, 'urn:fld:nomofr'), $url, _get_urn_value($offre, 'urn:fld:descmarket'), 'post');
+        }
       }
     }
   }

@@ -417,11 +417,24 @@ function pivot_get_filters($page_id = NULL) {
 function pivot_get_filter_groups($page_id) {
   global $wpdb;
 
-  $query = $wpdb->prepare("SELECT DISTINCT filter_group FROM {$wpdb->prefix}pivot_filter WHERE page_id = %d AND filter_group IS NOT NULL", $page_id);
+  $query = $wpdb->prepare("SELECT DISTINCT filter_group FROM {$wpdb->prefix}pivot_filter WHERE page_id = %d AND filter_group IS NOT NULL ORDER BY filter_group ASC", $page_id);
   $groups = $wpdb->get_results($query);
 
   if(!empty($groups[0])) {
     return $groups;
+  }
+
+  return;
+}
+
+function pivot_get_filter_from_group($page_id, $group_id) {
+  global $wpdb;
+
+  $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}pivot_filter WHERE page_id = %d AND filter_group = %s ORDER BY filter_group ASC, filter_title ASC", $page_id, $group_id);
+  $filters = $wpdb->get_results($query);
+
+  if(!empty($filters[0])) {
+    return $filters;
   }
 
   return;
@@ -433,7 +446,7 @@ function pivot_filters_meta_box() {
   <div class="form-item form-type-textfield form-item-pivot-urn">
     <label for="edit-pivot-urn"><?php esc_html_e('URN', 'pivot')?> </label>
     <input type="text" id="edit-pivot-urn" name="urn" value="<?php if(isset($edit_page)) echo $edit_page->urn;?>" maxlength="128" class="form-text">
-    <span><input id="load-urn-info" class="button" type="button" value="<?php esc_html_e('Load URN Infos', 'pivot')?>"> </button></span>
+    <span><input id="load-urn-info" class="button" type="button" value="<?php esc_html_e('Load URN Infos', 'pivot')?>"></span>
     <p class="description"><?php esc_html_e('URN or ID of the field you want to filter', 'pivot')?></p>
   </div>
 

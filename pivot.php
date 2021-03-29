@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 1.8.5
+ * Version: 1.8.6
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -222,6 +222,8 @@ function pivot_uninstall() {
     delete_option('pivot_bootstrap');
     delete_option('pivot_bitly');
     delete_option('pivot_db_version');
+    delete_option('pivot_transient');
+    delete_option('pivot_transient_time');
 
     flush_rewrite_rules();
 }
@@ -260,6 +262,8 @@ function pivot_settings(){
   register_setting('pivot_settings', 'pivot_bootstrap');
   register_setting('pivot_settings', 'pivot_bitly');
   register_setting('pivot_settings', 'pivot_mapbox');
+  register_setting('pivot_settings', 'pivot_transient');
+  register_setting('pivot_settings', 'pivot_transient_time');
 }
 
 function pivot_options() {
@@ -311,13 +315,30 @@ function pivot_options() {
         <label for="edit-pivot-bootsrap"><?php esc_html_e('Include Bootstrap', 'pivot') ?> </label>
         <p class="description"><a href="https://getbootstrap.com/">Bootstrap </a>(<?php esc_html_e('required for default templates', 'pivot');?>)</p>
       </div>
+      <div class="form-item form-type-textfield form-item-pivot-transient">
+        <input type="checkbox" id="edit-pivot-transient" name="pivot_transient" class="form-checkbox" <?php echo (get_option('pivot_transient') == 'on'?'checked':'');?>>
+        <label for="edit-pivot-transient"><?php esc_html_e('Active Wordpress Transients for Pivot content', 'pivot') ?> </label>
+        <p class="description"><?php esc_html_e('Use Wordpress transients to optimize page speed. Do not use for development purpose', 'pivot') ?></p>
+      </div>
+      <div class="form-item form-type-textfield form-item-pivot-transient-time">
+        <label for="edit-pivot-transient-time"><?php esc_html_e('Define transient validity', 'pivot')?></label>
+        <select id="edit-pivot-transient-time" name="pivot_transient_time">
+          <option selected disabled hidden value="172800"><?php esc_html_e('Choose expiration time of transients', 'pivot')?></option>
+          <option <?php print (get_option('pivot_transient_time')=="3600"?'selected="selected"':'');?> value="3600">1H</option>
+          <option <?php print (get_option('pivot_transient_time')=="43200"?'selected="selected"':'');?> value="43200">12H</option>
+          <option <?php print (get_option('pivot_transient_time')=="86400"?'selected="selected"':'');?> value="86400">1 <?php esc_html_e('Day');?></option>
+          <option <?php print (get_option('pivot_transient_time')=="172800"?'selected="selected"':'');?> value="172800">2 <?php esc_html_e('Days');?></option>
+          <option <?php print (get_option('pivot_transient_time')=="432000"?'selected="selected"':'');?> value="432000">5 <?php esc_html_e('Days');?></option>
+          <option <?php print (get_option('pivot_transient_time')=="864000"?'selected="selected"':'');?> value="864000">10 <?php esc_html_e('Days');?></option>
+        </select>
+      </div>
       <div class="form-item form-type-textfield form-item-pivot-bitly">
         <label for="edit-pivot-bitly">Bitly access token <span class="form-required" title="<?php esc_html_e('This field is required')?>">*</span></label>
         <input type="text" id="edit-pivot-bitly" name="pivot_bitly" value="<?php echo get_option('pivot_bitly')?>" size="60" maxlength="128" class="form-text required">
         <p class="description"><?php _e('Personnal Key to access bitly webservices, signin <a href="https://bitly.com/" target="_blank">bitly.com</a> and get you access token', 'pivot')?></p>
       </div>
       <div class="form-item form-type-textfield form-item-pivot-mapbox">
-        <label for="edit-pivot-bitly"><?php esc_html_e('MapBox access token', 'pivot')?> <span class="form-required" title="<?php esc_html_e('This field is required')?>">*</span></label>
+        <label for="edit-pivot-mapbox"><?php esc_html_e('MapBox access token', 'pivot')?> <span class="form-required" title="<?php esc_html_e('This field is required')?>">*</span></label>
         <input type="text" id="edit-pivot-mapbox" name="pivot_mapbox" value="<?php echo get_option('pivot_mapbox')?>" size="60" maxlength="128" class="form-text required">
         <p class="description"><?php _e('Personnal Key to access MapBox services, signin <a href="https://account.mapbox.com/" target="_blank">mapbox.com</a> and get you access token', 'pivot')?></p>
       </div>
