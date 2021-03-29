@@ -441,16 +441,17 @@ function _add_meta_data($offre, $path, $default_image=null){
   if(isset($offre) && is_object($offre)){
 //    $descp = preg_replace("/[^A-Za-z0-9 ]/", '', wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket')));
     $descp =  wp_strip_all_tags( get_the_excerpt(), true );
+    $title = _get_urn_value($offre, 'urn:fld:nomofr');
     return '<meta name="description" content="'.((strlen($descp)>160)?substr($descp, 0, strpos($descp, ' ', 160)):$descp).'"/>'
          .'<meta property="og:url" content="'.$url.'">'
          .'<meta property="og:type" content="article">'
-         .'<meta property="og:title" content="'._get_urn_value($offre, 'urn:fld:nomofr').'">'
+         .'<meta property="og:title" content="'.$title.'">'
          .'<meta property="og:description" content="'.((strlen($descp)>160)?substr($descp, 0, strpos($descp, ' ', 160)):$descp).'">'
          .'<meta property="og:updated_time" content="'.$offre->attributes()->dateModification->__toString().'">'
          .'<meta property="og:image" content="'.$default_image.'">'
          .'<meta name="twitter:card" content="summary_large_image">'
          .'<meta name="twitter:url" content="'.$url.'">'
-         .'<meta name="twitter:title" content="'._get_urn_value($offre, 'urn:fld:nomofr').'">'
+         .'<meta name="twitter:title" content="'.$title.'">'
          .'<meta property="article:published_time" content="'.$offre->attributes()->dateCreation->__toString().'">'
          .'<meta property="article:modified_time" content="'.$offre->attributes()->dateModification->__toString().'">';
   }
@@ -657,7 +658,14 @@ function _get_path(){
   return $path;
 }
 
-function _get_offer_details($offer_id = NULL, $details = 3){
+/**
+ * 
+ * @param string $offer_id Pivot offer ID
+ * @param int $details level of details, 3 (complete) by default
+ * @param string $name current template name where the function is called
+ * @return type
+ */
+function _get_offer_details($offer_id = NULL, $details = 3, $name = NULL){
   if($offer_id){
     $params['offer_code'] = $offer_id;
     $params['type'] = 'offer';
@@ -667,28 +675,36 @@ function _get_offer_details($offer_id = NULL, $details = 3){
     $path = $_SERVER['REQUEST_URI'];
     if((strpos($path, "&type=")) !== FALSE){
       if (preg_match('/\/(.*?)&type=/', $path, $match) == 1) {
+        // Get offer id from url
         $offer_id = substr($match[1], strrpos($match[1], '/' )+1);
+        // Get language code
         $lang = substr(get_locale(), 0, 2 );
+        // Set params for query
+        $params['offer_code'] = $offer_id;
+        $params['type'] = 'offer';
+        // If system use Wordpress Transient
         if(get_option('pivot_transient') == 'on'){
+          // Construct key to retrieve transient
           $key = 'pivot_offer_'.$lang.'_'.$offer_id;
           if(get_transient($key) === false){
-            $params['offer_code'] = $offer_id;
-            $params['type'] = 'offer';
             $xml_object = _pivot_request('offer-details', $details, $params);
             $offre = $xml_object->offre;
-            $url = get_bloginfo('wpurl').(($lang=='fr')?'':'/'.$lang).'/'.$offre->path.'/'.$params['offer_code'].'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString();
-            pivot_create_fake_post(_get_urn_value($offre, 'urn:fld:nomofr'), $url, _get_urn_value($offre, 'urn:fld:descmarket'), 'post');
-            $data = pivot_template('pivot-hebergement-details-template', $offre);
+            $url = get_bloginfo('wpurl').(($lang=='fr')?'':'/'.$lang).'/details/'.$params['offer_code'].'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString();
+            $title = _get_urn_value($offre, 'urn:fld:nomofr');
+            $descmarket = json_encode(_get_urn_value($offre, 'urn:fld:descmarket'));
+            pivot_create_fake_post($title, $url, $descmarket, 'post');
+            // Prepare data transient
+            $data = array('offerid' =>$offer_id, 'title'=>$title, 'desc'=>$descmarket, 'url'=>$url, 'content'=> json_encode(pivot_template($name, $offre)));
+            // Store transient
             set_transient($key, $data, get_option('pivot_transient_time'));
           }else{
-            $offre = array('offerid' => $offer_id, 'transient' => true, 'content' => get_transient($key));
+            $offre = get_transient($key);
+            pivot_create_fake_post($offre['title'], $offre['url'], json_decode($offre['desc']), 'post');
           }
         }else{
-          $params['offer_code'] = $offer_id;
-          $params['type'] = 'offer';
           $xml_object = _pivot_request('offer-details', $details, $params);
           $offre = $xml_object->offre;
-          $url = get_bloginfo('wpurl').(($lang=='fr')?'':'/'.$lang).'/'.$offre->path.'/'.$params['offer_code'].'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString();
+          $url = get_bloginfo('wpurl').(($lang=='fr')?'':'/'.$lang).'/details/'.$offer_id.'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString();
           pivot_create_fake_post(_get_urn_value($offre, 'urn:fld:nomofr'), $url, _get_urn_value($offre, 'urn:fld:descmarket'), 'post');
         }
       }
