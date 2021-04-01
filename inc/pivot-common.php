@@ -440,18 +440,18 @@ function _add_meta_data($offre, $path, $default_image=null){
   $url = get_bloginfo('wpurl').'/'.$path.'/'.$offre->attributes()->codeCgt->__toString().'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString();
   if(isset($offre) && is_object($offre)){
 //    $descp = preg_replace("/[^A-Za-z0-9 ]/", '', wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket')));
-    $descp =  wp_strip_all_tags( get_the_excerpt(), true );
+    $descp =  get_the_excerpt();
     $title = _get_urn_value($offre, 'urn:fld:nomofr');
-    return '<meta name="description" content="'.((strlen($descp)>160)?substr($descp, 0, strpos($descp, ' ', 160)):$descp).'"/>'
+    return '<meta name="description" content="'.esc_attr(((strlen($descp)>160)?substr($descp, 0, strpos($descp, ' ', 160)):$descp)).'"/>'
          .'<meta property="og:url" content="'.$url.'">'
          .'<meta property="og:type" content="article">'
-         .'<meta property="og:title" content="'.$title.'">'
-         .'<meta property="og:description" content="'.((strlen($descp)>160)?substr($descp, 0, strpos($descp, ' ', 160)):$descp).'">'
+         .'<meta property="og:title" content="'.esc_attr($title).'">'
+         .'<meta property="og:description" content="'.esc_attr(((strlen($descp)>160)?substr($descp, 0, strpos($descp, ' ', 160)):$descp)).'">'
          .'<meta property="og:updated_time" content="'.$offre->attributes()->dateModification->__toString().'">'
          .'<meta property="og:image" content="'.$default_image.'">'
          .'<meta name="twitter:card" content="summary_large_image">'
          .'<meta name="twitter:url" content="'.$url.'">'
-         .'<meta name="twitter:title" content="'.$title.'">'
+         .'<meta name="twitter:title" content="'.esc_attr($title).'">'
          .'<meta property="article:published_time" content="'.$offre->attributes()->dateCreation->__toString().'">'
          .'<meta property="article:modified_time" content="'.$offre->attributes()->dateModification->__toString().'">';
   }
@@ -468,14 +468,14 @@ function _add_meta_data_list_page($pivot_page){
     $url = get_bloginfo('wpurl').'/'.$pivot_page->path;
 //    $descp = preg_replace("/[^A-Za-z0-9 ]/", '', wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket')));
     $descp =  wp_strip_all_tags($pivot_page->description, true );
-    return '<meta name="description" content="'.((strlen($descp)>160)?substr($descp, 0, strpos($descp, ' ', 160)):$descp).'"/>'
+    return '<meta name="description" content="'.esc_attr(((strlen($descp)>160)?substr($descp, 0, strpos($descp, ' ', 160)):$descp)).'"/>'
          .'<meta property="og:url" content="'.$url.'">'
          .'<meta property="og:type" content="page">'
-         .'<meta property="og:title" content="'.__($pivot_page->title, 'pivot').'">'
+         .'<meta property="og:title" content="'.esc_attr(__($pivot_page->title, 'pivot')).'">'
          .'<meta property="og:image" content="'.$pivot_page->image.'">'
          .'<meta name="twitter:card" content="summary_large_image">'
          .'<meta name="twitter:url" content="'.$url.'">'
-         .'<meta name="twitter:title" content="'.__($pivot_page->title, 'pivot').'">';
+         .'<meta name="twitter:title" content="'.esc_attr(__($pivot_page->title, 'pivot')).'">';
   }
 }
 
