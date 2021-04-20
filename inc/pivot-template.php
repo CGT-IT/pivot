@@ -207,7 +207,9 @@ add_filter('pre_handle_404', function($preempt, $wp_query) {
   // If Session has been too long or token is lost, reload first page
   if(strpos($wp->request, '&paged=')){
     $page_id = $customPages[$key]['id'];
-    if(!isset($_SESSION['pivot'][$page_id]['token'])){
+    $transient_key = 'pivot_page_token_'.$page_id;
+    $stored_token = get_transient($transient_key);
+    if(!isset($_SESSION['pivot'][$page_id]['token']) && $stored_token === false){
       $pos = strpos($_SERVER['REQUEST_URI'], "&paged=");
       $url = substr($_SERVER['REQUEST_URI'], 0, $pos);
       header('Location:'.$url);
