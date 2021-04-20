@@ -53,10 +53,11 @@
               <thead>
                 <tr>
                   <th data-field="nom" data-sortable="true">Nom</th>
+                  <th data-field="type" data-sortable="true">Type</th>
                   <th data-field="id-pivot" data-sortable="true" class="text-center" data-visible="false" scope="col">ID Pivot</th>
                   <th data-field="code-postal" data-sortable="true" class="text-center" scope="col">Code postal</th>
                   <th data-field="commune" data-sortable="true" class="text-center" scope="col">Commune</th>
-                  <th data-field="province" data-sortable="true" class="text-center" scope="col">Province</th>
+                  <th data-field="maison-tourisme" data-sortable="true" class="text-center" scope="col">MT</th>
                   <th data-field="lien-orc-fr" class="text-center" data-visible="false" scope="col">Lien ORC (FR)</th>
                   <th data-field="lien-orc-nl" class="text-center" data-visible="false" scope="col">Lien ORC (NL)</th>
                   <th data-field="lien-orc-en" class="text-center" data-visible="false" scope="col">Lien ORC (EN)</th>
@@ -74,11 +75,12 @@
                   <?php $orcLink = _get_urn_value($offre, 'urn:fld:orc'); ?>
                   <tr>
                     <td class="nom"><?php print $offerTitle; ?></td>
+                    <td class="type"><?php print $offre->typeOffre->label->value->__toString(); ?>
                     <td class="id-pivot"><?php print $codeCGT; ?></td>
                     <td class="code-postal"><?php print $offre->adresse1->cp; ?></td>
                     <td class="commune"><?php print $offre->adresse1->localite->value->__toString(); ?></td>
-                    <td class="province"><?php print $offre->adresse1->province->__toString(); ?></td>
-                    <td id="lien-orc-fr-<?php print $i;?>" class="lien-orc-fr"><?php print _get_urn_value($offre, 'urn:fld:orc'); ?></td>
+                    <td class="maison-tourisme"><?php print $offre->adresse1->organisme->label; ?></td>
+                    <td id="lien-orc-fr-<?php print $i;?>" class="lien-orc-fr"><?php print $orcLink; ?></td>
                     <td id="lien-orc-nl-<?php print $i;?>" class="lien-orc-nl"><?php print _get_urn_value($offre, 'nl:urn:fld:orc'); ?></td>
                     <td id="lien-orc-en-<?php print $i;?>" class="lien-orc-en"><?php print _get_urn_value($offre, 'en:urn:fld:orc'); ?></td>
                     <td id="lien-orc-de-<?php print $i;?>" class="lien-orc-de"><?php print _get_urn_value($offre, 'de:urn:fld:orc'); ?></td>
