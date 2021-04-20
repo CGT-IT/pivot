@@ -42,7 +42,7 @@ function pivot_custom_shortcode_slider($atts){
     $template_name = 'pivot-shortcode-slider-template';
 
     // Get offers
-    $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query);
+    $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query, $atts['query']);
 
     // Open HTML balises
     $output = '<div class="container-fluid">
@@ -116,7 +116,7 @@ function pivot_custom_shortcode_event_slider($atts){
     $template_name = 'pivot-eventslider-details-part-template';
 
     // Get offers
-    $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query);
+    $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query, $atts['query']);
 
     // Open HTML balises
     $output = '<div class="container-fluid">
@@ -204,7 +204,7 @@ function pivot_custom_shortcode_orc_list($atts){
     $template_name = 'pivot-orc-list-template';
 
     // Get offers
-    $offres = pivot_construct_output('offer-search', 1000, $xml_query);
+    $offres = pivot_construct_output('offer-search', 1000, $xml_query, $atts['query']);
 
     // Add main HTML content in output
     $output .= pivot_template($template_name, $offres);
@@ -321,7 +321,7 @@ function pivot_custom_shortcode_event($atts) {
     $template_name = 'pivot-activite-details-part-template';
 
     // Get offers
-    $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query);
+    $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query, $atts['query']);
 
     $output = '<div class="container-fluid pivot-list">'
                .'<div class="row row-eq-height pivot-row d-flex flex-wrap">';
@@ -462,7 +462,7 @@ function pivot_custom_shortcode($atts) {
       $template_name = 'pivot-'.$atts['type'].'-details-part-template';
 
       // Get offers
-      $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query, NULL, $atts['details']);
+      $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query, $atts['query'], $atts['details']);
       
       $output = '<div class="container-fluid pivot-list">';
       // Change display as we want to display only title and url on list
