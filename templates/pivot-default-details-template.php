@@ -1,15 +1,39 @@
-
 <?php global $offre_meta_data; ?>
-<!--if offer comes from url or by arguments-->
-<?php if(isset($args->estActive)): ?>
-  <?php $offre = $args; ?>
+<?php if(isset($args->estActive)): // if offer comes by arguments, means included in an existing page ?>
+   <?php $offre = $args; ?>
 <?php else: ?>
-  <?php $offre = _get_offer_details(); ?>
-  <?php _check_is_offer_active($offre); ?>
-  <?php _add_meta_data($offre, 'details'); ?>
-  <?php get_header(); ?>
+  <?php $current_template_name = basename(__FILE__, '.php'); ?>
+  <?php $offre = _get_offer_details(null, 3, $current_template_name); ?>
+  <?php if(get_option('pivot_transient') == 'on' && $offre['content']): ?>
+    <?php $key = 'pivot_meta_'.$offre['offerid'];
+        if (get_transient($key)){
+          $offre_meta_data = get_transient($key);
+        } 
+    ?>
+    <?php get_header(); ?>
+    <?php print json_decode($offre['content']); ?>
+  <?php else: ?>
+    <?php _check_is_offer_active($offre); ?>
+    <?php
+      if(get_option('pivot_transient') == 'on'){
+        $key = 'pivot_meta_'.$offre->attributes()->codeCgt->__toString();
+        if (get_transient($key) === false){
+          $default_image = _get_offer_default_image($offre, null, null);
+          $offre_meta_data = _add_meta_data($offre, 'details', $default_image); 
+          set_transient($key, $offre_meta_data, get_option('pivot_transient_time'));
+        }else{
+          $offre_meta_data = get_transient($key);
+        }
+      }else{
+        $default_image = _get_offer_default_image($offre, null, null);
+        $offre_meta_data = _add_meta_data($offre, 'details', $default_image); 
+      }
+    ?>
+    <?php get_header(); ?>
+  <?php endif;?>
 <?php endif;?>
 
+<?php if(!isset($offre['content'])): ?>
 <article class="pivot-offer row m-3">
   <div class="col-xs-12 col-md-8">
     <div class="row">
@@ -59,7 +83,8 @@
   <?php // print pivot_template('map-orthodromic', $offre->adresse1->idIns); ?>
 
 </article>
-
-<?php if(!isset($args->estActive)): ?>
-  <?php get_footer(); ?>
 <?php endif;?>
+
+<?php if(!isset($args->estActive) || $offre['content'] == true): ?>
+  <?php get_footer(); ?>
+<?php endif; ?>

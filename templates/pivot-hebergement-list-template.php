@@ -42,7 +42,19 @@
                 <?php $offre->path = $pivot_page->path; ?>
                 <?php $offre->map = $pivot_page->map; ?>
                 <?php $offre->nb_per_row = $pivot_page->nbcol; ?>
-                <?php print pivot_template($name, $offre); ?>
+                <?php $lang = substr(get_locale(), 0, 2 ); ?>
+                <?php $key = 'pivot_offer_part_'.$lang.'_'.$offre->attributes()->codeCgt->__toString(); ?>
+                <?php if(get_option('pivot_transient') == 'on'): ?>
+                  <?php if (get_transient($key) === false): ?>
+                    <?php $data = pivot_template($name, $offre); ?>
+                    <?php set_transient($key, $data, get_option('pivot_transient_time')); ?>
+                  <?php else: ?>
+                    <?php $data = get_transient($key); ?>
+                  <?php endif; ?>
+                <?php else: ?>
+                  <?php $data = pivot_template($name, $offre); ?>
+                <?php endif; ?>
+                <?php echo $data; ?>
               <?php endforeach; ?>
             </div>
           </div>
