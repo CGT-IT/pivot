@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 1.8.9
+ * Version: 1.9.0
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -690,7 +690,7 @@ function pivot_lodging_page($page_id, $details=2, $offers_per_page=null) {
   if(isset($field_params['filters'])){
     $offers = pivot_construct_output('offer-search', $offers_per_page, $xml_query, $page_id, $details);
   }else{
-    $offers = pivot_construct_output('offer-pager', $offers_per_page, $xml_query, $page_id, $details);  
+    $offers = pivot_construct_output('offer-pager', $offers_per_page, $xml_query, $page_id, $details);
   }
 
   return $offers;
@@ -704,13 +704,6 @@ function pivot_lodging_page($page_id, $details=2, $offers_per_page=null) {
  * @return string part of HTML to display
  */
 function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $page_id = NULL, $details = 2){
-  // Get current page number (start with 0)
-  if(($pos = strpos($_SERVER['REQUEST_URI'], "paged=")) !== FALSE){ 
-    $page_number = substr($_SERVER['REQUEST_URI'], $pos+6); 
-    $current_page =  (int) filter_var($page_number, FILTER_SANITIZE_NUMBER_INT);
-  }else{
-    $current_page = 1;
-  }
   // Define query type
   $params['type'] = 'query';
   if($page_id != NULL){
@@ -722,13 +715,27 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
       // build transient key to store shortcode token
       // page_id = query ID in this case
       $key = 'pivot_shortcode_token_'.$page_id;
+      $shortcode = true;
     }
     // get token from transient if there is one
     $stored_token = get_transient($key);
   }else{
     $stored_token = false;
   }
-
+  
+  // Get current page number (start with 0)
+  if(($pos = strpos($_SERVER['REQUEST_URI'], "paged=")) !== FALSE){ 
+    $page_number = substr($_SERVER['REQUEST_URI'], $pos+6); 
+    $current_page =  (int) filter_var($page_number, FILTER_SANITIZE_NUMBER_INT);
+  }else{
+    $current_page = 1;
+  }
+  // In case there is a shortcode with offers included in a pivot page.
+  // don't take page argument, reset to 1.
+  if(isset($shortcode) && $shortcode === true){
+    $current_page = 1;  
+  }
+  
   // Check current page.
   // If 0 we need to define params to get all offers (depending on filters)
   if($current_page == 1 || $stored_token === false){
@@ -773,11 +780,15 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
 
     $offres = $xml_object->offre;
   }else{
+
+    print "c'est la page";
+
     if((!isset($_SESSION['pivot']['filters'][$page_id]) || count(($_SESSION['pivot']['filters'][$page_id])) == 0)){
       $params['token'] = '/'.$stored_token.'/'.$current_page;
     }else{
       $params['token'] = '/'.$_SESSION['pivot'][$page_id]['token'].'/'.$current_page;
     }
+    print "token: ".$params['token'];
     // Get offers
     $xml_object = _pivot_request('offer-pager', $details, $params);
     $offres = $xml_object->offre;
