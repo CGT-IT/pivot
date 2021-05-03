@@ -23,7 +23,7 @@ function export_pivot($atts){
   );
   
   $output = '<form method="post">
-              <button name="'.$atts['filename'].'">Générer le fichier</button>
+              <button name="'.$atts['filename'].'">Générer le fichier '.$atts['filename'].'</button>
             </form>';
   
   if(isset($_POST[$atts['filename']])) {
