@@ -947,16 +947,16 @@ function _pivot_export($filename, $export_id, $query_id){
     curl_close($request);
   }
   
-  // the following lines write the contents to a file in the same directory (provided permissions etc)
-//  print wp_get_upload_dir().$filename.'.xlsx';
+  // get upload directory
   $upload_dir = wp_get_upload_dir();
-  print '<pre>';print_r($upload_dir);print '</pre>';
-  $fp = fopen($upload_dir["basedir"].'/'.$filename.'.xlsx', 'w');
+  // create file in the default base uploads wordpress directory
+  $fp = fopen($upload_dir["basedir"].'/'.$filename.'.xlsx', 'w+');
   fwrite($fp, $result);
   fclose($fp);
   
+  // Provide download link
   $output = '<i class="fa fa-download"></i>'
-            . '<a href="'.MY_PLUGIN_URL.'inc/external/xlsxdownloader.php?n='.$filename.'&f='.$upload_dir["baseurl"].'/'.$filename.'.xslx" download="'.$filename.'.xls" target="_blank" type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">Télécharger le fichier '.$filename.'</a>';
+            . '<a href="'.$upload_dir["baseurl"].'/'.$filename.'.xlsx" download="'.$filename.'.xlsx" target="_blank" type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">Télécharger le fichier '.$filename.'</a>';
 
   return $output;
 }
