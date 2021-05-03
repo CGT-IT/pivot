@@ -918,3 +918,42 @@ function _multiKeyExists( Array $array, $key ) {
     }
     return false;
 }
+
+function _pivot_export($filename, $export_id, $query_id){
+  // Get Pivot Base URI
+  $pivot_url = esc_url(get_option('pivot_uri')).'export/'.$export_id.'/'.$query_id;
+  // Get Pivot Personnal Key for Webservices
+  $pivot_key = get_option('pivot_key');
+
+  $headers = array(
+    'WS_KEY: '.$pivot_key,
+    'Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+  $request = curl_init();
+  if ($request){
+    curl_setopt($request, CURLOPT_URL, $pivot_url);
+    curl_setopt($request, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($request, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($request, CURLOPT_CONNECTTIMEOUT, 160);
+    curl_setopt($request, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($request, CURLOPT_RETURNTRANSFER, 1);
+
+    $result = curl_exec($request);
+
+    if (curl_errno($request)) {
+      echo 'Error:' . curl_error($request);
+    }
+
+    curl_close($request);
+  }
+  
+  // the following lines write the contents to a file in the same directory (provided permissions etc)
+  $fp = fopen($filename.'.xlsx', 'w');
+  fwrite($fp, $result);
+  fclose($fp);
+  
+  $output = get_bloginfo('wpurl').'<i class="fa fa-download"></i>'
+            . '<a href="'.MY_PLUGIN_URL.'inc/external/xlsxdownloader.php?n='.$filename.'&f='.get_bloginfo('wpurl').'/'.$filename.'.xslx" download="'.$filename.'.xlsx" target="_blank" type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">Télécharger le fichier</a>';
+
+  return $output;
+}

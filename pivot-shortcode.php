@@ -8,6 +8,31 @@ add_shortcode('pivot_shortcode_event_slider', 'pivot_custom_shortcode_event_slid
 add_shortcode('pivot_shortcode_offer_details', 'pivot_custom_shortcode_offer_details');
 add_shortcode('pivot_orc_list', 'pivot_custom_shortcode_orc_list');
 
+add_shortcode('export_pivot', 'export_pivot' );
+function export_pivot($atts){
+  $field_params = array();
+  // Attributes
+  $atts = shortcode_atts(
+    array(
+      'filename' => '',
+      'export_id' => '',
+      'query_id' => '',
+    ),
+    $atts,
+    'export_pivot'
+  );
+  
+  $output = '<form method="post">
+              <button name="'.$atts['filename'].'">Générer le fichier</button>
+            </form>';
+  
+  if(isset($_POST[$atts['filename']])) {
+    $output .= _pivot_export($atts['filename'], $atts['export_id'], $atts['query_id']);
+  }
+
+  return $output;
+}
+
 function pivot_custom_shortcode_slider($atts){
   $output = '';
   $field_params = array();
