@@ -367,12 +367,10 @@ function _get_commune_from_pivot($type, $value, $selected_value = NULL){
   // Init vars
   $commune_list = array();
   $output = '<option value="all" '.(isset($selected_value)?'':'selected').' >'.esc_html__('Choose a town', 'pivot').'</option>';
-
   // Construct list
   foreach($communes as $commune){
-    $commune_translated = _get_translated_value($commune->commune);
-    if(!in_array($commune_translated, $commune_list)){
-      $commune_list[] = $commune_translated;
+    if($commune->commune->attributes()->__toString() == 'fr' && !in_array($commune->commune->value->__toString(), $commune_list)){
+      $commune_list[] = $commune->commune->value->__toString();
     }
   }
   // Sort list
@@ -783,7 +781,6 @@ function _check_is_offer_active($offre){
       get_template_part(404);
       exit();
     }else{
-      $codeCGT = $offre->attributes()->codeCgt->__toString();
       $lang = substr(get_locale(), 0, 2 );
       $url = get_bloginfo('wpurl').(($lang=='fr')?'':'/'.$lang).'/'.$path;
       switch($offre->estActive){
