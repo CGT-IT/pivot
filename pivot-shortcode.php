@@ -486,8 +486,11 @@ function pivot_custom_shortcode($atts) {
       // Get template name depending of query type
       $template_name = 'pivot-'.$atts['type'].'-details-part-template';
 
-      // Get offers
-      $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query, $atts['query'], $atts['details']);
+      /* Get offers and send 
+       * $atts['query'] > to identify
+       * + $atts['filtervalue'] > to be sure it's unique in case a shortcode with the same query is used in multiple place with differents filters
+       */
+      $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query, $atts['query'].$atts['filtervalue'], $atts['details']);
       
       $output = '<div class="container-fluid pivot-list">';
       // Change display as we want to display only title and url on list
