@@ -69,34 +69,38 @@ function pivot_custom_shortcode_slider($atts){
     // Get offers
     $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query, $atts['query']);
 
-    // Open HTML balises
-    $output = '<div class="container-fluid">
-                <div id="pivot-shortcode-carousel" class="carousel slide" data-ride="carousel">
-                  <div class="carousel-inner row w-100 mx-auto nb-col-'.$atts['nbcol'].'" data-nbcol="'.$atts['nbcol'].'">';
+    if(is_object($offres)){
+      // Open HTML balises
+      $output = '<div class="container-fluid">
+                  <div id="pivot-shortcode-carousel" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner row w-100 mx-auto nb-col-'.$atts['nbcol'].'" data-nbcol="'.$atts['nbcol'].'">';
 
-    // Add main HTML content in output
-    $i = 0;
-    foreach($offres as $offre){
-      $offre->path = 'details';
-      $offre->nb_per_row = $atts['nbcol'];
-      // Will add an 'active' class for the first element
-      if($i == 0){
-        $offre->first = TRUE;
+      // Add main HTML content in output
+      $i = 0;
+      foreach($offres as $offre){
+        $offre->path = 'details';
+        $offre->nb_per_row = $atts['nbcol'];
+        // Will add an 'active' class for the first element
+        if($i == 0){
+          $offre->first = TRUE;
+        }
+        $output.= pivot_template($template_name, $offre);
+        $i++;
       }
-      $output.= pivot_template($template_name, $offre);
-      $i++;
-    }
 
-    // Close HTML balises
-    $output .= '<a class="carousel-control-prev" href="#pivot-shortcode-carousell" role="button" data-slide="prev">
-                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                  <span class="sr-only">'.__('Previous').'</span>
-                </a>
-                <a class="carousel-control-next" href="#pivot-shortcode-carousel" role="button" data-slide="next">
-                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                  <span class="sr-only">'.__('Next').'</span>
-                </a>
-              </div></div></div>';
+      // Close HTML balises
+      $output .= '<a class="carousel-control-prev" href="#pivot-shortcode-carousell" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">'.__('Previous').'</span>
+                  </a>
+                  <a class="carousel-control-next" href="#pivot-shortcode-carousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">'.__('Next').'</span>
+                  </a>
+                </div></div></div>';
+    }else{
+      $output = $offres;
+    }
   }
   return $output;
 }
@@ -143,26 +147,30 @@ function pivot_custom_shortcode_event_slider($atts){
     // Get offers
     $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query, $atts['query']);
 
-    // Open HTML balises
-    $output = '<div class="container-fluid">
-                <div id="pivot-shortcode-carousel" class="carousel slide" data-ride="carousel">
-                  <div class="carousel-inner row w-100 mx-auto nb-col-'.$atts['nbcol'].'" data-nbcol="'.$atts['nbcol'].'">';
+    if(is_object($offres)){
+      // Open HTML balises
+      $output = '<div class="container-fluid">
+                  <div id="pivot-shortcode-carousel" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner row w-100 mx-auto nb-col-'.$atts['nbcol'].'" data-nbcol="'.$atts['nbcol'].'">';
 
-    // Add main HTML content in output
-    $i = 0;
-    foreach($offres as $offre){
-      $offre->path = 'details';
-      $offre->nb_per_row = $atts['nbcol'];
-      // Will add an 'active' class for the first element
-      if($i == 0){
-        $offre->first = TRUE;
+      // Add main HTML content in output
+      $i = 0;
+      foreach($offres as $offre){
+        $offre->path = 'details';
+        $offre->nb_per_row = $atts['nbcol'];
+        // Will add an 'active' class for the first element
+        if($i == 0){
+          $offre->first = TRUE;
+        }
+        $output.= pivot_template($template_name, $offre);
+        $i++;
       }
-      $output.= pivot_template($template_name, $offre);
-      $i++;
-    }
 
-    // Close HTML balises
-    $output .= '</div></div></div>';
+      // Close HTML balises
+      $output .= '</div></div></div>';
+    }else{
+      $output = $offres;
+    }
   }
   return $output;
 }
@@ -347,18 +355,21 @@ function pivot_custom_shortcode_event($atts) {
 
     // Get offers
     $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query, $atts['query']);
+    if(is_object($offres)){
+      $output = '<div class="container-fluid pivot-list">'
+                 .'<div class="row row-eq-height pivot-row d-flex flex-wrap">';
 
-    $output = '<div class="container-fluid pivot-list">'
-               .'<div class="row row-eq-height pivot-row d-flex flex-wrap">';
+      // Add main HTML content in output
+      foreach($offres as $offre){
+        $offre->path = 'details';
+        $offre->nb_per_row = $atts['nbcol'];
+        $output.= pivot_template($template_name, $offre);
+      }
 
-    // Add main HTML content in output
-    foreach($offres as $offre){
-      $offre->path = 'details';
-      $offre->nb_per_row = $atts['nbcol'];
-      $output.= pivot_template($template_name, $offre);
+      $output .= '</div></div>';
+    }else{
+      $output = $offres;
     }
-
-    $output .= '</div></div>';
   }
   return $output;
 }
@@ -492,22 +503,26 @@ function pivot_custom_shortcode($atts) {
        */
       $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query, $atts['query'].$atts['filtervalue'], $atts['details']);
       
-      $output = '<div class="container-fluid pivot-list">';
-      // Change display as we want to display only title and url on list
-      if($atts['details'] == 1){
-        $output .= '<div class="list-group">';
+      if(is_object($offres)){
+        $output = '<div class="container-fluid pivot-list">';
+        // Change display as we want to display only title and url on list
+        if($atts['details'] == 1){
+          $output .= '<div class="list-group">';
+        }else{
+          $output .='<div class="row row-eq-height pivot-row d-flex flex-wrap">';
+        }
+
+        // Add main HTML content in output
+        foreach($offres as $offre){
+          $offre->path = 'details';
+          $offre->nb_per_row = $atts['nbcol'];
+          $output.= pivot_template($template_name, $offre);
+        }
+
+        $output .= '</div></div>';
       }else{
-        $output .='<div class="row row-eq-height pivot-row d-flex flex-wrap">';
+        $output = $offres;
       }
-
-      // Add main HTML content in output
-      foreach($offres as $offre){
-        $offre->path = 'details';
-        $offre->nb_per_row = $atts['nbcol'];
-        $output.= pivot_template($template_name, $offre);
-      }
-
-      $output .= '</div></div>';
 
     }else{
       $text = __('The <strong>type</strong> attributes for the query is wrong or missing ', 'pivot');

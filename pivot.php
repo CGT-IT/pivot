@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 1.9.7
+ * Version: 1.9.8
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -431,17 +431,31 @@ function _pivot_request($type, $detail, $params = NULL, $postfields = NULL){
       }
       return $xml_object;
     }else{
-      $page = pivot_get_page($params['page_id']);
-      // If it is event, show a specific error message
-      if($page->type == 'activite'){
-        $error = __('Too bad, no event planned at this time ! Come back later ...', 'pivot');
-        $output = '<div class="container">'
-                . '<div class="row">'
-                . '<div class="col mx-auto my-5">'
-                ._show_warning($error)
-                .'</div></div></div>';
-        print $output;
-        get_footer();
+      if(isset($params['page_id']) || isset($params['shortcode'])){
+        if(isset($params['page_id'])){
+          // If it is event, show a specific error message
+          $page = pivot_get_page($params['page_id']);
+          if($page->type == 'activite'){
+            $error = __('Too bad, no event planned at this time ! Come back later ...', 'pivot');
+            $output = '<div class="container">'
+                    . '<div class="row">'
+                    . '<div class="col mx-auto my-5">'
+                    ._show_warning($error)
+                    .'</div></div></div>';
+            print $output;
+            get_footer();
+          }
+        }
+        // case shortcode and error, avoid page construction errors
+        if((isset($params['shortcode']) && $params['shortcode'] == true)){
+          $error = __('No offer at this time ! Come back later ...', 'pivot');
+          $output = '<div class="container">'
+                  . '<div class="row">'
+                  . '<div class="col mx-auto my-5">'
+                  ._show_warning($error)
+                  .'</div></div></div>';
+          return $output;
+        }
       }else{
         print pivot_template('pivot-problem-template', $response);
       }
@@ -701,6 +715,8 @@ function pivot_lodging_page($page_id, $details=2, $offers_per_page=null) {
  * @param string $case Define request case
  * @param int $offers_per_page Number of offers per page to display
  * @param Object $xml_query XML file with request to Pivot (filter on specific fields)
+ * @param int $page_id to be able to retrieve the page attributes or to know if it's a shortcode
+ * @param int $details level of details ask, 2 by default
  * @return string part of HTML to display
  */
 function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $page_id = NULL, $details = 2){
@@ -733,7 +749,8 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
   // In case there is a shortcode with offers included in a pivot page.
   // don't take page argument, reset to 1.
   if(isset($shortcode) && $shortcode === true){
-    $current_page = 1;  
+    $current_page = 1;
+    $params['shortcode'] = true;
   }
   
   // Check current page.
@@ -755,7 +772,7 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
     if((!isset($_SESSION['pivot']['filters'][$page_id]) || count(($_SESSION['pivot']['filters'][$page_id])) == 0)){
       if($stored_token === false){
         $xml_object = _pivot_request('offer-init-list', $details, $params, $xml_query);
-        if(isset($key)){
+        if(is_object($xml_object) && isset($key)){
           // store token in transient with a validity of 1 day
           set_transient($key, $xml_object->attributes()->token->__toString(), 86400);
         }
@@ -763,22 +780,20 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
         $params['token'] = '/'.$stored_token.'/'.$current_page;
         $xml_object = _pivot_request('offer-pager', $details, $params);
       }
-      if($page_id != 999){
+      if(is_object($xml_object) && $page_id != 999){
         // Store number of offers
         $_SESSION['pivot'][$page_id]['nb_offres'] = str_replace(',', '', $xml_object->attributes()->count->__toString());
       }
     }else{
       // Get offers
       $xml_object = _pivot_request('offer-init-list', $details, $params, $xml_query);
-      if($page_id != 999){
+      if(is_object($xml_object) && $page_id != 999){
         // Store number of offers
         $_SESSION['pivot'][$page_id]['nb_offres'] = str_replace(',', '', $xml_object->attributes()->count->__toString());
         // Store the token to get next x items
         $_SESSION['pivot'][$page_id]['token'] = $xml_object->attributes()->token->__toString();
       }
     }
-
-    $offres = $xml_object->offre;
   }else{
     if((!isset($_SESSION['pivot']['filters'][$page_id]) || count(($_SESSION['pivot']['filters'][$page_id])) == 0)){
       $params['token'] = '/'.$stored_token.'/'.$current_page;
@@ -787,8 +802,12 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
     }
     // Get offers
     $xml_object = _pivot_request('offer-pager', $details, $params);
-    $offres = $xml_object->offre;
   }
 
+  if(is_object($xml_object)){
+    $offres = $xml_object->offre;
+  }else{
+    $offres = $xml_object;
+  }
   return $offres;
 }
