@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 1.9.8
+ * Version: 1.9.9
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -437,14 +437,19 @@ function _pivot_request($type, $detail, $params = NULL, $postfields = NULL){
           $page = pivot_get_page($params['page_id']);
           if($page->type == 'activite'){
             $error = __('Too bad, no event planned at this time ! Come back later ...', 'pivot');
-            $output = '<div class="container">'
-                    . '<div class="row">'
-                    . '<div class="col mx-auto my-5">'
-                    ._show_warning($error)
-                    .'</div></div></div>';
-            print $output;
-            get_footer();
-          }
+          }else{
+            $error = __('No offer at this time ! Come back later ...', 'pivot');
+          }              
+          $output = '<div class="container">'
+                  . '<div class="row">'
+                  . '<div class="col mx-auto my-5">'
+                  ._show_warning($error)
+                  .'<form>'
+                  .'<input class="btn btn-outline-dark btn-lg btn-block btn-filter shadow py-3" type="button" value="'.__('Go back!').'" onclick="history.back()">'
+                  .'</form>'
+                  .'</div></div></div>';
+          print $output;
+          get_footer();
         }
         // case shortcode and error, avoid page construction errors
         if((isset($params['shortcode']) && $params['shortcode'] == true)){
