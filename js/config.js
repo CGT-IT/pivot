@@ -19,7 +19,7 @@
           $.ajax({
             type: "GET",
             headers: {'ws_key': key},
-            url: uri+"offer/GIT-02-01W2-0001/exists;",
+            url: uri+"offer/ALD-01-00096Z/exists;fmt=json",
             dataType: "json",
             success: function(data){
               $('#pivot-response').append("<p style='color:green;'>Your config is correct</p>");
