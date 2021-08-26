@@ -50,7 +50,7 @@ function pivot_enqueue_admin_script($hook) {
     wp_enqueue_script('pivot_typeofr_script', MY_PLUGIN_URL.'js/typeofr.js',array('jquery'), '3.0', true);
   }
   if(isset($_GET['page']) && $_GET['page'] === "pivot-admin"){
-    wp_enqueue_script('pivot_config_script', MY_PLUGIN_URL.'js/config.js',array('jquery'), '3.0', true);
+    wp_enqueue_script('pivot_config_script', MY_PLUGIN_URL.'js/config.js',array('jquery'), '3.1', true);
   }
 }
 
