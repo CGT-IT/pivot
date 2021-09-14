@@ -243,6 +243,45 @@ function _get_ranking_picto($offre, $color = null, $height = 20){
 }
 
 /**
+ * Will return a span with image of the ranking picto inside.
+ * 
+ * @param Object $offre the complete offer Object
+ * @param string $color color in hexadecimal format without # (null by default)
+ * @return string
+ */
+function _get_resto_ranking_picto($offre, $color = null, $height = 20){
+  $searched_urn = array('urn:fld:class:michfour', 'urn:fld:class:michstar', 'urn:fld:class:gaultmiltoq');
+  $output = ''; 
+  // Loop on each specific field
+  foreach($offre->spec as $specification){
+    // Check if it's the one we are looking for
+    if(in_array($specification->attributes()->urn->__toString(), $searched_urn)){
+      $urn = $specification->value->__toString();
+      $useless = array('urn:val:class:michstar:nc', 'urn:val:class:michfour:nc', 'urn:val:class:gaultmiltoq:nc');
+      if(!in_array($urn, $useless)){
+        // add specific class to allow overriding. Replace : by -
+        $output .= '<span class="pivot-ranking">';
+        $urn_doc = _get_urn_documentation($urn);
+        // prepare img title attribute
+        $title_attribute = 'title="'.$urn_doc.'"';
+        // prepare img alt attribute
+        $alt_attribute = 'alt="image '.$urn_doc.'"';
+        // Construct <img/> tag
+        $img = '<img height="'.$height.'" '.$title_attribute.' '.$alt_attribute.' class="pivot-picto" src="'.get_option('pivot_uri').'img/'.$urn.(($color)?';c='.$color:'').';h='.$height;
+        $img .= '"/>';
+
+        $output .= $img.'</span>';
+      }
+    }
+  }
+  if($output != ''){
+    return $output;
+  }else{
+    return '';
+  }
+}
+
+/**
  * Get number of offer for a specific urn
  * 
  * @param array $field_params with urn name
@@ -324,6 +363,53 @@ function _get_list_typeofr($selected_id = NULL){
     ),
   );
 
+  $xml_response = file_get_contents($uri, false, stream_context_create($ssl_options));
+  $typeofr = simplexml_load_string($xml_response);
+  $typeofr_list = '';
+  
+  foreach($typeofr as $type){
+    if($selected_id == $type->attributes()['order']){
+      $typeofr_list .= '<option selected="selected" value="'.$type->attributes()['order'].'">'.$type->label->value.'</option>';
+    }else{
+      $typeofr_list .= '<option value="'.$type->attributes()['order'].'">'.$type->label->value.'</option>';
+    }
+  }
+  
+  if($selected_id == 'custom'){
+    $typeofr_list .= '<option selected="selected" value="custom">Custom (hors Pivot) spécialement utilisé pour les vignettes en shortcode</option>';
+  }else{
+    $typeofr_list .= '<option value="custom">Custom (hors Pivot) spécialement utilisé pour les vignettes en shortcode</option>';
+  }
+  return $typeofr_list;
+}
+
+function _get_linked_mt($commune){
+  $uri = get_option('pivot_uri');
+
+  $ssl_options=array(
+    "ssl"=>array(
+      "verify_peer"=>false,
+      "verify_peer_name"=>false,
+    ),
+  );
+/*
+ * <Query>
+ * <CriteriaGroup type="and">
+ *  <CriteriaField field="urn:fld:etatedit" operator="equal" target="value">
+ *   <value></value>
+ *  </CriteriaField>
+ *  <CriteriaField field="urn:fld:typeofr" operator="equal" target="value">
+ *   <value>14</value>
+ *  </CriteriaField>
+ *  <CriteriaField id="advanced" field="urn:fld:typeogt" operator="equal" target="value">
+ *   <value>urn:val:typeogt:mdt</value>
+ *  </CriteriaField>
+ *  <CriteriaField id="advanced" field="urn:fld:adrcom" operator="equal" target="value">
+ *   <value>xxx</value>
+ *  </CriteriaField>
+ * </CriteriaGroup>
+ * </Query>
+ */
   $xml_response = file_get_contents($uri, false, stream_context_create($ssl_options));
   $typeofr = simplexml_load_string($xml_response);
   $typeofr_list = '';
@@ -808,7 +894,7 @@ function _check_is_offer_active($offre){
  * @param int $page_id
  */
 function _construct_filters_array($field_params,$filter, $key = 'shortcode', $page_id = NULL){
-  if($filter->urn == 'urn:fld:adrcom' && $_SESSION['pivot']['filters'][$page_id][$key] == 'all'){
+  if($filter->urn == 'urn:fld:adrcom' && isset($_SESSION['pivot']['filters']) && $_SESSION['pivot']['filters'][$page_id][$key] == 'all'){
     return $field_params;
   }else{
     switch($filter->type){
