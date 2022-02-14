@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 2.0.2
+ * Version: 2.0.3
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -92,6 +92,7 @@ function add_clear_pivot_cache_menu_item($wp_admin_bar) {
         'title' => __('Clear current page Pivot cache', 'pivot'),
         'href' => admin_url('admin.php?page=pivot-pages&amp;clear-pivot-cache=' . absint($pivot_page->id)),
       );
+      $wp_admin_bar->add_node($args);
     }
     // case offer details page
     if (get_option('pivot_transient') == 'on' && isset($wp_query->post->pivot_id)) {
@@ -102,9 +103,8 @@ function add_clear_pivot_cache_menu_item($wp_admin_bar) {
         'title' => __('Clear current page Pivot cache', 'pivot'),
         'href' => admin_url('admin.php?page=pivot-pages&amp;clear-pivot-offer-cache=' . $wp_query->post->pivot_id),
       );
+      $wp_admin_bar->add_node($args);
     }
-
-    $wp_admin_bar->add_node($args);
   }
 }
 
@@ -817,7 +817,7 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
       if ($stored_token === false) {
         $xml_object = _pivot_request('offer-init-list', $details, $params, $xml_query);
         if (is_object($xml_object) && isset($key)) {
-          if ($page->type != 'activite') {
+          if (isset($page) && $page->type != 'activite') {
             // store token in transient with a validity of 1 day
             set_transient($key, $xml_object->attributes()->token->__toString(), 86400);
           } else {
