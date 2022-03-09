@@ -1,75 +1,103 @@
 
 <?php $offre = $args; ?>
 
-<div class="offers-area-col <?php print _set_nb_col($offre->map, $offre->nb_per_row).'nb-col-'.$offre->nb_per_row; ?> mb-3">
-  <?php $codeCGT = $offre->attributes()->codeCgt->__toString(); ?>
-  <?php $offreName = _get_urn_value($offre, 'urn:fld:nomofr'); ?>
-  <?php $lang = substr(get_locale(), 0, 2 ); ?>
-  <?php $url = get_bloginfo('wpurl').(($lang=='fr')?'':'/'.$lang).'/'.$offre->path.'/'.$codeCGT.'&type='.$offre->typeOffre->attributes()->idTypeOffre->__toString(); ?>
-  <div class="card text-left pivot-offer">
-    <div class="card-orientation <?php print ($offre->map!=1||wp_is_mobile()==1)?'':'card-horizontal';?>">
-      <div class="container-img embed-responsive embed-responsive-16by9 <?php print ($offre->map!=1||wp_is_mobile()==1)?'':'col-5 p-0 my-auto';?>">
-        <img alt="<?php print $offreName; ?>" class="embed-responsive-item pivot-img card-img-top zoom pivot-img-list" src="<?php print _get_offer_default_image($offre); ?>"/>
-        <div class="p-3 position-absolute fixed-top">
-          <?php print _search_specific_urn_img($offre, 'urn:fld:label:bvvelo', 40, null, true); ?>
-        </div>
-        <div class="p-3 position-absolute fixed-top text-right">
-          <span class="item-services">
-            <?php print _search_specific_urn_img($offre, 'urn:fld:eqpsrv:accwebwifi', 20, 'FFFFFF'); ?>
-            <?php print _search_specific_urn_img($offre, 'urn:fld:pmr', 20, 'FFFFFF'); ?>
-            <?php print _search_specific_urn_img($offre, 'urn:fld:animauxacc', 20, 'FFFFFF'); ?>
-          </span>
-        </div>
-      </div>
-      <h6 class="title-header card-header" <?php print ($offre->map!=1||wp_is_mobile()==1)?'':'style="display:none"';?>><?php print $offreName; ?></h6>
-      <div class="card-body <?php print ($offre->map!=1||wp_is_mobile()==1)?'':'col-7 pt-2 pb-0';?>">
-        <p class="h6 title-no-header" <?php print ($offre->map!=1||wp_is_mobile()==1)?'style="display:none"':'';?>><?php print $offreName; ?></p>
-        <p class="card-text">
-          <?php print $offre->typeOffre->label->value->__toString().'  '._get_ranking_picto($offre); ?>
-        </p>
-        <?php $capbase = _get_urn_value($offre, 'urn:fld:capbase'); ?>
-        <?php if(!empty($capbase) && $capbase != 0): ?>
-          <p class="card-text">
-            <i class="fas fas-align-right pr-2 fa-bed"></i><?php print $capbase; ?>
-            <?php $capadd = _get_urn_value($offre, 'urn:fld:capadd'); ?>
-            <?php if(!empty($capadd) && $capadd != 0): ?>
-              <?php print ' '.__('à', 'pivot').' '.($capbase+$capadd); ?>
-            <?php endif; ?>
-          </p>
-        <?php endif; ?>
-        <?php $prixmin = _get_urn_value($offre, 'urn:fld:tarifind:pmin:webssais'); ?>
-        <?php if(!empty($prixmin) && $prixmin != 0): ?>
-          <p class="card-text">
-            <i class="fas fas-align-right pr-2 fa-euro-sign"></i><?php print __('à partir de ','pivot').$prixmin.'€'; ?>
-          </p>
-        <?php endif; ?>
-        <?php $phone = _get_urn_value($offre, 'urn:fld:phone1'); ?>
-        <?php if($phone != ''): ?>
-          <p class="card-text">
-            <i class="fas fa-phone"></i>
-            <?php print $phone; ?>
-          </p>
-        <?php else: ?>
-          <?php $mobile = _get_urn_value($offre, 'urn:fld:mobi1'); ?>
-          <?php if($mobile != ''): ?>
-            <p class="card-text">
-              <i class="fas fa-phone"></i>
-              <?php print $mobile; ?>
+<div class="offers-area-col <?php print _set_nb_col($offre->map, $offre->nb_per_row) . 'nb-col-' . $offre->nb_per_row; ?> mb-3">
+    <?php $codeCGT = $offre->attributes()->codeCgt->__toString(); ?>
+    <?php $offreName = _get_urn_value($offre, 'urn:fld:nomofr'); ?>
+    <?php $lang = substr(get_locale(), 0, 2); ?>
+    <?php $url = get_bloginfo('wpurl') . (($lang == 'fr') ? '' : '/' . $lang) . '/details/' . $codeCGT . '&amp;type=' . $offre->typeOffre->attributes()->idTypeOffre->__toString(); ?>
+    <div class="card text-left pivot-offer">
+        <div class="card-orientation <?php print ($offre->map != 1 || wp_is_mobile() == 1) ? '' : 'card-horizontal'; ?>">
+            <div class="container-img <?php print ($offre->map != 1 || wp_is_mobile() == 1) ? '' : 'col-5 p-0 my-0'; ?>">
+                <img alt="<?php print $offreName; ?>" class="pivot-img card-img-top zoom pivot-img-list" src="<?php print _get_offer_image($offre, 428, 285, 'https://www.destinationcondroz.be/wp-content/uploads/2021/05/Logo-destination-Condroz-Famenne.jpg'); ?>"/>
+                <div class="p-3 position-absolute fixed-top">
+                    <?php print _search_specific_urn_img($offre, 'urn:fld:label:bvvelo', 40, null, true); ?>
+                </div>
+                <div class="p-3 position-absolute fixed-top text-right">
+                    <span class="item-services">
+                        <?php print _search_specific_urn_img($offre, 'urn:fld:eqpsrv:accwebwifi', 20, 'FFFFFF'); ?>
+                        <?php print _search_specific_urn_img($offre, 'urn:fld:pmr', 20, 'FFFFFF'); ?>
+                        <?php print _search_specific_urn_img($offre, 'urn:fld:animauxacc', 20, 'FFFFFF'); ?>
+                    </span>
+                </div>
+            </div>
+            <p class="h6 title-header card-header" <?php print ($offre->map != 1 || wp_is_mobile() == 1) ? '' : 'style="display:none"'; ?>>
+                <a target="_blank" class="text-dark" title="<?php echo __('Link to', 'pivot') . ' ' . $offreName; ?>" href="<?php print $url; ?>">
+                    <?php print $offreName; ?>
+                </a>
             </p>
-          <?php endif; ?>
-        <?php endif; ?>
-        <p class="card-text">
-          <i class="fas fa-map-marker-alt"></i>
-          <?php print $offre->adresse1->cp; ?> 
-          <?php print $offre->adresse1->localite->value->__toString(); ?>
-        </p>
-        <a target="_blank" class="text-dark stretched-link" title="<?php echo __('Link to', 'pivot') .' '. $offreName; ?>" href="<?php print $url; ?>"></a>
-        <span class="pivot-id-type-offre d-none item"><?php print $offre->typeOffre->attributes()->idTypeOffre->__toString(); ?></span>
-        <span class="pivot-code-cgt d-none item"><?php print $codeCGT; ?></span>
-        <span class="pivot-latitude d-none item"><?php print $offre->adresse1->latitude->__toString(); ?></span>
-        <span class="pivot-longitude d-none item"><?php print $offre->adresse1->longitude->__toString(); ?></span>
-      </div>
+            <div class="card-body <?php print ($offre->map != 1 || wp_is_mobile() == 1) ? '' : 'col-7 pt-2 pb-0'; ?>">
+                <p class="h6 title-no-header" <?php print ($offre->map != 1 || wp_is_mobile() == 1) ? 'style="display:none"' : ''; ?>>
+                    <a target="_blank" class="text-dark" title="<?php echo __('Link to', 'pivot') . ' ' . $offreName; ?>" href="<?php print $url; ?>">
+                        <?php print $offreName; ?>
+                    </a>
+                </p>
+                <p class="card-text">
+                    <?php print $offre->typeOffre->label->value->__toString() . '  ' . _get_ranking_picto($offre); ?>
+                </p>
+                <?php $capbase = _get_urn_value($offre, 'urn:fld:capbase'); ?>
+                <?php if (!empty($capbase) && $capbase != 0): ?>
+                  <p class="card-text">
+                      <i class="fas fas-align-right pr-2 fa-bed"></i><?php print $capbase; ?>
+                      <?php $capadd = _get_urn_value($offre, 'urn:fld:capadd'); ?>
+                      <?php if (!empty($capadd) && $capadd != 0): ?>
+                        <?php print ' ' . __('à', 'pivot') . ' ' . ($capbase + $capadd); ?>
+                      <?php endif; ?>
+                  </p>
+                <?php endif; ?>
+                <?php
+                switch ($offre->typeOffre->attributes()->idTypeOffre->__toString()) {
+                  case 1:
+                    $prixmin = _get_urn_value($offre, 'urn:fld:tarifind:pmin:dblptdej');
+                    break;
+                  case 2:
+                  case 4:
+                    $prixmin = _get_urn_value($offre, 'urn:fld:tarifind:pmin:webssais');
+                    break;
+                  case 3:
+                    $prixmin = _get_urn_value($offre, 'urn:fld:tarifind:pmin:ch2pptdej');
+                    break;
+                  case 5:
+                    $prixmin = _get_urn_value($offre, 'urn:fld:tarifind:pmin:emp2a2en');
+                    break;
+                  case 6:
+                  case 7:
+                    $prixmin = _get_urn_value($offre, 'urn:fld:tarifind:pmin');
+                    break;
+                }
+                ?>
+                <?php if (!empty($prixmin) && $prixmin != 0): ?>
+                  <p class="card-text">
+                      <i class="fas fas-align-right pr-2 fa-euro-sign"></i><?php print __('à partir de ', 'pivot') . $prixmin . '€'; ?>
+                  </p>
+                <?php endif; ?>
+                <?php $phone = _get_urn_value($offre, 'urn:fld:phone1'); ?>
+                <?php if ($phone != ''): ?>
+                  <p class="card-text">
+                      <i class="fas fa-phone"></i>
+                      <a href="tel:<?php print $phone; ?>"><?php print $phone; ?></a>
+                  </p>
+                <?php else: ?>
+                  <?php $mobile = _get_urn_value($offre, 'urn:fld:mobi1'); ?>
+                  <?php if ($mobile != ''): ?>
+                    <p class="card-text">
+                        <i class="fas fa-phone"></i>
+                        <a href="tel:<?php print $mobile; ?>"><?php print $mobile; ?></a>
+                    </p>
+                  <?php endif; ?>
+                <?php endif; ?>
+                <p class="card-text">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <?php print $offre->adresse1->cp; ?>
+                    <?php print $offre->adresse1->localite->value->__toString(); ?>
+                </p>
+                <?php print pivot_template('booking-part', $offre); ?>
+                <span class="pivot-id-type-offre d-none item"><?php print $offre->typeOffre->attributes()->idTypeOffre->__toString(); ?></span>
+                <span class="pivot-code-cgt d-none item"><?php print $codeCGT; ?></span>
+                <span class="pivot-latitude d-none item"><?php print $offre->adresse1->latitude->__toString(); ?></span>
+                <span class="pivot-longitude d-none item"><?php print $offre->adresse1->longitude->__toString(); ?></span>
+            </div>
+        </div>
     </div>
-  </div>
-      
+
 </div>

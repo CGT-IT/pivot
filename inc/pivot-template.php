@@ -255,8 +255,7 @@ function pivot_create_fake_post($title, $path, $description, $post_type = 'page'
   $post->filter = 'raw';
 
   $wp_post = new WP_Post($post);
-  wp_cache_add($post_id, $wp_post, 'posts');
-
+//  wp_cache_add($post_id, $wp_post, 'posts');
   // Update the main query
   $wp_query->post = $wp_post;
   $wp_query->posts = array($wp_post);
