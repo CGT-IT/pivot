@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 2.0.4
+ * Version: 2.0.5
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -585,12 +585,6 @@ function _xml_query_construction($query_id = NULL, $field_params = NULL) {
 
     // For event check only those where "date fin publication" is between now and +6month
     if (isset($field_params['page_type']) && $field_params['page_type'] == 'activite') {
-      // temporary fix
-      if (strpos($_SERVER['HTTP_HOST'], 'paysdevesdre') === false) {
-        $field_params['filters']['datefinmax']['name'] = 'urn:fld:date:datefin';
-        $field_params['filters']['datefinmax']['operator'] = 'lesserequal';
-        $field_params['filters']['datefinmax']['searched_value'][] = date("d/m/Y", strtotime('+6 month'));
-      }
       $field_params['filters']['datefinmin']['name'] = 'urn:fld:date:datefin';
       $field_params['filters']['datefinmin']['operator'] = 'greaterequal';
       $field_params['filters']['datefinmin']['searched_value'][] = date("d/m/Y", strtotime('today'));
