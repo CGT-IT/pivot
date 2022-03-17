@@ -5,11 +5,12 @@
     <?php $codeCGT = $offre->attributes()->codeCgt->__toString(); ?>
     <?php $offreName = _get_urn_value($offre, 'urn:fld:nomofr'); ?>
     <?php $lang = substr(get_locale(), 0, 2); ?>
-    <?php $url = get_bloginfo('wpurl') . (($lang == 'fr') ? '' : '/' . $lang) . '/details/' . $codeCGT . '&amp;type=' . $offre->typeOffre->attributes()->idTypeOffre->__toString(); ?>
+    <?php $idTypeOffre = $offre->typeOffre->attributes()->idTypeOffre->__toString(); ?>
+    <?php $url = get_bloginfo('wpurl') . (($lang == 'fr') ? '' : '/' . $lang) . '/details/' . $codeCGT . '&amp;type=' . $idTypeOffre; ?>
     <div class="card text-left pivot-offer">
         <div class="card-orientation <?php print ($offre->map != 1 || wp_is_mobile() == 1) ? '' : 'card-horizontal'; ?>">
             <div class="container-img <?php print ($offre->map != 1 || wp_is_mobile() == 1) ? '' : 'col-5 p-0 my-0'; ?>">
-                <img alt="<?php print $offreName; ?>" class="pivot-img card-img-top zoom pivot-img-list" src="<?php print _get_offer_image($offre, 428, 285, 'https://www.destinationcondroz.be/wp-content/uploads/2021/05/Logo-destination-Condroz-Famenne.jpg'); ?>"/>
+                <img alt="<?php print $offreName; ?>" class="pivot-img card-img-top cover zoom pivot-img-list" src="<?php print _get_offer_default_image($offre, '428', '285'); ?>"/>
                 <div class="p-3 position-absolute fixed-top">
                     <?php print _search_specific_urn_img($offre, 'urn:fld:label:bvvelo', 40, null, true); ?>
                 </div>
@@ -46,7 +47,7 @@
                   </p>
                 <?php endif; ?>
                 <?php
-                switch ($offre->typeOffre->attributes()->idTypeOffre->__toString()) {
+                switch ($idTypeOffre) {
                   case 1:
                     $prixmin = _get_urn_value($offre, 'urn:fld:tarifind:pmin:dblptdej');
                     break;
@@ -92,7 +93,7 @@
                     <?php print $offre->adresse1->localite->value->__toString(); ?>
                 </p>
                 <?php print pivot_template('booking-part', $offre); ?>
-                <span class="pivot-id-type-offre d-none item"><?php print $offre->typeOffre->attributes()->idTypeOffre->__toString(); ?></span>
+                <span class="pivot-id-type-offre d-none item"><?php print $idTypeOffre; ?></span>
                 <span class="pivot-code-cgt d-none item"><?php print $codeCGT; ?></span>
                 <span class="pivot-latitude d-none item"><?php print $offre->adresse1->latitude->__toString(); ?></span>
                 <span class="pivot-longitude d-none item"><?php print $offre->adresse1->longitude->__toString(); ?></span>
