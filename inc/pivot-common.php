@@ -562,7 +562,7 @@ function _add_meta_data($offre, $path, $default_image = null) {
     $descp = get_the_excerpt();
 
     $title = _get_urn_value($offre, 'urn:fld:nomofr');
-    return '<meta name="description" content="' . $descp . '"/>'
+    return '<meta name="description" content="' . $descp . '">'
       . '<meta property="og:url" content="' . $url . '">'
       . '<meta property="og:type" content="article">'
       . '<meta property="og:title" content="' . esc_attr($title) . '">'
@@ -812,7 +812,7 @@ function _get_offer_details($offer_id = NULL, $details = 3, $name = NULL) {
             $offre = $xml_object->offre;
             $url = get_bloginfo('wpurl') . (($lang == 'fr') ? '' : '/' . $lang) . '/details/' . $params['offer_code'] . '&type=' . $offre->typeOffre->attributes()->idTypeOffre->__toString();
             $title = _get_urn_value($offre, 'urn:fld:nomofr');
-            $descmarket = strip_tags(json_encode(_get_urn_value($offre, 'urn:fld:descmarket')));
+            $descmarket = _get_urn_value($offre, 'urn:fld:descmarket');
             pivot_create_fake_post($title, $url, $descmarket, 'post', $offer_id);
             // Prepare data transient
             $data = array('offerid' => $offer_id, 'title' => $title, 'desc' => $descmarket, 'url' => $url, 'content' => json_encode(pivot_template($name, $offre)));
@@ -820,13 +820,13 @@ function _get_offer_details($offer_id = NULL, $details = 3, $name = NULL) {
             set_transient($key, $data, get_option('pivot_transient_time'));
           } else {
             $offre = get_transient($key);
-            pivot_create_fake_post($offre['title'], $offre['url'], json_decode($offre['desc']), 'post', $offre['offerid']);
+            pivot_create_fake_post($offre['title'], $offre['url'], $offre['desc'], 'post', $offre['offerid']);
           }
         } else {
           $xml_object = _pivot_request('offer-details', $details, $params);
           $offre = $xml_object->offre;
           $url = get_bloginfo('wpurl') . (($lang == 'fr') ? '' : '/' . $lang) . '/details/' . $offer_id . '&type=' . $offre->typeOffre->attributes()->idTypeOffre->__toString();
-          pivot_create_fake_post(_get_urn_value($offre, 'urn:fld:nomofr'), $url, strip_tags(_get_urn_value($offre, 'urn:fld:descmarket')), 'post', $offer_id);
+          pivot_create_fake_post(_get_urn_value($offre, 'urn:fld:nomofr'), $url, _get_urn_value($offre, 'urn:fld:descmarket'), 'post', $offer_id);
         }
       }
     }
