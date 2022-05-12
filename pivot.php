@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 2.0.6
+ * Version: 2.0.7
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -410,7 +410,8 @@ function _pivot_request($type, $detail, $params = NULL, $postfields = NULL) {
   // Construct URL depending on query type
   switch ($type) {
     case 'shortcode':
-      $pivot_url .= $params['type'] . '/paginated;itemsperpage=' . $params['items_per_page'] . ';content=' . $detail . $shuffle;
+      $pivot_url .= $params['type'] . ';limit=' . $params['items_per_page'] . ';content=' . $detail . $shuffle;
+      break;
     case 'offer-init-list':
       $pivot_url .= $params['type'] . '/paginated;itemsperpage=' . $params['items_per_page'] . ';content=' . $detail . $shuffle;
       break;
@@ -418,7 +419,7 @@ function _pivot_request($type, $detail, $params = NULL, $postfields = NULL) {
       $pivot_url .= $params['type'] . '/paginated' . $params['token'] . ';content=' . $detail . $shuffle;
       break;
     case 'offer-search':
-      $pivot_url .= $params['type'] . '/paginated;itemsperpage=' . $params['items_per_page'] . ';content=' . $detail . $shuffle;
+      $pivot_url .= $params['type'] . ';limit=' . $params['items_per_page'] . ';content=' . $detail . $shuffle;
       break;
     case 'offer-details':
       $pivot_url .= $params['type'] . '/' . $params['offer_code'] . ';content=' . $detail;
@@ -439,7 +440,8 @@ function _pivot_request($type, $detail, $params = NULL, $postfields = NULL) {
     curl_setopt($request, CURLOPT_URL, $pivot_url);
     curl_setopt($request, CURLOPT_SSL_VERIFYHOST, 0);
     curl_setopt($request, CURLOPT_SSL_VERIFYPEER, 0);
-    curl_setopt($request, CURLOPT_CONNECTTIMEOUT, 160);
+    curl_setopt($request, CURLOPT_CONNECTTIMEOUT, 120);
+    curl_setopt($request, CURLOPT_TIMEOUT, 120);
     curl_setopt($request, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($request, CURLOPT_RETURNTRANSFER, 1);
     if ($postfields != NULL) {
@@ -758,95 +760,102 @@ function pivot_lodging_page($page_id, $details = 2, $offers_per_page = null) {
  * @return string part of HTML to display
  */
 function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $page_id = NULL, $details = 2) {
-  // Define query type
-  $params['type'] = 'query';
-  if ($page_id != NULL) {
-    if (is_numeric($page_id)) {
-      $params['page_id'] = $page_id;
-      // build transient key to store page token
-      $key = 'pivot_page_token_' . $page_id;
+  if ($case != 'offer-search') {
+    // Define query type
+    $params['type'] = 'query';
+    if ($page_id != NULL) {
+      if (is_numeric($page_id)) {
+        $params['page_id'] = $page_id;
+        // build transient key to store page token
+        $key = 'pivot_page_token_' . $page_id;
+      } else {
+        // build transient key to store shortcode token
+        // page_id = query ID in this case
+        $key = 'pivot_shortcode_token_' . $page_id;
+        $shortcode = true;
+      }
+      // get token from transient if there is one
+      $stored_token = get_transient($key);
     } else {
-      // build transient key to store shortcode token
-      // page_id = query ID in this case
-      $key = 'pivot_shortcode_token_' . $page_id;
-      $shortcode = true;
+      $stored_token = false;
     }
-    // get token from transient if there is one
-    $stored_token = get_transient($key);
-  } else {
-    $stored_token = false;
-  }
 
-  // Get current page number (start with 0)
-  if (($pos = strpos($_SERVER['REQUEST_URI'], "paged=")) !== FALSE) {
-    $page_number = substr($_SERVER['REQUEST_URI'], $pos + 6);
-    $current_page = (int) filter_var($page_number, FILTER_SANITIZE_NUMBER_INT);
-  } else {
-    $current_page = 1;
-  }
-  // In case there is a shortcode with offers included in a pivot page.
-  // don't take page argument, reset to 1.
-  if (isset($shortcode) && $shortcode === true) {
-    $current_page = 1;
-    $params['shortcode'] = true;
-  }
+    // Get current page number (start with 0)
+    if (($pos = strpos($_SERVER['REQUEST_URI'], "paged=")) !== FALSE) {
+      $page_number = substr($_SERVER['REQUEST_URI'], $pos + 6);
+      $current_page = (int) filter_var($page_number, FILTER_SANITIZE_NUMBER_INT);
+    } else {
+      $current_page = 1;
+    }
+    // In case there is a shortcode with offers included in a pivot page.
+    // don't take page argument, reset to 1.
+    if (isset($shortcode) && $shortcode === true) {
+      $current_page = 1;
+      $params['shortcode'] = true;
+    }
 
-  // Check current page.
-  // If 0 we need to define params to get all offers (depending on filters)
-  if ($current_page == 1 || $stored_token === false) {
-    if ($current_page > 1 && !isset($_SESSION['pivot'][$page_id]['token']) && $page_id != 999) {
-      print _show_warning('Token has been lost, reload first page');
-    }
-    // Define number of offers per page
-    $params['items_per_page'] = $offers_per_page;
+    // Check current page.
+    // If 0 we need to define params to get all offers (depending on filters)
+    if ($current_page == 1 || $stored_token === false) {
+      if ($current_page > 1 && !isset($_SESSION['pivot'][$page_id]['token']) && $page_id != 999) {
+        print _show_warning('Token has been lost, reload first page');
+      }
+      // Define number of offers per page
+      $params['items_per_page'] = $offers_per_page;
 
-    if ($page_id != NULL && is_numeric($page_id) && $page_id != 999) {
-      $page = pivot_get_page($page_id);
-    }
-    if (isset($page->sortMode) && $page->sortMode == 'shuffle') {
-      $params['shuffle'] = TRUE;
-    }
-    // If no filter, then same page for everyone, get initial token
-    if ((!isset($_SESSION['pivot']['filters'][$page_id]) || count(($_SESSION['pivot']['filters'][$page_id])) == 0)) {
-      if ($stored_token === false) {
-        $xml_object = _pivot_request('offer-init-list', $details, $params, $xml_query);
-        if (is_object($xml_object) && isset($key)) {
-          if (isset($page) && $page->type != 'activite') {
-            // store token in transient with a validity of 1 day
-            set_transient($key, $xml_object->attributes()->token->__toString(), 86400);
-          } else {
-            // store token in transient with a validity of 12h
-            set_transient($key, $xml_object->attributes()->token->__toString(), 43200);
+      if ($page_id != NULL && is_numeric($page_id) && $page_id != 999) {
+        $page = pivot_get_page($page_id);
+      }
+      if (isset($page->sortMode) && $page->sortMode == 'shuffle') {
+        $params['shuffle'] = TRUE;
+      }
+      // If no filter, then same page for everyone, get initial token
+      if ((!isset($_SESSION['pivot']['filters'][$page_id]) || count(($_SESSION['pivot']['filters'][$page_id])) == 0)) {
+        if ($stored_token === false) {
+          $xml_object = _pivot_request('offer-init-list', $details, $params, $xml_query);
+          if (is_object($xml_object) && isset($key)) {
+            if (isset($page) && $page->type != 'activite') {
+              // store token in transient with a validity of 1 day
+              set_transient($key, $xml_object->attributes()->token->__toString(), 86400);
+            } else {
+              // store token in transient with a validity of 12h
+              set_transient($key, $xml_object->attributes()->token->__toString(), 43200);
+            }
           }
+        } else {
+          $params['token'] = '/' . $stored_token . '/' . $current_page;
+          $xml_object = _pivot_request('offer-pager', $details, $params);
+        }
+        if (is_object($xml_object) && $page_id != 999) {
+          // Store number of offers
+          $_SESSION['pivot'][$page_id]['nb_offres'] = str_replace(',', '', $xml_object->attributes()->count->__toString());
         }
       } else {
-        $params['token'] = '/' . $stored_token . '/' . $current_page;
-        $xml_object = _pivot_request('offer-pager', $details, $params);
-      }
-      if (is_object($xml_object) && $page_id != 999) {
-        // Store number of offers
-        $_SESSION['pivot'][$page_id]['nb_offres'] = str_replace(',', '', $xml_object->attributes()->count->__toString());
+        // Get offers
+        $xml_object = _pivot_request('offer-init-list', $details, $params, $xml_query);
+        if (is_object($xml_object) && $page_id != 999) {
+          // Store number of offers
+          $_SESSION['pivot'][$page_id]['nb_offres'] = str_replace(',', '', $xml_object->attributes()->count->__toString());
+          // Store the token to get next x items
+          $_SESSION['pivot'][$page_id]['token'] = $xml_object->attributes()->token->__toString();
+        }
       }
     } else {
-      // Get offers
-      $xml_object = _pivot_request('offer-init-list', $details, $params, $xml_query);
-      if (is_object($xml_object) && $page_id != 999) {
-        // Store number of offers
-        $_SESSION['pivot'][$page_id]['nb_offres'] = str_replace(',', '', $xml_object->attributes()->count->__toString());
-        // Store the token to get next x items
-        $_SESSION['pivot'][$page_id]['token'] = $xml_object->attributes()->token->__toString();
+      if ((!isset($_SESSION['pivot']['filters'][$page_id]) || count(($_SESSION['pivot']['filters'][$page_id])) == 0)) {
+        $params['token'] = '/' . $stored_token . '/' . $current_page;
+      } else {
+        $params['token'] = '/' . $_SESSION['pivot'][$page_id]['token'] . '/' . $current_page;
       }
+      // Get offers
+      $xml_object = _pivot_request('offer-pager', $details, $params);
     }
   } else {
-    if ((!isset($_SESSION['pivot']['filters'][$page_id]) || count(($_SESSION['pivot']['filters'][$page_id])) == 0)) {
-      $params['token'] = '/' . $stored_token . '/' . $current_page;
-    } else {
-      $params['token'] = '/' . $_SESSION['pivot'][$page_id]['token'] . '/' . $current_page;
-    }
-    // Get offers
-    $xml_object = _pivot_request('offer-pager', $details, $params);
+    $params['type'] = 'query';
+    $params['items_per_page'] = $offers_per_page;
+    $params['shortcode'] = true;
+    $params['shuffle'] = false;
+    $xml_object = _pivot_request('offer-search', $details, $params, $xml_query);
   }
-
   if (is_object($xml_object)) {
     $offres = $xml_object->offre;
   } else {

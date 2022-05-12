@@ -243,7 +243,12 @@ function pivot_create_fake_post($title, $path, $description, $post_type = 'page'
   $post->post_date = current_time('mysql');
   $post->post_date_gmt = current_time('mysql', 1);
   $post->post_title = $title;
-  $post->post_excerpt = $description;
+
+  $descp = strip_tags($description);
+  $descp = strip_shortcodes($descp);
+  $descp = ((strlen($descp) > 160) ? substr($descp, 0, strpos($descp, ' ', 160)) : $descp);
+
+  $post->post_excerpt = $descp;
   $post->post_content = '';
   $post->post_status = 'publish';
   $post->comment_status = 'closed';

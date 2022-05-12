@@ -439,6 +439,37 @@ function _get_linked_mt($commune) {
  * @param string $selected_value = selected option
  * @return string = list of HTML option
  */
+function _get_commune($mt_id) {
+  // Construction of request uri
+  $uri = get_option('pivot_uri') . 'thesaurus/tins/mdt/' . $mt_id . ';fmt=xml';
+  $ssl_options = array(
+    "ssl" => array(
+      "verify_peer" => false,
+      "verify_peer_name" => false,
+    ),
+  );
+
+  $xml_response = file_get_contents($uri, false, stream_context_create($ssl_options));
+  $communes = simplexml_load_string($xml_response);
+
+  // Init vars
+  $commune_list = array();
+  // Construct list
+  foreach ($communes as $commune) {
+    if ($commune->commune->attributes()->__toString() == 'fr' && !in_array($commune->commune->value->__toString(), $commune_list)) {
+      $commune_list[] = $commune->commune->value->__toString();
+    }
+  }
+  return $commune_list;
+}
+
+/**
+ *
+ * @param string $type
+ * @param string $value
+ * @param string $selected_value = selected option
+ * @return string = list of HTML option
+ */
 function _get_commune_from_pivot($type, $value, $selected_value = NULL) {
   // Construction of request uri
   $uri = get_option('pivot_uri') . 'thesaurus/tins/' . $type . '/' . $value . ';pretty=true;fmt=xml';
@@ -508,7 +539,10 @@ function _overide_yoast_seo_meta_data($offre, $path) {
     $offre_meta_data['title'] = _get_urn_value($offre, 'urn:fld:nomofr');
     $offre_meta_data['type'] = 'article';
     $offre_meta_data['url'] = $url;
-    $offre_meta_data['description'] = wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket'));
+
+    $descp = get_the_excerpt();
+
+    $offre_meta_data['description'] = $descp;
     $offre_meta_data['updated_time'] = $offre->attributes()->dateModification->__toString();
     $offre_meta_data['published_time'] = $offre->attributes()->dateCreation->__toString();
     $offre_meta_data['modified_time'] = $offre->attributes()->dateModification->__toString();
@@ -526,12 +560,13 @@ function _add_meta_data($offre, $path, $default_image = null) {
   $url = get_bloginfo('wpurl') . '/' . $path . '/' . $offre->attributes()->codeCgt->__toString() . '&type=' . $offre->typeOffre->attributes()->idTypeOffre->__toString();
   if (isset($offre) && is_object($offre)) {
     $descp = get_the_excerpt();
+
     $title = _get_urn_value($offre, 'urn:fld:nomofr');
-    return '<meta name="description" content="' . esc_attr(((strlen($descp) > 160) ? substr($descp, 0, strpos($descp, ' ', 160)) : $descp)) . '"/>'
+    return '<meta name="description" content="' . $descp . '"/>'
       . '<meta property="og:url" content="' . $url . '">'
       . '<meta property="og:type" content="article">'
       . '<meta property="og:title" content="' . esc_attr($title) . '">'
-      . '<meta property="og:description" content="' . esc_attr(((strlen($descp) > 160) ? substr($descp, 0, strpos($descp, ' ', 160)) : $descp)) . '">'
+      . '<meta property="og:description" content="' . $descp . '">'
       . '<meta property="og:updated_time" content="' . $offre->attributes()->dateModification->__toString() . '">'
       . '<meta property="og:image" content="' . $default_image . '">'
       . '<meta name="twitter:card" content="summary_large_image">'
@@ -551,9 +586,9 @@ function _add_meta_data($offre, $path, $default_image = null) {
 function _add_meta_data_list_page($pivot_page) {
   if (isset($pivot_page) && is_object($pivot_page)) {
     $url = get_bloginfo('wpurl') . '/' . $pivot_page->path;
-//    $descp = preg_replace("/[^A-Za-z0-9 ]/", '', wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket')));
-    $descp = wp_strip_all_tags($pivot_page->description, true);
-    return '<meta name="description" content="' . esc_attr(((strlen($descp) > 160) ? substr($descp, 0, strpos($descp, ' ', 160)) : $descp)) . '"/>'
+    $descp = get_the_excerpt();
+
+    return '<meta name="description" content="' . $descp . '"/>'
       . '<meta property="og:url" content="' . $url . '">'
       . '<meta property="og:type" content="page">'
       . '<meta property="og:title" content="' . esc_attr(__($pivot_page->title, 'pivot')) . '">'
@@ -577,7 +612,7 @@ function _pivot_create_alternate_link() {
   $languages = icl_get_languages();
   $current_url = home_url($wp->request);
   foreach ($languages as $lang) {
-    $output .= '<link rel="alternate" hreflang="' . $lang['language_code'] . '" href="' . apply_filters('wpml_permalink', $current_url, $lang['language_code']) . '">';
+    $output .= '<link rel="alternate" hreflang="' . $lang['default_locale'] . '" href="' . apply_filters('wpml_permalink', $current_url, $lang['language_code']) . '">';
   }
   return $output;
 }
