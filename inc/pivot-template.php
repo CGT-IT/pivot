@@ -246,7 +246,7 @@ function pivot_create_fake_post($title, $path, $description, $post_type = 'page'
 
   $descp = strip_tags($description);
   $descp = strip_shortcodes($descp);
-  $descp = ((strlen($descp) > 160) ? substr($descp, 0, strpos($descp, ' ', 160)) : $descp);
+  $descp = ((strlen($descp) > 160) ? substr($descp, 0, 160) : $descp);
 
   $post->post_excerpt = $descp;
   $post->post_content = '';

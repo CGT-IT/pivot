@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 2.1.0
+ * Version: 2.1.1
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -815,14 +815,18 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
     // If no filter, then same page for everyone, get initial token
     if ((!isset($_SESSION['pivot']['filters'][$page_id]) || count(($_SESSION['pivot']['filters'][$page_id])) == 0)) {
       if ($stored_token === false) {
-        $xml_object = _pivot_request('offer-init-list', $details, $params, $xml_query);
-        if (is_object($xml_object) && isset($key)) {
-          if (isset($page) && $page->type != 'activite') {
-            // store token in transient with a validity of 1 day
-            set_transient($key, $xml_object->attributes()->token->__toString(), 86400);
-          } else {
-            // store token in transient with a validity of 12h
-            set_transient($key, $xml_object->attributes()->token->__toString(), 43200);
+        if ($case == 'shortcode') {
+          $xml_object = _pivot_request($case, $details, $params, $xml_query);
+        } else {
+          $xml_object = _pivot_request('offer-init-list', $details, $params, $xml_query);
+          if (is_object($xml_object) && isset($key)) {
+            if (isset($page) && $page->type != 'activite') {
+              // store token in transient with a validity of 1 day
+              set_transient($key, $xml_object->attributes()->token->__toString(), 86400);
+            } else {
+              // store token in transient with a validity of 12h
+              set_transient($key, $xml_object->attributes()->token->__toString(), 43200);
+            }
           }
         }
       } else {
