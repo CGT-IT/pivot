@@ -67,7 +67,7 @@ function pivot_custom_shortcode_slider($atts) {
     $template_name = 'pivot-shortcode-slider-template';
 
     // Get offers
-    $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query, $atts['query']);
+    $offres = pivot_construct_output('shortcode', $atts['nboffers'], $xml_query, $atts['query']);
 
     if (is_object($offres)) {
       // Open HTML balises
@@ -145,7 +145,7 @@ function pivot_custom_shortcode_event_slider($atts) {
     $template_name = 'pivot-eventslider-details-part-template';
 
     // Get offers
-    $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query, $atts['query']);
+    $offres = pivot_construct_output('shortcode', $atts['nboffers'], $xml_query, $atts['query']);
 
     if (is_object($offres)) {
       // Open HTML balises
@@ -237,7 +237,7 @@ function pivot_custom_shortcode_orc_list($atts) {
     $template_name = 'pivot-orc-list-template';
 
     // Get offers
-    $offres = pivot_construct_output('offer-search', 1000, $xml_query, $atts['query']);
+    $offres = pivot_construct_output('shortcode', 1000, $xml_query, $atts['query']);
 
     // Add main HTML content in output
     $output .= pivot_template($template_name, $offres);
@@ -354,7 +354,7 @@ function pivot_custom_shortcode_event($atts) {
     $template_name = 'pivot-activite-details-part-template';
 
     // Get offers
-    $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query, $atts['query']);
+    $offres = pivot_construct_output('shortcode', $atts['nboffers'], $xml_query, $atts['query']);
     if (is_object($offres)) {
       $output = '<div class="container-fluid pivot-list">'
         . '<div class="row row-eq-height pivot-row d-flex flex-wrap">';
@@ -501,7 +501,7 @@ function pivot_custom_shortcode($atts) {
        * $atts['query'] > to identify
        * + $atts['filterurn'] + $atts['filtervalue'] > to be sure it's unique in case a shortcode with the same query is used in multiple place with differents filters
        */
-      $offres = pivot_construct_output('offer-search', $atts['nboffers'], $xml_query, $atts['query'] . $atts['filterurn'] . $atts['filtervalue'], $atts['details']);
+      $offres = pivot_construct_output('shortcode', $atts['nboffers'], $xml_query, $atts['query'] . $atts['filterurn'] . $atts['filtervalue'], $atts['details']);
 
       if (is_object($offres)) {
         $output = '<div class="container-fluid pivot-list">';
