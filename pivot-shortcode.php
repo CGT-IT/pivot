@@ -573,7 +573,7 @@ function pivot_build_shortcode_box_html() {
   </div>
 
   <div class="form-item form-item-pivot-nb-col">
-      <label for="edit-pivot-nb-col"><?php esc_html_e('Define number of offers per line', 'pivot') ?> </label>
+      <label for="edit-pivot-nb-col"><?php esc_html_e('Define number of column', 'pivot') ?> </label>
       <input type="number" id="edit-pivot-nb-col" name="nb-col" min="2" max="6">
       <p class="description"><?php esc_html_e('It will be 4 by default', 'pivot') ?></p>
   </div>
