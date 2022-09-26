@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 2.1.2
+ * Version: 2.1.3
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -198,6 +198,9 @@ function plugin_upgrade() {
   if (get_option('pivot_db_version') < 210) {
     pivot_upgrade_210();
   }
+  if (get_option('pivot_db_version') < 220) {
+    pivot_upgrade_220();
+  }
 }
 
 add_action('plugins_loaded', 'plugin_upgrade');
@@ -230,6 +233,27 @@ function pivot_upgrade_210() {
     ");
 
   update_option('pivot_db_version', 210);
+}
+
+function pivot_upgrade_220() {
+  global $wpdb;
+
+  $table_name = $wpdb->prefix . 'pivot_filter';
+
+  $wpdb->query(
+    "ALTER TABLE $table_name
+     ADD COLUMN `filter_title_nl` varchar(200) NOT NULL
+    ");
+  $wpdb->query(
+    "ALTER TABLE $table_name
+     ADD COLUMN `filter_title_en` varchar(200) NOT NULL
+    ");
+  $wpdb->query(
+    "ALTER TABLE $table_name
+     ADD COLUMN `filter_title_de` varchar(200) NOT NULL
+    ");
+
+  update_option('pivot_db_version', 220);
 }
 
 function pivot_deactivation() {

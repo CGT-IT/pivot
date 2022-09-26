@@ -1,6 +1,10 @@
 .error404 .ast-container{
     max-width: 100%;
 }  
+#map{
+    width: 500px;
+    height: 500px;
+}
 #mapid {
     width: 100%!important;
 }
@@ -98,6 +102,17 @@ aside.pivot-contacts.col-md-4{
     padding: 3px;
     font-style: oblique;
     background: black;
+}
+#pivotCarousel{
+    height: 645px;
+    overflow: hidden;
+}
+#pivotCarousel img.pivot-img.pivot-img-details {
+    object-fit: cover;
+    height: 645px;
+}
+#pivotCarousel img.pivot-img.pivot-img-details.landscape {
+    width: 100%;
 }
 .pivot-equipments .table > tbody > tr > td {
     border-top: none;
