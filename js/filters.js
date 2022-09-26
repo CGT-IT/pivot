@@ -33,11 +33,24 @@
       dataType: "json",
       success: function(data) {
         for (i in data.spec[0].label) {
-          if(data.spec[0].label[i].lang === 'fr' && data.spec[0].label[i].value !== 'Accueil'){
-            // Fill "filter title" with value from Pivot
-            $('#edit-pivot-filter-title').val(data.spec[0].label[i].value);
-            $('#filter-urn-infos').show();
-          }
+            console.log(data.spec[0].label[i]);
+            if(data.spec[0].label[i].value !== 'Accueil'){
+                switch(data.spec[0].label[i].lang){
+                    case 'fr':
+                        $('#edit-pivot-filter-title').val(data.spec[0].label[i].value);
+                        break;
+                    case 'nl':
+                        $('#edit-pivot-filter-title-nl').val(data.spec[0].label[i].value);
+                        break;
+                    case 'en':
+                        $('#edit-pivot-filter-title-en').val(data.spec[0].label[i].value);
+                        break;
+                    case 'de':
+                        $('#edit-pivot-filter-title-de').val(data.spec[0].label[i].value);
+                        break;
+                }
+                $('#filter-urn-infos').show();
+            }
         }
         switch_decision(data);
       }
