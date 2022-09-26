@@ -206,17 +206,32 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL) {
     $output .= '<div class="filter-group text-uppercase font-weight-bolder p-2 mb-2 mt-2 bg-light">' . __($group, 'pivot') . '</div>';
   }
   // check if current language is different from fr
-  if (substr(get_locale(), 0, 2) != 'fr') {
+  $lang = substr(get_locale(), 0, 2);
+  if ($lang != 'fr') {
     // Check if filter title is translated in WPML
     if ($filter->filter_title != __($filter->filter_title, 'pivot')) {
       $title = __($filter->filter_title, 'pivot');
     } else {
       // Otherwise, Get translated title from Pivot
-      if (empty(_get_urn_documentation($filter->urn))) {
-        // If Pivot translation is empty, display title event if same in differents languages
-        $title = __($filter->filter_title, 'pivot');
-      } else {
+      switch ($lang) {
+        case 'nl':
+          $title_translated = $filter->filter_title_nl;
+          break;
+        case 'en':
+          $title_translated = $filter->filter_title_nl;
+          break;
+        case 'de':
+          $title_translated = $filter->filter_title_nl;
+          break;
+        default:
+          $title_translated = $filter->filter_title;
+          break;
+      }
+      if (empty($title_translated)) {
+        // If Pivot translation is empty, display title even if same in differents languages
         $title = _get_urn_documentation($filter->urn);
+      } else {
+        $title = $title_translated;
       }
     }
   } else {
@@ -227,7 +242,7 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL) {
       $output .= '<div class="pl-2 form-item form-item-' . $filter->filter_name . '">'
         . '<label title="" data-toggle="tooltip" class="control-label" for="edit-' . $filter->filter_name . '" data-original-title="Filter on ' . $title . '">'
         . '<input type="checkbox" id="edit-' . $filter->filter_name . '" name="' . $filter->id . '"  class="form-checkbox"' . (isset($_SESSION['pivot']['filters'][$page_id][$filter->id]) ? 'checked' : '') . '> '
-        . '<img heiht="12px" width="12px" class="pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $filter->urn . ';h=12"> ' . $title
+        . $title
         . '</label>'
         . '</div>';
 
@@ -238,7 +253,7 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL) {
       $output .= '<div class="pl-2 form-item form-item-' . $filter->filter_name . '">'
         . '<label title="" data-toggle="tooltip" class="control-label" for="edit-' . $filter->filter_name . '" data-original-title="Filter on ' . $title . '">'
         . '<input type="checkbox" id="edit-' . $filter->filter_name . '" name="' . $filter->id . '"  class="form-checkbox"' . (isset($_SESSION['pivot']['filters'][$page_id][$filter->id]) ? 'checked' : '') . '> '
-        . '<img class="pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $filter->urn . ';h=12"> ' . $title
+        . $title
         . '</label>'
         . '</div>';
       return $output;
