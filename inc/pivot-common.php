@@ -166,10 +166,11 @@ function _search_specific_urn_img($offre, $urn, $height, $color = '', $original 
     if ($specification->attributes()->urn->__toString() == $urn) {
       // add specific class to allow overriding. Replace : by -
       $output = '<span class="item-service ' . str_replace(":", "-", $urn) . '">';
+      $urn_doc = _get_urn_documentation($urn);
       // prepare img title attribute
-      $title_attribute = 'title="' . _get_urn_documentation($urn) . '"';
+      $title_attribute = 'title="' . $urn_doc . '"';
       // prepare img alt attribute
-      $alt_attribute = 'alt="image ' . _get_urn_documentation($urn) . '"';
+      $alt_attribute = 'alt="image ' . $urn_doc . '"';
 
       // Construct <img/> tag
       $img = '<img ' . $title_attribute . ' ' . $alt_attribute . ' class="pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $urn . ';h=' . $height;
