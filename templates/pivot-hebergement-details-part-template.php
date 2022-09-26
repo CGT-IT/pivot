@@ -3,34 +3,24 @@
 
 <div class="offers-area-col <?php print _set_nb_col($offre->map, $offre->nb_per_row) . 'nb-col-' . $offre->nb_per_row; ?> mb-3">
     <?php $codeCGT = $offre->attributes()->codeCgt->__toString(); ?>
-    <?php $offreName = _get_urn_value($offre, 'urn:fld:nomofr'); ?>
-    <?php $lang = substr(get_locale(), 0, 2); ?>
     <?php $idTypeOffre = $offre->typeOffre->attributes()->idTypeOffre->__toString(); ?>
+    <?php $offerTitle = _get_urn_value($offre, 'urn:fld:nomofr'); ?>
+    <?php $lang = substr(get_locale(), 0, 2); ?>
     <?php $url = get_bloginfo('wpurl') . (($lang == 'fr') ? '' : '/' . $lang) . '/details/' . $codeCGT . '&amp;type=' . $idTypeOffre; ?>
     <div class="card text-left pivot-offer">
         <div class="card-orientation <?php print ($offre->map != 1 || wp_is_mobile() == 1) ? '' : 'card-horizontal'; ?>">
-            <div class="container-img <?php print ($offre->map != 1 || wp_is_mobile() == 1) ? '' : 'col-5 p-0 my-0'; ?>">
-                <img alt="<?php print $offreName; ?>" class="pivot-img card-img-top cover zoom pivot-img-list" src="<?php print _get_offer_default_image($offre, '428', '285'); ?>"/>
-                <div class="p-3 position-absolute fixed-top">
-                    <?php print _search_specific_urn_img($offre, 'urn:fld:label:bvvelo', 40, null, true); ?>
-                </div>
-                <div class="p-3 position-absolute fixed-top text-right">
-                    <span class="item-services">
-                        <?php print _search_specific_urn_img($offre, 'urn:fld:eqpsrv:accwebwifi', 20, 'FFFFFF'); ?>
-                        <?php print _search_specific_urn_img($offre, 'urn:fld:pmr', 20, 'FFFFFF'); ?>
-                        <?php print _search_specific_urn_img($offre, 'urn:fld:animauxacc', 20, 'FFFFFF'); ?>
-                    </span>
-                </div>
+            <div class="container-img embed-responsive embed-responsive-16by9 <?php print ($offre->map != 1 || wp_is_mobile() == 1) ? '' : 'col-5 p-0 my-auto'; ?>" >
+                <img alt="<?php print $offerTitle; ?>" class="embed-responsive-item pivot-img card-img-top zoom pivot-img-list" src="<?php print _get_offer_default_image($offre); ?>"/>
             </div>
             <p class="h6 title-header card-header" <?php print ($offre->map != 1 || wp_is_mobile() == 1) ? '' : 'style="display:none"'; ?>>
-                <a target="_blank" class="text-dark" title="<?php echo __('Link to', 'pivot') . ' ' . $offreName; ?>" href="<?php print $url; ?>">
-                    <?php print $offreName; ?>
+                <a target="_blank" class="text-dark" title="<?php echo __('Link to', 'pivot') . ' ' . $offerTitle; ?>" href="<?php print $url; ?>">
+                    <?php print $offerTitle; ?>
                 </a>
             </p>
             <div class="card-body <?php print ($offre->map != 1 || wp_is_mobile() == 1) ? '' : 'col-7 pt-2 pb-0'; ?>">
                 <p class="h6 title-no-header" <?php print ($offre->map != 1 || wp_is_mobile() == 1) ? 'style="display:none"' : ''; ?>>
-                    <a target="_blank" class="text-dark" title="<?php echo __('Link to', 'pivot') . ' ' . $offreName; ?>" href="<?php print $url; ?>">
-                        <?php print $offreName; ?>
+                    <a target="_blank" class="text-dark" title="<?php echo __('Link to', 'pivot') . ' ' . $offerTitle; ?>" href="<?php print $url; ?>">
+                        <?php print $offerTitle; ?>
                     </a>
                 </p>
                 <p class="card-text">
