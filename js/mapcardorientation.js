@@ -16,23 +16,23 @@
           $('.offers-area-col').each(function(){
             if($(this).hasClass('nb-col-2')){
               $(this).toggleClass("col-12");
-              $(this).toggleClass("col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12");  
+              $(this).toggleClass("col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12 col-12");  
             }
             if($(this).hasClass('nb-col-3')){
               $(this).toggleClass("col-12");
-              $(this).toggleClass("col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12");  
+              $(this).toggleClass("col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12 col-12");  
             }
             if($(this).hasClass('nb-col-4')){
               $(this).toggleClass("col-12");
-              $(this).toggleClass("col-xl-3 col-lg-4 col-md-6 col-sm-6 col-xs-12");  
+              $(this).toggleClass("col-xl-3 col-lg-4 col-md-6 col-sm-6 col-xs-12 col-12");  
             }
             if($(this).hasClass('nb-col-5')){
               $(this).toggleClass("col-12");
-              $(this).toggleClass("w-xl-20 w-lg-20 w-md-20 w-sm-20 w-20");  
+              $(this).toggleClass("w-xl-20 w-lg-20 w-md-20 w-sm-20 w-20 col-12");  
             }
             if($(this).hasClass('nb-col-6')){
               $(this).toggleClass("col-12");
-              $(this).toggleClass("col-xl-2 col-lg-2 col-md-6 col-sm-6 col-xs-12");  
+              $(this).toggleClass("col-xl-2 col-lg-2 col-md-6 col-sm-6 col-xs-12 col-12");  
             }
             $(this).find(".card-orientation").toggleClass("card-horizontal");
             $(this).find(".container-img").toggleClass("col-5 p-0 my-auto");
@@ -81,11 +81,11 @@ function map_call(){
       // Construction of a point
       var point = [latitude,longitude];
       // Get offer details
-      var offerTitle = $(this).find('h6.card-header').text();
+      var offerTitle = $(this).find('.title-header').text();
       var contentString = "<div class='card' style='width: 13rem;'>"
                 +"<img src='https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/"+$(this).find('.pivot-code-cgt').text()+";w=193;h=128' class='card-img-top'>"
                 +"<div class='card-body text-center'>"
-                  +"<a target='_blank' href='"+$(this).find('a').attr("href")+"'><h6 class='card-title'>"+offerTitle+"</h6></a>"
+                  +"<a target='_blank' href='"+$(this).find('a').attr("href")+"'><p class='card-title'>"+offerTitle+"</p></a>"
                 +"</div>"
             +"</div>";
 
