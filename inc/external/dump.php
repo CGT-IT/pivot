@@ -1,17 +1,16 @@
-<?php 
+<?php
 
-if (isset($_GET['export']) && $_GET['export'] == 'dump'){
-  $results = $wpdb->get_results("SELECT urn, operator, filter_title, filter_group FROM ".$wpdb->prefix."pivot_filter WHERE page_id = ".$_GET['page_id']." ORDER BY filter_title ASC");
+if (isset($_GET['export']) && $_GET['export'] == 'dump') {
+  $results = $wpdb->get_results("SELECT urn, operator, filter_title, filter_title_nl, filter_title_en, filter_title_de, filter_group FROM " . $wpdb->prefix . "pivot_filter WHERE page_id = " . $_GET['page_id'] . " ORDER BY filter_title ASC");
 
   // Process report request
-  if(!$results){
+  if (!$results) {
     $error = $wpdb->print_error();
     die("The following error was found: $error");
-  }else{
+  } else {
     // Prepare our csv download
-
     // Set header row values
-    $output_filename = 'filters_export_'.date("Y-m-d").'.csv';
+    $output_filename = 'filters_export_' . date("Y-m-d") . '.csv';
     $output_handle = @fopen('php://output', 'w');
 
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
@@ -19,15 +18,15 @@ if (isset($_GET['export']) && $_GET['export'] == 'dump'){
     header('Content-type:application/csv;charset=UTF-8');
     header('Content-Disposition: attachment; filename=' . $output_filename);
     header('Expires: 0');
-    header('Pragma: public');	
+    header('Pragma: public');
 
     $first = true;
     // Parse results to csv format
     foreach ($results as $row) {
       // Add table headers
-      if($first){
+      if ($first) {
         $titles = array();
-        foreach($row as $key=>$val){
+        foreach ($row as $key => $val) {
           $titles[] = $key;
         }
         fputcsv($output_handle, $titles);
@@ -36,11 +35,11 @@ if (isset($_GET['export']) && $_GET['export'] == 'dump'){
 
       $leadArray = (array) $row; // Cast the Object to an array
       // Add row to file
-      fputcsv( $output_handle, $leadArray );
+      fputcsv($output_handle, $leadArray);
     }
 
     // Close output file stream
-    fclose( $output_handle ); 
+    fclose($output_handle);
 
     die();
   }
