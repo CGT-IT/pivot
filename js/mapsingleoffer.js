@@ -42,7 +42,7 @@ function map_call(){
       arrayOfLatLngs.push(point);
 
       // Get point icon from Pivot
-      var image = 'https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/urn:typ:'+$(this).find('.pivot-id-type-offre').text()+';modifier=pin;modifier=ori;w=30';
+      var image = 'https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/urn:typ:'+$(this).find('.pivot-id-type-offre:first').text()+';modifier=pin;modifier=ori;w=30';
       var pointIcon = L.icon({
         iconUrl: image,
       });
