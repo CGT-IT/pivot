@@ -173,7 +173,7 @@ function _search_specific_urn_img($offre, $urn, $height, $color = '', $original 
       $alt_attribute = 'alt="image ' . $urn_doc . '"';
 
       // Construct <img/> tag
-      $img = '<img ' . $title_attribute . ' ' . $alt_attribute . ' class="pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $urn . ';h=' . $height;
+      $img = '<img height="' . $height . '"' . $title_attribute . ' ' . $alt_attribute . ' class="pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $urn . ';h=' . $height;
       if (!empty($color) && $color != '') {
         $img .= ';c=' . $color;
       }

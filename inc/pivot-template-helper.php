@@ -85,7 +85,7 @@ function _add_section_language($offre) {
   foreach ($offre->spec as $specification) {
     if ($specification->urnSubCat->__toString() == 'urn:cat:accueil:langpar') {
       $language = _get_urn_documentation($specification->attributes()->urn->__toString());
-      $content .= '<img alt="' . __('Language(s)', 'pivot') . ' ' . $language . '" title="' . $language . '"class="p-1 pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $specification->attributes()->urn->__toString() . ';h=30"/>';
+      $content .= '<img alt="' . __('Language(s)', 'pivot') . ' ' . $language . '" title="' . $language . '"class="p-1 pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $specification->attributes()->urn->__toString() . ';h=30" width="30" height="30"/>';
     }
   }
   // Check if there is well something to display
@@ -109,7 +109,7 @@ function _add_section_themes($offre) {
       if ($specification->urnCat->__toString() == 'urn:cat:classlab') {
         $content .= '<span class="ml-1 badge badge-dark"> '
           . _get_urnValue_translated($offre, $specification)
-          . '<span class="m-1 badge badge-light"><img class="pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $specification->attributes()->urn->__toString() . ';h=16"/></span>'
+          . '<span class="m-1 badge badge-light"><img class="pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $specification->attributes()->urn->__toString() . ';h=16" width="16" height="16"/></span>'
           . '</span>';
       }
     }
@@ -153,7 +153,7 @@ function _add_section_contact($offre) {
     if ($specification->urnCat->__toString() == 'urn:cat:moycom' && $specification->urnSubCat->__toString() != 'urn:cat:moycom:sitereservation') {
       if ($specification->type->__toString() != 'StringML') {
         $output .= '<li>'
-          . '<img class="pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $specification->attributes()->urn->__toString() . ';h=16"/>';
+          . '<img class="pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $specification->attributes()->urn->__toString() . ';h=16" width="16" height="16"/>';
         switch ($specification->type->__toString()) {
           case 'EMail':
             $output .= ' <a class="' . $specification->type->__toString() . '" href="mailto:' . $specification->value->__toString() . '">' . strrev($specification->value->__toString()) . '</a>';
@@ -211,7 +211,7 @@ function _add_section_contact_version2($offre) {
     if ($specification->urnCat->__toString() == 'urn:cat:moycom' && $specification->urnSubCat->__toString() != 'urn:cat:moycom:sitereservation') {
       if ($specification->type->__toString() != 'StringML') {
         $output .= '<li>'
-          . '<img class="pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $specification->attributes()->urn->__toString() . ';h=16"/>';
+          . '<img class="pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $specification->attributes()->urn->__toString() . ';h=16" width="16" height="16"/>';
         switch ($specification->type->__toString()) {
           case 'EMail':
             $output .= ' <a class="' . $specification->type->__toString() . '" href="mailto:' . $specification->value->__toString() . '">' . strrev($specification->value->__toString()) . '</a>';
@@ -244,8 +244,8 @@ function _add_section_contact_version2($offre) {
 function _add_section_booking($offre) {
   $orc = _get_urn_value($offre, 'urn:fld:urlresa:default');
   if (esc_url($orc)) {
-    $output = '<p class="section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-credit-card"></i>' . esc_html('Booking', 'pivot') . '</p>'
-      . '<section class="pivot-booking card lis-brd-light wow fadeInUp mb-4">'
+    $output = '<p class="d-print-none section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-credit-card"></i>' . esc_html('Booking', 'pivot') . '</p>'
+      . '<section class="pivot-booking card lis-brd-light wow fadeInUp mb-4 d-print-none">'
       . '<div class="card-body p-4">'
       . '<a title="' . __('Link to', 'pivot') . ' ' . __('booking system') . '" class="button btn-block btn-lg text-center" target="_blank" href="' . $orc . '"><i class="fa fa-credit-card"></i> ' . __('Book', 'pivot') . '</a>'
       . '</div>'
@@ -263,8 +263,8 @@ function _add_section_booking($offre) {
  */
 function _add_section_booking2($offre) {
   $booking = FALSE;
-  $output = '<p class="section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-credit-card"></i>' . esc_html('Réservation', 'pivot') . '</p>'
-    . '<section class="pivot-booking card lis-brd-light wow fadeInUp mb-4">'
+  $output = '<p class="d-print-none section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-credit-card"></i>' . esc_html('Réservation', 'pivot') . '</p>'
+    . '<section class="d-print-none pivot-booking card lis-brd-light wow fadeInUp mb-4">'
     . '<div class="card-body p-4">';
 
   foreach ($offre->spec as $specification) {
@@ -291,8 +291,8 @@ function _add_section_booking2($offre) {
  * @return string
  */
 function _add_section_linked_offers($offre) {
-  $output = '<p class="section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-paperclip"></i>' . __('Linked offers', 'pivot') . '</p>'
-    . '<div class="carousel slide" data-ride="carousel" id="quote-carousel">'
+  $output = '<p class="d-print-none section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-paperclip"></i>' . __('Linked offers', 'pivot') . '</p>'
+    . '<div class="d-print-none carousel slide" data-ride="carousel" id="quote-carousel">'
     // Carousel Slides
     . '<div class="carousel-inner">';
   $i = 0;
