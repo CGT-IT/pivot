@@ -1038,7 +1038,7 @@ function _multiKeyExists(Array $array, $key) {
 
 function _pivot_export($filename, $export_id, $query_id) {
   // Get Pivot Base URI
-  $pivot_url = esc_url(get_option('pivot_uri')) . 'export/' . $export_id . '/' . $query_id;
+  $pivot_url = esc_url(get_option('pivot_uri')) . 'export/' . $export_id . '/' . $query_id . '';
   // Get Pivot Personnal Key for Webservices
   $pivot_key = get_option('pivot_key');
 
@@ -1066,14 +1066,18 @@ function _pivot_export($filename, $export_id, $query_id) {
 
   // get upload directory
   $upload_dir = wp_get_upload_dir();
+
+  array_map('unlink', glob($upload_dir["basedir"] . '/exportpivot-*.xlsx'));
+
   // create file in the default base uploads wordpress directory
-  $fp = fopen($upload_dir["basedir"] . '/' . $filename . '.xlsx', 'w+');
+  $filenamedated = 'exportpivot-' . $filename . date('j-F-Y');
+  $fp = fopen($upload_dir["basedir"] . '/' . $filenamedated . '.xlsx', 'w+');
   fwrite($fp, $result);
   fclose($fp);
 
   // Provide download link
   $output = '<i class="fa fa-download"></i>'
-    . '<a href="' . $upload_dir["baseurl"] . '/' . $filename . '.xlsx" download="' . $filename . '.xlsx" target="_blank" type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">Télécharger le fichier ' . $filename . '</a>';
+    . '<a href="' . $upload_dir["baseurl"] . '/' . $filenamedated . '.xlsx" download="' . $filenamedated . '.xlsx" target="_blank" type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">Télécharger le fichier ' . $filename . '</a>';
 
   return $output;
 }
