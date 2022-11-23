@@ -49,8 +49,12 @@ function pivot_template_include($template) {
         // Get number after paged= (position of first letter + length of "paged="
         $type_id = substr($_SERVER['REQUEST_URI'], $pos + strlen("&type="));
         $type = pivot_get_offer_type($type_id);
-        $pivot_page->type = $type->parent;
-        $pivot_page->path = 'details';
+        if (isset($type->parent)) {
+          $pivot_page->type = $type->parent;
+          $pivot_page->path = 'details';
+        } else {
+          $pivot_page->type = 'error-in-type';
+        }
       }
     } else {
       $pivot_page = pivot_get_page_path($path);
@@ -174,18 +178,23 @@ function pivot_template($name, $args) {
  * or plugin install, update, or removal.
  */
 function pivot_add_rewrite_rules() {
+  $types = pivot_get_offer_type();
+  add_rewrite_tag('%' . 'details' . '%', '([^&]+)');
+  add_rewrite_rule(
+    'details' . '/([^/]*)&type=\d+/?',
+    'index.php?' . 'details' . '=$matches[1]',
+    'top'
+  );
+
   $pages = pivot_get_pages();
-  $pages[] = (object) array('path' => 'details');
 
   foreach ($pages as $pivot_page) {
     add_rewrite_tag('%' . $pivot_page->path . '%', '([^&]+)');
-    $path_parts = explode("/", $pivot_page->path);
     add_rewrite_rule(
       '^' . $pivot_page->path . '$',
       'index.php?pagename=' . $pivot_page->path,
       'top'
     );
-
     add_rewrite_rule(
       $pivot_page->path . '/([^/]*)/?',
       'index.php?' . $pivot_page->path . '=$matches[1]',
