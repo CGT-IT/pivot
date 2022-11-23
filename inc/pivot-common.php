@@ -609,9 +609,9 @@ function _add_meta_data_list_page($pivot_page) {
  */
 function _pivot_create_alternate_link() {
   global $wp;
-  $output = '';
   $languages = icl_get_languages();
   $current_url = home_url($wp->request);
+  $output = '<link rel="alternate" hreflang="x-default" href="' . apply_filters('wpml_permalink', $current_url, 'fr') . '">';
   foreach ($languages as $lang) {
     $output .= '<link rel="alternate" hreflang="' . $lang['language_code'] . '" href="' . apply_filters('wpml_permalink', $current_url, $lang['language_code']) . '">';
   }
