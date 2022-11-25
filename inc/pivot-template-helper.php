@@ -159,9 +159,13 @@ function _add_section_contact($offre) {
             $output .= ' <a class="' . $specification->type->__toString() . '" href="mailto:' . $specification->value->__toString() . '">' . strrev($specification->value->__toString()) . '</a>';
             break;
           case 'URL':
-          case 'URLFacebook':
-          case 'URLInstagram':
             $output .= ' <a class="' . $specification->type->__toString() . '" target="_blank" href="' . esc_url($specification->value->__toString()) . '">' . strrev(esc_url($specification->value->__toString())) . '</a>';
+            break;
+          case 'URLInstagram':
+            $output .= ' <a class="' . $specification->type->__toString() . '" target="_blank" href="' . esc_url($specification->value->__toString()) . '"> ' . strrev('Instagram') . '</a>';
+            break;
+          case 'URLFacebook':
+            $output .= ' <a class="' . $specification->type->__toString() . '" target="_blank" href="' . esc_url($specification->value->__toString()) . '"> ' . strrev('Facebook') . '</a>';
             break;
           case 'GSM':
             $output .= ' <a class="' . $specification->type->__toString() . '" href="tel:' . $specification->value->__toString() . '">' . strrev($specification->value->__toString()) . '</a>';
