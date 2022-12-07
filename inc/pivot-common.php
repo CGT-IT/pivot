@@ -698,7 +698,7 @@ function _add_pagination($nb_offres, $nbcol, $offers_per_page = null) {
   // Check if we have more than 1 page!
   if ($total > 1) {
     // Get the current page
-    $current_page = max(1, abs(get_query_var('paged')));
+    $current_page = max(1, abs((int) get_query_var('paged')));
 
     // Set format
     $format = '/&paged=%#%';
