@@ -16,7 +16,7 @@
       maxZoom: 18,
       zoomOffset: -1,
       id: 'mapbox/streets-v11',
-      accessToken: 'pk.eyJ1IjoibWRlZ2VtYmUiLCJhIjoiY2prMHY3Y2prMGE2NDNwazZuMWUxOWV5OCJ9.WkGG_tCifQuDbnVR9kniFw'
+      accessToken: window._pivot_mapbox_token
     }).addTo(pivotMap);
 
     $('#tab-1').click(function(){
