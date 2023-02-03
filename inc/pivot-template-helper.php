@@ -524,7 +524,7 @@ function _add_section_event_dates($offre) {
   if (isset($dates)) {
     foreach ($dates as $date) {
       if (isset($date['fin']) && $date['fin'] != '') {
-        if ((strtotime($date['fin']) >= strtotime('today')) && (strtotime($date['fin']) <= strtotime('+ 6months'))) {
+        if ((strtotime($date['fin']) >= strtotime('today')) && (strtotime($date['fin']) <= strtotime('+ 12months'))) {
           $dates_output .= '<span class="time time-start">'
             . '<span datetime="' . date("Y-M-D h:m", strtotime($date['deb'])) . '">'
             . ' <span class="day">' . date('d', strtotime($date['deb'])) . '</span>'
@@ -540,7 +540,7 @@ function _add_section_event_dates($offre) {
             . '</span>';
         }
       } else {
-        if ((strtotime($date['deb']) >= strtotime('- 1day')) && (strtotime($date['deb']) <= strtotime('+ 6months'))) {
+        if ((strtotime($date['deb']) >= strtotime('- 1day')) && (strtotime($date['deb']) <= strtotime('+ 12months'))) {
           $dates_output .= '<span class="time time-start">'
             . '<span datetime="' . date("Y-M-D h:m", strtotime($date['deb'])) . '">'
             . ' <span class="day">' . date('d', strtotime($date['deb'])) . '</span>'

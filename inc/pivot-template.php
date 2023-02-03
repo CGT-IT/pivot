@@ -181,11 +181,6 @@ function pivot_add_rewrite_rules() {
   $types = pivot_get_offer_type();
   add_rewrite_tag('%' . 'details' . '%', '([^&]+)');
   add_rewrite_rule(
-    '^' . 'details' . '$',
-    'index.php?pagename=' . $pivot_page->path,
-    'top'
-  );
-  add_rewrite_rule(
     'details' . '/([^/]*&type=\d+)/?',
     'index.php?' . 'details' . '=$matches[1]',
     'top'
