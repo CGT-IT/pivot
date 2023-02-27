@@ -414,7 +414,7 @@ function pivot_custom_shortcode($atts) {
     if ($type) {
       // Construct filter if set
       if (!empty($atts['filterurn'])) {
-        $urn = $atts['filterurn'];
+        $urn = trim($atts['filterurn']);
         // Get specification of the filtered URN
         $urnDoc = _get_urn_documentation_full_spec($urn);
         // Get type of the filtered URN
@@ -457,7 +457,7 @@ function pivot_custom_shortcode($atts) {
               $valid_operator = array("equal", "notequal", "like", "notlike", "lesser", "lesserequal", "greater", "greaterequal");
               // Check if operator is valid
               if (in_array($atts['operator'], $valid_operator)) {
-                $filter->operator = $atts['operator'];
+                $filter->operator = trim($atts['operator']);
               } else {
                 // If operator not valid, construction of error message
                 $operator_list = '<ul>';
@@ -476,7 +476,7 @@ function pivot_custom_shortcode($atts) {
               $text = __('The attribute "filtervalue" is required for this kind of filter', 'pivot');
               print _show_warning($text, 'danger');
             } else {
-              $filter->filter_name = $atts['filtervalue'];
+              $filter->filter_name = trim($atts['filtervalue']);
             }
             break;
         }
@@ -484,24 +484,24 @@ function pivot_custom_shortcode($atts) {
       }
       // Check sorting
       if (!empty($atts['sortmode'])) {
-        $field_params['sortMode'] = $atts['sortmode'];
+        $field_params['sortMode'] = trim($atts['sortmode']);
         if (!empty($atts['sortfield']) && $atts['sortmode'] != 'shuffle') {
-          $field_params['sortField'] = $atts['sortfield'];
+          $field_params['sortField'] = trim($atts['sortfield']);
         }
       }
       if ($atts['type'] == 'activite') {
         $field_params['page_type'] = 'activite';
       }
-      $xml_query = _xml_query_construction($atts['query'], $field_params);
+      $xml_query = _xml_query_construction(trim($atts['query']), $field_params);
 
       // Get template name depending of query type
-      $template_name = 'pivot-' . $atts['type'] . '-details-part-template';
+      $template_name = 'pivot-' . trim($atts['type']) . '-details-part-template';
 
       /* Get offers and send
        * $atts['query'] > to identify
        * + $atts['filterurn'] + $atts['filtervalue'] > to be sure it's unique in case a shortcode with the same query is used in multiple place with differents filters
        */
-      $offres = pivot_construct_output('shortcode', $atts['nboffers'], $xml_query, $atts['query'] . $atts['filterurn'] . $atts['filtervalue'], $atts['details']);
+      $offres = pivot_construct_output('shortcode', $atts['nboffers'], $xml_query, trim($atts['query']) . trim($atts['filterurn']) . trim($atts['filtervalue']), $atts['details']);
 
       if (is_object($offres)) {
         $output = '<div class="container-fluid pivot-list">';
