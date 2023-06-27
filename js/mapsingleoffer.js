@@ -45,6 +45,8 @@ function map_call(){
       var image = 'https://pivotweb.tourismewallonie.be/PivotWeb-3.1/img/urn:typ:'+$(this).find('.pivot-id-type-offre:first').text()+';modifier=pin;modifier=ori;w=30';
       var pointIcon = L.icon({
         iconUrl: image,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32]
       });
       // Set marker
       L.marker(point, {icon: pointIcon}).bindTooltip(offerTitle).addTo(pivotMap);
