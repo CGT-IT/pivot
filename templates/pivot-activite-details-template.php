@@ -1,5 +1,5 @@
 <?php global $offre_meta_data; ?>
-<?php if (isset($args->estActive)): // if offer comes by arguments, means included in an existing page    ?>
+<?php if (isset($args->estActive)): // if offer comes by arguments, means included in an existing page         ?>
   <?php $offre = $args; ?>
 <?php else: ?>
   <?php $current_template_name = basename(__FILE__, '.php'); ?>
@@ -61,10 +61,13 @@
           <p class="section-title h5 lis-font-weight-500"><i class="fa fa-align-right pr-2 fa-calendar-check-o"></i><?php esc_html_e('Dates', 'pivot') ?></p>
           <section class="pivot-share card lis-brd-light mb-4">
               <div class="card-body p-4">
-                  <?php echo _add_section_event_dates($offre); ?>
+                  <?php $dates = _get_dates_details($offre); ?>
+                  <?php if (is_array($dates)): ?>
+                    <?php print pivot_template('section-event-schedule', $dates); ?>
+                  <?php endif; ?>
               </div>
           </section>
-
+          <?php print _add_section($offre, 'urn:cat:tarif', __('Prices'), 'fa-euro-sign'); ?>
           <?php print _add_section_booking($offre); ?>
           <?php print _add_section($offre, 'urn:cat:classlab', __('Theme(s)'), 'fa-list-ol'); ?>
       </aside>
@@ -74,4 +77,5 @@
 <?php if (!isset($args->estActive) || $offre['content'] == true): ?>
   <?php get_footer(); ?>
   <?php
+
  endif;
