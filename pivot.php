@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 2.2.7
+ * Version: 2.2.8
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -844,12 +844,15 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
         } else {
           $xml_object = _pivot_request('offer-init-list', $details, $params, $xml_query);
           if (is_object($xml_object) && isset($key)) {
+            $key_nbOffers = 'nb' . $key;
             if (isset($page) && $page->type != 'activite') {
-              // store token in transient with a validity of 1 day
+              // store token and nboffers in transient with a validity of 1 day
               set_transient($key, $xml_object->attributes()->token->__toString(), 86400);
+              set_transient($key_nbOffers, $_SESSION['pivot'][$page_id]['nb_offres'], 86400);
             } else {
-              // store token in transient with a validity of 12h
+              // store token and nboffers in transient with a validity of 12h
               set_transient($key, $xml_object->attributes()->token->__toString(), 43200);
+              set_transient($key_nbOffers, $_SESSION['pivot'][$page_id]['nb_offres'], 43200);
             }
           }
         }

@@ -1070,8 +1070,8 @@ function _pivot_export($filename, $export_id, $query_id) {
   array_map('unlink', glob($upload_dir["basedir"] . '/exportpivot-*.xlsx'));
 
   // create file in the default base uploads wordpress directory
-  $filenamedated = 'exportpivot-' . $filename . date('j-F-Y');
-  $fp = fopen($upload_dir["basedir"] . '/' . $filenamedated . '.xlsx', 'w+');
+  $filenamedated = 'exportpivot-' . $filename . '-' . date('j-F-Y H:i');
+  $fp = fopen($upload_dir["basedir"] . '/' . $filenamedated . '.xlsx', 'w');
   fwrite($fp, $result);
   fclose($fp);
 
@@ -1096,4 +1096,14 @@ function _get_pivot_transients($offer_id) {
   $transients = $wpdb->get_results($sql);
 
   return $transients;
+}
+
+function _get_nb_offers_from_transient($page_id) {
+  if (isset($_SESSION['pivot'][$page_id]['nb_offres'])) {
+    $nboffers = $_SESSION['pivot'][$page_id]['nb_offres'];
+  } else {
+    $key = 'nbpivot_page_token_' . $page_id;
+    $nboffers = get_transient($key);
+  }
+  return $nboffers;
 }
