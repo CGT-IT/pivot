@@ -844,6 +844,7 @@ function _get_offer_details($offer_id = NULL, $details = 3, $name = NULL) {
  */
 function _get_dates_details($offre) {
   $i = 0;
+  $dates = array();
   foreach ($offre->spec as $specification) {
     if ($specification->attributes()->urn->__toString() == 'urn:obj:date') {
       foreach ($specification->spec as $dateObj) {
