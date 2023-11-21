@@ -60,7 +60,6 @@ class pivot_filter_widget extends WP_Widget {
     $instance['pageid'] = strip_tags($new_instance['pageid']);
     return $instance;
   }
-
 }
 
 function pivot_display_widget($instance = NULL) {
@@ -218,10 +217,10 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL) {
           $title_translated = $filter->filter_title_nl;
           break;
         case 'en':
-          $title_translated = $filter->filter_title_nl;
+          $title_translated = $filter->filter_title_en;
           break;
         case 'de':
-          $title_translated = $filter->filter_title_nl;
+          $title_translated = $filter->filter_title_de;
           break;
         default:
           $title_translated = $filter->filter_title;
@@ -247,7 +246,6 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL) {
         . '</div>';
 
       return $output;
-      break;
     case 'Type':
     case 'Value':
       $output .= '<div class="pl-2 form-item form-item-' . $filter->filter_name . '">'
