@@ -541,9 +541,10 @@ function _overide_yoast_seo_meta_data($offre, $path) {
     $offre_meta_data['type'] = 'article';
     $offre_meta_data['url'] = $url;
 
-    $descp = get_the_excerpt();
+    $descp = wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket'));
+    $descmarket = esc_attr((strlen($descp) > 160) ? substr($descp, 0, strpos($descp, ' ', 160)) : $descp);
 
-    $offre_meta_data['description'] = $descp;
+    $offre_meta_data['description'] = $descmarket;
     $offre_meta_data['updated_time'] = $offre->attributes()->dateModification->__toString();
     $offre_meta_data['published_time'] = $offre->attributes()->dateCreation->__toString();
     $offre_meta_data['modified_time'] = $offre->attributes()->dateModification->__toString();
@@ -560,14 +561,15 @@ function _overide_yoast_seo_meta_data($offre, $path) {
 function _add_meta_data($offre, $path, $default_image = null) {
   $url = get_bloginfo('wpurl') . '/' . $path . '/' . $offre->attributes()->codeCgt->__toString() . '&type=' . $offre->typeOffre->attributes()->idTypeOffre->__toString();
   if (isset($offre) && is_object($offre)) {
-    $descp = get_the_excerpt();
+    $descp = wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket'));
+    $descmarket = esc_attr((strlen($descp) > 160) ? substr($descp, 0, strpos($descp, ' ', 160)) : $descp);
 
     $title = _get_urn_value($offre, 'urn:fld:nomofr');
-    return '<meta name="description" content="' . $descp . '">'
+    return '<meta name="description" content="' . $descmarket . '">'
       . '<meta property="og:url" content="' . $url . '">'
       . '<meta property="og:type" content="article">'
       . '<meta property="og:title" content="' . esc_attr($title) . '">'
-      . '<meta property="og:description" content="' . $descp . '">'
+      . '<meta property="og:description" content="' . $descmarket . '">'
       . '<meta property="og:updated_time" content="' . $offre->attributes()->dateModification->__toString() . '">'
       . '<meta property="og:image" content="' . $default_image . '">'
       . '<meta name="twitter:card" content="summary_large_image">'
@@ -587,12 +589,14 @@ function _add_meta_data($offre, $path, $default_image = null) {
 function _add_meta_data_list_page($pivot_page) {
   if (isset($pivot_page) && is_object($pivot_page)) {
     $url = get_bloginfo('wpurl') . '/' . $pivot_page->path;
-    $descp = get_the_excerpt();
+    $descp = wp_strip_all_tags($pivot_page->description);
+    $descmarket = esc_attr((strlen($descp) > 160) ? substr($descp, 0, strpos($descp, ' ', 160)) : $descp);
 
-    return '<meta name="description" content="' . $descp . '"/>'
+    return '<meta name="description" content="' . $descmarket . '"/>'
       . '<meta property="og:url" content="' . $url . '">'
       . '<meta property="og:type" content="page">'
       . '<meta property="og:title" content="' . esc_attr(__($pivot_page->title, 'pivot')) . '">'
+      . '<meta property="og:description" content="' . $descmarket . '">'
       . '<meta property="og:image" content="' . $pivot_page->image . '">'
       . '<meta name="twitter:card" content="summary_large_image">'
       . '<meta name="twitter:url" content="' . $url . '">'
@@ -813,7 +817,8 @@ function _get_offer_details($offer_id = NULL, $details = 3, $name = NULL) {
             $offre = $xml_object->offre;
             $url = get_bloginfo('wpurl') . (($lang == 'fr') ? '' : '/' . $lang) . '/details/' . $params['offer_code'] . '&type=' . $offre->typeOffre->attributes()->idTypeOffre->__toString();
             $title = _get_urn_value($offre, 'urn:fld:nomofr');
-            $descmarket = _get_urn_value($offre, 'urn:fld:descmarket');
+            $descp = wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket'));
+            $descmarket = esc_attr((strlen($descp) > 160) ? substr($descp, 0, strpos($descp, ' ', 160)) : $descp);
             pivot_create_fake_post($title, $url, $descmarket, 'post', $offer_id);
             // Prepare data transient
             $data = array('offerid' => $offer_id, 'title' => $title, 'desc' => $descmarket, 'url' => $url, 'content' => json_encode(pivot_template($name, $offre)));
@@ -827,7 +832,9 @@ function _get_offer_details($offer_id = NULL, $details = 3, $name = NULL) {
           $xml_object = _pivot_request('offer-details', $details, $params);
           $offre = $xml_object->offre;
           $url = get_bloginfo('wpurl') . (($lang == 'fr') ? '' : '/' . $lang) . '/details/' . $offer_id . '&type=' . $offre->typeOffre->attributes()->idTypeOffre->__toString();
-          pivot_create_fake_post(_get_urn_value($offre, 'urn:fld:nomofr'), $url, _get_urn_value($offre, 'urn:fld:descmarket'), 'post', $offer_id);
+          $descp = wp_strip_all_tags(_get_urn_value($offre, 'urn:fld:descmarket'));
+          $descmarket = esc_attr((strlen($descp) > 160) ? substr($descp, 0, strpos($descp, ' ', 160)) : $descp);
+          pivot_create_fake_post(_get_urn_value($offre, 'urn:fld:nomofr'), $url, $descmarket, 'post', $offer_id);
         }
       }
     }

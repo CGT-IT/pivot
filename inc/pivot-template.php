@@ -178,7 +178,6 @@ function pivot_template($name, $args) {
  * or plugin install, update, or removal.
  */
 function pivot_add_rewrite_rules() {
-  $types = pivot_get_offer_type();
   add_rewrite_tag('%' . 'details' . '%', '([^&]+)');
   add_rewrite_rule(
     'details' . '/([^/]*&type=\d+)/?',
@@ -252,12 +251,7 @@ function pivot_create_fake_post($title, $path, $description, $post_type = 'page'
   $post->post_date = current_time('mysql');
   $post->post_date_gmt = current_time('mysql', 1);
   $post->post_title = $title;
-
-  $descp = strip_tags($description);
-  $descp = strip_shortcodes($descp);
-  $descp = ((strlen($descp) > 160) ? substr($descp, 0, 160) : $descp);
-
-  $post->post_excerpt = $descp;
+  $post->post_excerpt = $description;
   $post->post_content = '';
   $post->post_status = 'publish';
   $post->comment_status = 'closed';
