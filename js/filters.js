@@ -33,7 +33,6 @@
       dataType: "json",
       success: function(data) {
         for (i in data.spec[0].label) {
-            console.log(data.spec[0].label[i]);
             if(data.spec[0].label[i].value !== 'Accueil'){
                 switch(data.spec[0].label[i].lang){
                     case 'fr':
