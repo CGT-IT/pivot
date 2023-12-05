@@ -316,9 +316,9 @@ function _add_section_linked_offers($offre) {
           . '<a class="text-dark" title="' . esc_attr('Link to', 'pivot') . ' ' . $offerTitle . '" href="' . $url . '">'
           . '<div class="row">'
           . '<div class="col-xl-4 col-lg-4 col-md-4 col-12 text-center">'
-          . '<div class="container-img embed-responsive embed-responsive-4by3">'
-          . '<img class="embed-responsive-item pivot-img card-img-top zoom pivot-img-list" src="' . _get_offer_default_image($relation->offre) . '"/>'
-          . '</div>'
+          . '<figure class="">'
+          . '<img class="cover pivot-img" src="' . _get_offer_default_image($relation->offre) . '"/>'
+          . '</figure>'
           . '</div>'
           . '<div class="col-xl-8 col-lg-8 col-md-8 col-12 text-center">'
           . '<p class="offer-description">' . substr(_get_urn_value($relation->offre, 'urn:fld:descmarket'), 0, 250) . '</p>'
@@ -328,8 +328,8 @@ function _add_section_linked_offers($offre) {
           . '</a>'
           . '<span class="pivot-id-type d-none item">' . $idTypeOffre . '</span>'
           . '<span class="pivot-code-cgt d-none item">' . $relation->offre->attributes()->codeCgt->__toString() . '</span>'
-          . '<span class="pivot-latitude d-none item">' . $relation->offre->adresse1->latitude->__toString() . '</span>'
-          . '<span class="pivot-longitude d-none item">' . $relation->offre->adresse1->longitude->__toString() . '</span>'
+//          . '<span class="pivot-latitude d-none item">' . $relation->offre->adresse1->latitude->__toString() . '</span>'
+//          . '<span class="pivot-longitude d-none item">' . $relation->offre->adresse1->longitude->__toString() . '</span>'
           . '</blockquote>'
           . '</div>';
       }
@@ -584,12 +584,12 @@ function _add_itinerary_details($offre, $urnCat, $urnSubCat = 0) {
         } else {
           // Case FR
           if ($lang == 'fr' && 'urn' == substr($specification->attributes()->urn->__toString(), 0, 3)) {
-            $content .= '</p><p class="card-text">'
+            $content .= '</p><p class="card-text mb-1">'
               . $urnValue;
           } else {
             // Case other language than french
             if ($lang != 'fr') {
-              $content .= '</p><p class="card-text">'
+              $content .= '</p><p class="card-text mb-1">'
                 . $urnValue;
             }
           }
@@ -743,6 +743,19 @@ function _add_banner_image($image, $height = '400px') {
   } else {
     $output = '';
   }
+  return $output;
+}
+
+/**
+ * Will return url of default image for a given offer
+ * @param Object $offre
+ * @param $noimg_src = url source of the image. If you want a different from Pivot
+ * @param int $width wanted width in px set to null if you want original. Useless if media is not really stored in Pivot
+ * @param int $height wanted height in px set to null if you want original. Useless if media is not really stored in Pivot
+ * @return string
+ */
+function _get_offer_default_image_refractor($codeCgt, $width = 428, $height = 285, $noimg_src = NULL) {
+  $output = get_option('pivot_uri') . 'img/' . $codeCgt . ';w=' . $width . ';h=' . $height;
   return $output;
 }
 

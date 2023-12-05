@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 2.3.0
+ * Version: 2.3.1
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -440,19 +440,19 @@ function _pivot_request($type, $detail, $params = NULL, $postfields = NULL) {
       $pivot_url .= $params['type'] . '/paginated;itemsperpage=' . $params['items_per_page'] . ';content=' . $detail . $shuffle;
       break;
     case 'offer-pager':
-      $pivot_url .= $params['type'] . '/paginated' . $params['token'] . ';content=' . $detail . $shuffle;
+      $pivot_url .= $params['type'] . '/paginated' . $params['token'] . ';content=' . $detail . $shuffle . ';info=true;infolvl=10';
       break;
     case 'offer-search':
-      $pivot_url .= $params['type'] . '/paginated;itemsperpage=' . $params['items_per_page'] . ';content=' . $detail . $shuffle;
+      $pivot_url .= $params['type'] . '/paginated;itemsperpage=' . $params['items_per_page'] . ';content=' . $detail . $shuffle . ';info=true;infolvl=10';
       break;
     case 'offer-details':
-      $pivot_url .= $params['type'] . '/' . $params['offer_code'] . ';content=' . $detail;
+      $pivot_url .= $params['type'] . '/' . $params['offer_code'] . ';content=' . $detail . ';info=true';
       break;
     case 'thesaurus':
       $pivot_url .= 'thesaurus/urn/' . $params['urn_name'] . ';fmt=xml';
       break;
   }
-//  print "count request: " . $pivot_url . '<br>';
+
   // Define Headers with Pivot Personnal Key and set format as XML
   $headers = array(
     'WS_KEY: ' . $pivot_key,

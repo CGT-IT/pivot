@@ -8,6 +8,21 @@
  * @param string $lang current language interface
  * @return string Return string value of a urn (field)
  */
+function _get_urn_value_refractor($offre, $urn_cat, $urn_name) {
+  if (isset($offre[$urn_cat][$urn_name]) && !empty($offre[$urn_cat][$urn_name])) {
+    return $offre[$urn_cat][$urn_name]['value'];
+  }
+  return '';
+}
+
+/**
+ * Return a specific urn value
+ *
+ * @param Object $offre Complete offer Object
+ * @param string $urn_name urn name we are looking for
+ * @param string $lang current language interface
+ * @return string Return string value of a urn (field)
+ */
 function _get_urn_value($offre, $urn_name) {
   $lang = substr(get_locale(), 0, 2);
   // Construct URN with language code
@@ -159,6 +174,40 @@ function _get_urn_default_language($urn) {
  * @param boolean $original set to true if you want to original color of the picto
  * @return string
  */
+function _search_specific_urn_img_refractor($offre, $urn_cat, $urn, $height, $color = '', $original = FALSE) {
+  if (isset($offre[$urn_cat][$urn])) {
+    // add specific class to allow overriding. Replace : by -
+    $output = '<span class="item-service ' . str_replace(":", "-", $urn) . '">';
+
+    // Construct <img/> tag
+    $img = '<img height="' . $height . '" alt="" class="pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $urn . ';h=' . $height;
+    if (!empty($color) && $color != '') {
+      $img .= ';c=' . $color;
+    }
+    if ($original == TRUE) {
+      $img .= ';modifier=orig';
+    }
+    $img .= '"/>';
+
+    $output .= $img . '</span>';
+
+    return $output;
+  }
+}
+
+/**
+ * Will return a span with an image inside with all parameters you have set
+ *
+ * Go there to see which URN has a picto
+ * http://pivot.tourismewallonie.be/index.php/9-pivot-gest-pc/218-liste-des-pictogrammes
+ *
+ * @param Object $offre the complete offer Object
+ * @param string $urn Name of the URN = field ID
+ * @param int $height set height in px like (20)
+ * @param string $color has to be RGB hexa color code like FFFFFF for black (can be '')
+ * @param boolean $original set to true if you want to original color of the picto
+ * @return string
+ */
 function _search_specific_urn_img($offre, $urn, $height, $color = '', $original = FALSE) {
   // Loop on each specific field
   foreach ($offre->spec as $specification) {
@@ -242,6 +291,32 @@ function _get_ranking_picto($offre, $color = null, $height = 20) {
         return '';
       }
     }
+  }
+}
+
+/**
+ * Will return a span with image of the ranking picto inside.
+ *
+ * @param Object $offre the complete offer Object
+ * @param string $color color in hexadecimal format without # (null by default)
+ * @return string
+ */
+function _get_ranking_picto_refractor($offre, $color = null, $height = 20) {
+  $useless = array('urn:val:class:cessation', 'urn:val:class:ecc', 'urn:val:class:echue', 'urn:val:class:nc');
+  if (!empty($offre['urn:fld:class']['urn']) && !in_array($offre['urn:fld:class']['urn'], $useless)) {
+    // add specific class to allow overriding. Replace : by -
+    $output = '<span class="pivot-ranking">';
+    // prepare img title attribute
+    $title_attribute = 'title="' . $offre['urn:fld:class']['value'] . '"';
+    // prepare img alt attribute
+    $alt_attribute = 'alt="image ' . $offre['urn:fld:class']['value'] . '"';
+    // Construct <img/> tag
+    $img = '<img height="' . $height . '" ' . $title_attribute . ' ' . $alt_attribute . ' class="pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $offre['urn:fld:class']['urn'] . (($color) ? ';c=' . $color : '') . ';h=' . $height;
+    $img .= '"/>';
+
+    $output .= $img . '</span>';
+
+    return $output;
   }
 }
 
@@ -578,6 +653,38 @@ function _add_meta_data($offre, $path, $default_image = null) {
       . '<meta property="article:published_time" content="' . $offre->attributes()->dateCreation->__toString() . '">'
       . '<meta property="article:modified_time" content="' . $offre->attributes()->dateModification->__toString() . '">';
   }
+}
+
+/**
+ * Override page title with offer name + site name
+ * Add metadata for twitter and og (facebook, google, ...)
+ * @param Object $offre Complete Offer object
+ * @param String $path path to join the offer
+ */
+function _add_meta_data_refractor($offre, $path, $default_image = null) {
+  $url = get_bloginfo('wpurl') . '/' . $path . '/' . $offre['codeCgt'] . '&type=' . $offre['idTypeOffre'];
+  if (isset($offre) && is_object($offre)) {
+    $descp = wp_strip_all_tags($offre['urn:cat:descmarket']['urn:fld:descmarket']['value']);
+    $descmarket = esc_attr((strlen($descp) > 160) ? substr($descp, 0, strpos($descp, ' ', 160)) : $descp);
+
+    $title = $offre['urn:cat:ident']['urn:fld:nomofr']['value'];
+    return '<meta name="description" content="' . $descmarket . '">'
+      . '<meta property="og:url" content="' . $url . '">'
+      . '<meta property="og:type" content="article">'
+      . '<meta property="og:title" content="' . esc_attr($title) . '">'
+      . '<meta property="og:description" content="' . $descmarket . '">'
+      . '<meta property="og:updated_time" content="' . $offre['dateModification'] . '">'
+      . '<meta property="og:image" content="' . $default_image . '">'
+      . '<meta name="twitter:card" content="summary_large_image">'
+      . '<meta name="twitter:url" content="' . $url . '">'
+      . '<meta name="twitter:title" content="' . esc_attr($title) . '">'
+      . '<meta property="article:published_time" content="' . $offre['dateCreation'] . '">'
+      . '<meta property="article:modified_time" content="' . $offre['dateModification'] . '">';
+  }
+}
+
+function _add_pivot_picto($urn, $height) {
+  return '<img alt="" class="pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $urn . ';h=' . $height . '"/>';
 }
 
 /**
