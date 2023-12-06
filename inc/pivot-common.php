@@ -663,7 +663,7 @@ function _add_meta_data($offre, $path, $default_image = null) {
  */
 function _add_meta_data_refractor($offre, $path, $default_image = null) {
   $url = get_bloginfo('wpurl') . '/' . $path . '/' . $offre['codeCgt'] . '&type=' . $offre['idTypeOffre'];
-  if (isset($offre) && is_object($offre)) {
+  if (isset($offre)) {
     $descp = wp_strip_all_tags($offre['urn:cat:descmarket']['urn:fld:descmarket']['value']);
     $descmarket = esc_attr((strlen($descp) > 160) ? substr($descp, 0, strpos($descp, ' ', 160)) : $descp);
 
