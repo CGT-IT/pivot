@@ -664,7 +664,7 @@ function _add_meta_data($offre, $path, $default_image = null) {
 function _add_meta_data_refractor($offre, $path, $default_image = null) {
   $url = get_bloginfo('wpurl') . '/' . $path . '/' . $offre['codeCgt'] . '&type=' . $offre['idTypeOffre'];
   if (isset($offre)) {
-    $descp = wp_strip_all_tags($offre['urn:cat:descmarket']['urn:fld:descmarket']['value']);
+    $descp = isset($offre['urn:cat:descmarket']) ? wp_strip_all_tags($offre['urn:cat:descmarket']['urn:fld:descmarket']['value']) : '';
     $descmarket = esc_attr((strlen($descp) > 160) ? substr($descp, 0, strpos($descp, ' ', 160)) : $descp);
 
     $title = $offre['urn:cat:ident']['urn:fld:nomofr']['value'];
@@ -1221,4 +1221,269 @@ function _get_nb_offers_from_transient($page_id) {
     $nboffers = get_transient($key);
   }
   return $nboffers;
+}
+
+function endsWith($haystack, $needle) {
+  return substr_compare($haystack, $needle, -strlen($needle)) === 0;
+}
+
+/**
+ * Will convert the XML Object into a readable array
+ * @param Object $offre
+ * @return array
+ */
+function pivot_offer_treatment($offre) {
+  $excludedUrn = array('urn:cat:accueil:attest', 'urn:val:attestincendie:asi', 'urn:val:attestincendie:acs', 'urn:val:attestincendie:defaut', 'urn:fld:attestincendie:dateech', 'urn:fld:dateech',
+    'urn:fld:idaccessi', 'urn:fld:accessi', 'urn:fld:accessi:url', 'urn:fld:accessi:perfautroul', 'urn:fld:accessi:permardif', 'urn:fld:accessi:perave', 'urn:fld:accessi:permalvoy', 'urn:fld:accessi:persou', 'urn:fld:accessi:permalent', 'urn:fld:accessi:perdifcomp',
+    'urn:val:qw:nc', 'urn:fld:datereco', 'urn:fld:class:title', 'urn:fld:class:value', 'urn:val:class:echue', 'urn:fld:idautor');
+
+  $offer_array = array(
+    'codeCgt' => $offre->attributes()->codeCgt->__toString(),
+    'idTypeOffre' => $offre->typeOffre->attributes()->idTypeOffre->__toString(),
+    'labelTypeOffre' => $offre->typeOffre->label->value->__toString(),
+    'cp' => (isset($offre->adresse1->cp) ? $offre->adresse1->cp->__toString() : ''),
+    'localite' => (isset($offre->adresse1->localite->value) ? $offre->adresse1->localite->value->__toString() : ''),
+    'rue' => (isset($offre->adresse1->rue) ? $offre->adresse1->rue->__toString() : ''),
+    'numero' => (isset($offre->adresse1->numero->value) ? $offre->adresse1->numero->value->__toString() : ''),
+    'commune' => (isset($offre->adresse1->commune->value) ? $offre->adresse1->commune->value->__toString() : ''),
+    'lieuDit' => (isset($offre->adresse1->lieuDit) ? $offre->adresse1->lieuDit->__toString() : ''),
+    'lieuPrecis' => (isset($offre->adresse1->lieuPrecis) ? $offre->adresse1->lieuPrecis->__toString() : ''),
+    'pays' => $offre->adresse1->pays->__toString(),
+    'latitude' => $offre->adresse1->latitude->__toString(),
+    'longitude' => $offre->adresse1->longitude->__toString(),
+    'dateModification' => $offre->attributes()->dateModification->__toString(),
+    'dateCreation' => $offre->attributes()->dateCreation->__toString()
+  );
+
+  // Specific case, french name will be replace by it's translation if needed
+  $offer_array['urn:cat:ident']['urn:fld:nomofr']['value'] = $offre->nom->__toString();
+
+  foreach ($offre->spec as $specification) {
+    if (!in_array($specification->attributes()->urn->__toString(), $excludedUrn) && !in_array($specification->value->__toString(), $excludedUrn)) {
+      $offer_array = pivot_specification_treatment($specification, $offer_array);
+    }
+  }
+
+  // if offer is type 8 (itinerary) and lineary type, we need to keep the end address
+  if ($offer_array['idTypeOffre'] == 8 && isset($offer_array['urn:cat:classlab']['urn:fld:typecirc']['urn']) && $offer_array['urn:cat:classlab']['urn:fld:typecirc']['urn'] == 'urn:val:typecirc:lineaire') {
+    $offer_array['adresse2'] = array(
+      'cp' => (isset($offre->adresse2->cp) ? $offre->adresse2->cp->__toString() : ''),
+      'localite' => (isset($offre->adresse2->localite->value) ? $offre->adresse2->localite->value->__toString() : ''),
+      'rue' => (isset($offre->adresse2->rue) ? $offre->adresse2->rue->__toString() : ''),
+      'numero' => (isset($offre->adresse2->numero->value) ? $offre->adresse2->numero->value->__toString() : ''),
+      'commune' => (isset($offre->adresse2->commune->value) ? $offre->adresse2->commune->value->__toString() : ''),
+      'lieuDit' => (isset($offre->adresse2->lieuDit) ? $offre->adresse2->lieuDit->__toString() : ''),
+      'lieuPrecis' => (isset($offre->adresse2->lieuPrecis) ? $offre->adresse2->lieuPrecis->__toString() : ''),
+      'pays' => $offre->adresse2->pays->__toString(),
+      'latitude' => $offre->adresse2->latitude->__toString(),
+      'longitude' => $offre->adresse2->longitude->__toString()
+    );
+  }
+  return $offer_array;
+}
+
+function pivot_get_urn_without_lang($specification) {
+  $lang = substr(get_locale(), 0, 2);
+
+  // Specific case where the fr version of the name is not in the same place as the other language
+  if (endsWith($specification->attributes()->urn->__toString(), 'urn:fld:nomofr')) {
+    $urn_default = 'urn:fld:nomofr';
+  } else {
+    if ($lang == substr($specification->attributes()->urn->__toString(), 0, 2)) {
+      // set urn without language code to have the same urn non-language-dependent
+      $urn_default = substr($specification->attributes()->urn->__toString(), 2);
+    } else {
+      $urn_default = $specification->attributes()->urn->__toString();
+    }
+  }
+  return $urn_default;
+}
+
+function debug($p) {
+  print '<pre>';
+  print_r($p);
+  print '</pre>';
+}
+
+/**
+ * Add each field into the readable array
+ * @param Object $specification
+ * @param array $offer_array
+ * @return array same $offer_array in input completed with usefull fields
+ */
+function pivot_specification_type_treatment($specification, $offer_array, $urn_default) {
+  switch ($specification->type->__toString()) {
+    // In case the field type is choice, we will have an urn as value and we want the urn's label to return as value
+    case 'Choice':
+      $offer_array[$specification->urnCat->__toString()][$urn_default] = array(
+        'label' => _get_translated_value($specification->label),
+        'urnSubCat' => $specification->urnSubCat->__toString(),
+        'type' => $specification->type->__toString(),
+        // Keep the urn code to be able to call the image/picto service
+        'urn' => $specification->value->__toString(),
+        'value' => _get_translated_value($specification->valueLabel)
+      );
+      break;
+    case 'Object':
+      $offer_array = pivot_date_treatment($offer_array, $specification);
+      break;
+    default:
+      $offer_array[$specification->urnCat->__toString()][$urn_default] = array(
+        'label' => _get_translated_value($specification->label),
+        'urnSubCat' => $specification->urnSubCat->__toString(),
+        'type' => $specification->type->__toString(),
+        'value' => $specification->value->__toString(),
+      );
+      break;
+  }
+  return $offer_array;
+}
+
+function pivot_specification_treatment($specification, $offer_array) {
+  // Control it's well a urn
+  if (substr($specification->attributes()->urn->__toString(), 0, 4) == 'urn:') {
+    $offer_array = pivot_specification_type_treatment($specification, $offer_array, $specification->attributes()->urn->__toString());
+  } else {
+    $lang = substr(get_locale(), 0, 2);
+    if ($lang == substr($specification->attributes()->urn->__toString(), 0, 2)) {
+      $offer_array = pivot_specification_type_treatment($specification, $offer_array, pivot_get_urn_without_lang($specification));
+    }
+  }
+  return $offer_array;
+}
+
+function pivot_date_treatment($offer_array, $specification) {
+  if ($specification->attributes()->urn->__toString() == 'urn:obj:date') {
+    foreach ($specification->spec as $dateObj) {
+      if ($dateObj->type->__toString() == 'Date') {
+        if ($dateObj->attributes()->urn->__toString() == 'urn:fld:date:datedeb') {
+          $index = strtotime(str_replace('/', '-', $dateObj->value->__toString()));
+        }
+        $offer_array['date'][$index][($dateObj->attributes()->urn->__toString() == 'urn:fld:date:datedeb') ? 'deb' : 'fin'] = date("Y-m-d", strtotime(str_replace('/', '-', $dateObj->value->__toString())));
+      } else {
+        $urn_default = pivot_get_urn_without_lang($dateObj);
+        $offer_array['date'][$index][$urn_default] = array(
+          'label' => _get_translated_value($dateObj->label),
+          'urnSubCat' => $dateObj->urnSubCat->__toString(),
+          'type' => $dateObj->type->__toString(),
+          'value' => $dateObj->value->__toString()
+        );
+      }
+    }
+  }
+  return $offer_array;
+}
+
+function pivot_relation_treatment($offre) {
+  $relation_array = [];
+  foreach ($offre->relOffre as $relation) {
+    if ($relation->offre->estActive == 30) {
+      $idTypeOffre = $relation->offre->typeOffre->attributes()->idTypeOffre->__toString();
+      switch ($idTypeOffre) {
+        case "268":
+          $relation_array = pivot_media_treatment($relation, $relation_array);
+          break;
+        case "33" :
+          $relation_array = pivot_closed_treatment($relation, $relation_array);
+          break;
+        case "10" :
+        case "23" :
+          break;
+        default:
+          $relation_array = pivot_link_treatment($relation, $relation_array);
+          break;
+      }
+    }
+  }
+  return $relation_array;
+}
+
+function pivot_media_treatment($relation, $relation_array) {
+  $lang = substr(get_locale(), 0, 2);
+  $translated_title = ($lang && $lang != 'fr') ? $lang . ':urn:fld:nomofr' : 'urn:fld:nomofr';
+
+  $media = array(
+    'id' => $relation->offre->attributes()->codeCgt->__toString(),
+    'nom' => $relation->offre->nom->__toString(),
+  );
+
+  if ($relation->attributes()->urn == 'urn:lnk:media:defaut') {
+    $media['default'] = true;
+  }
+
+  foreach ($relation->offre->spec as $spec) {
+    if ($spec->attributes()->urn == 'urn:fld:typmed') {
+      $media['typmed'] = $spec->value->__toString();
+    }
+    if ($spec->attributes()->urn == 'urn:fld:copyr') {
+      $media['copyr'] = $spec->value->__toString();
+    }
+    if ($spec->attributes()->urn == 'urn:fld:date') {
+      $media['date'] = $spec->value->__toString();
+    }
+    if ($spec->attributes()->urn == 'urn:fld:url') {
+      $media['url'] = $spec->value->__toString();
+    }
+    if ($spec->attributes()->urn == $translated_title) {
+      $media['nom'] = $spec->value->__toString();
+    }
+    if ($spec->attributes()->urn == 'urn:fld:copyr') {
+      $media['copyr'] = $spec->value->__toString();
+    }
+  }
+
+  switch ($media['typmed']) {
+    case 'urn:val:typmed:photo':
+      $relation_array[263]['photo'][] = $media;
+      break;
+    case 'urn:val:typmed:video':
+      $relation_array[263]['video'][] = $media;
+      break;
+    case 'urn:val:typmed:doc':
+      $relation_array[263]['doc'] = $media;
+      break;
+    case 'urn:val:typmed:gpx':
+      $relation_array[263]['gpx'] = $media;
+      break;
+    default:
+      break;
+  }
+  return $relation_array;
+}
+
+function pivot_link_treatment($relation, $relation_array) {
+  $link = array(
+    'id' => $relation->offre->attributes()->codeCgt->__toString(),
+    'nom' => $relation->offre->nom->__toString(),
+    'idTypeOffre' => $relation->offre->typeOffre->attributes()->idTypeOffre->__toString(),
+    'cp' => (isset($relation->adresse1->cp) ? $relation->offre->adresse1->cp->__toString() : ''),
+    'localite' => (isset($relation->offre->adresse1->localite->value) ? $relation->offre->adresse1->localite->value->__toString() : ''),
+    'latitude' => (isset($relation->offre->adresse1->latitude) ? $relation->offre->adresse1->latitude->__toString() : ''),
+    'longitude' => (isset($relation->offre->adresse1->longitude) ? $relation->offre->adresse1->longitude->__toString() : ''),
+  );
+
+  $lang = substr(get_locale(), 0, 2);
+  if ($lang && $lang != 'fr') {
+    foreach ($relation->offre->spec as $spec) {
+      if ($spec->attributes()->urn == $lang . ':urn:fld:nomofr') {
+        $link['nom'] = $spec->value->__toString();
+        break;
+      }
+    }
+  }
+
+  $relation_array['link'][] = $link;
+
+  return $relation_array;
+}
+
+function pivot_closed_treatment($relation, $relation_array) {
+  $dates = _get_dates_details($relation->offre);
+
+  if (is_array($dates)) {
+    foreach ($dates as $date) {
+      $relation_array[33][] = $date;
+    }
+  }
+  return $relation_array;
 }
