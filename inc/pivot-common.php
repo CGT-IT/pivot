@@ -1244,7 +1244,7 @@ function pivot_offer_treatment($offre) {
     'cp' => (isset($offre->adresse1->cp) ? $offre->adresse1->cp->__toString() : ''),
     'localite' => (isset($offre->adresse1->localite->value) ? $offre->adresse1->localite->value->__toString() : ''),
     'rue' => (isset($offre->adresse1->rue) ? $offre->adresse1->rue->__toString() : ''),
-    'numero' => (isset($offre->adresse1->numero->value) ? $offre->adresse1->numero->value->__toString() : ''),
+    'numero' => (isset($offre->adresse1->numero) ? $offre->adresse1->numero->__toString() : ''),
     'commune' => (isset($offre->adresse1->commune->value) ? $offre->adresse1->commune->value->__toString() : ''),
     'lieuDit' => (isset($offre->adresse1->lieuDit) ? $offre->adresse1->lieuDit->__toString() : ''),
     'lieuPrecis' => (isset($offre->adresse1->lieuPrecis) ? $offre->adresse1->lieuPrecis->__toString() : ''),
@@ -1270,7 +1270,7 @@ function pivot_offer_treatment($offre) {
       'cp' => (isset($offre->adresse2->cp) ? $offre->adresse2->cp->__toString() : ''),
       'localite' => (isset($offre->adresse2->localite->value) ? $offre->adresse2->localite->value->__toString() : ''),
       'rue' => (isset($offre->adresse2->rue) ? $offre->adresse2->rue->__toString() : ''),
-      'numero' => (isset($offre->adresse2->numero->value) ? $offre->adresse2->numero->value->__toString() : ''),
+      'numero' => (isset($offre->adresse2->numero) ? $offre->adresse2->numero->__toString() : ''),
       'commune' => (isset($offre->adresse2->commune->value) ? $offre->adresse2->commune->value->__toString() : ''),
       'lieuDit' => (isset($offre->adresse2->lieuDit) ? $offre->adresse2->lieuDit->__toString() : ''),
       'lieuPrecis' => (isset($offre->adresse2->lieuPrecis) ? $offre->adresse2->lieuPrecis->__toString() : ''),
@@ -1291,7 +1291,7 @@ function pivot_get_urn_without_lang($specification) {
   } else {
     if ($lang == substr($specification->attributes()->urn->__toString(), 0, 2)) {
       // set urn without language code to have the same urn non-language-dependent
-      $urn_default = substr($specification->attributes()->urn->__toString(), 2);
+      $urn_default = substr($specification->attributes()->urn->__toString(), 3);
     } else {
       $urn_default = $specification->attributes()->urn->__toString();
     }
@@ -1361,13 +1361,26 @@ function pivot_date_treatment($offer_array, $specification) {
         }
         $offer_array['date'][$index][($dateObj->attributes()->urn->__toString() == 'urn:fld:date:datedeb') ? 'deb' : 'fin'] = date("Y-m-d", strtotime(str_replace('/', '-', $dateObj->value->__toString())));
       } else {
-        $urn_default = pivot_get_urn_without_lang($dateObj);
-        $offer_array['date'][$index][$urn_default] = array(
-          'label' => _get_translated_value($dateObj->label),
-          'urnSubCat' => $dateObj->urnSubCat->__toString(),
-          'type' => $dateObj->type->__toString(),
-          'value' => $dateObj->value->__toString()
-        );
+        $lang = substr(get_locale(), 0, 2);
+        if ($lang == substr($dateObj->attributes()->urn->__toString(), 0, 2) || 'urn' == substr($dateObj->attributes()->urn->__toString(), 0, 3)) {
+          $urn_default = pivot_get_urn_without_lang($dateObj);
+          $offer_array['date'][$index][$urn_default] = array(
+            'label' => _get_translated_value($dateObj->label),
+            'urnSubCat' => $dateObj->urnSubCat->__toString(),
+            'type' => $dateObj->type->__toString(),
+            'value' => $dateObj->value->__toString()
+          );
+        } else {
+          if ('urn' == substr($dateObj->attributes()->urn->__toString(), 0, 3) && $lang == 'fr') {
+            $urn_default = pivot_get_urn_without_lang($dateObj);
+            $offer_array['date'][$index][$urn_default] = array(
+              'label' => _get_translated_value($dateObj->label),
+              'urnSubCat' => $dateObj->urnSubCat->__toString(),
+              'type' => $dateObj->type->__toString(),
+              'value' => $dateObj->value->__toString()
+            );
+          }
+        }
       }
     }
   }
