@@ -327,6 +327,43 @@ function _get_ranking_picto_refractor($offre, $color = null, $height = 20) {
  * @param string $color color in hexadecimal format without # (null by default)
  * @return string
  */
+function _get_resto_ranking_picto_refractor($offre, $color = null, $height = 20) {
+  $searched_urn = array('urn:fld:class:michfour', 'urn:fld:class:michstar', 'urn:fld:class:gaultmiltoq');
+  $output = '';
+  // Loop on each specific field
+  foreach ($offre['urn:cat:classlab'] as $urn => $specification) {
+    // Check if it's the one we are looking for
+    if (in_array($urn, $searched_urn)) {
+      $useless = array('urn:val:class:michstar:nc', 'urn:val:class:michfour:nc', 'urn:val:class:gaultmiltoq:nc');
+      if (!in_array($specification['urn'], $useless)) {
+        // add specific class to allow overriding. Replace : by -
+        $output .= '<span class="pivot-ranking">';
+        // prepare img title attribute
+        $title_attribute = 'title="' . $specification['value'] . '"';
+        // prepare img alt attribute
+        $alt_attribute = 'alt="image ' . $specification['value'] . '"';
+        // Construct <img/> tag
+        $img = '<img height="' . $height . '" ' . $title_attribute . ' ' . $alt_attribute . ' class="pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $specification['urn'] . (($color) ? ';c=' . $color : '') . ';h=' . $height;
+        $img .= '"/>';
+
+        $output .= $img . '</span>';
+      }
+    }
+  }
+  if ($output != '') {
+    return $output;
+  } else {
+    return '';
+  }
+}
+
+/**
+ * Will return a span with image of the ranking picto inside.
+ *
+ * @param Object $offre the complete offer Object
+ * @param string $color color in hexadecimal format without # (null by default)
+ * @return string
+ */
 function _get_resto_ranking_picto($offre, $color = null, $height = 20) {
   $searched_urn = array('urn:fld:class:michfour', 'urn:fld:class:michstar', 'urn:fld:class:gaultmiltoq');
   $output = '';
