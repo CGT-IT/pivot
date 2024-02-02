@@ -68,7 +68,7 @@
                                 <tbody>
                                     <?php $i = 0; ?>
                                     <?php foreach ($offres as $offre): ?>
-                                      <?php $offerTitle = _get_urn_value($offre, 'urn:fld:nomofr'); ?>
+                                      <?php $offerTitle = $offre->nom->__toString(); ?>
                                       <?php $codeCGT = $offre->attributes()->codeCgt->__toString(); ?>
                                       <?php $idTypeOffre = $offre->typeOffre->attributes()->idTypeOffre->__toString(); ?>
                                       <?php $url = get_bloginfo('wpurl') . '/details/' . $codeCGT . '&type=' . $idTypeOffre; ?>
@@ -81,9 +81,9 @@
                                           <td class="commune"><?php print $offre->adresse1->localite->value->__toString(); ?></td>
                                           <td class="maison-tourisme"><?php print $offre->adresse1->organisme->label; ?></td>
                                           <td id="lien-orc-fr-<?php print $i; ?>" class="lien-orc-fr"><?php print $orcLink; ?></td>
-                                          <td id="lien-orc-nl-<?php print $i; ?>" class="lien-orc-nl"><?php print _get_urn_value($offre, 'nl:urn:fld:orc'); ?></td>
-                                          <td id="lien-orc-en-<?php print $i; ?>" class="lien-orc-en"><?php print _get_urn_value($offre, 'en:urn:fld:orc'); ?></td>
-                                          <td id="lien-orc-de-<?php print $i; ?>" class="lien-orc-de"><?php print _get_urn_value($offre, 'de:urn:fld:orc'); ?></td>
+                                          <td id="lien-orc-nl-<?php print $i; ?>" class="lien-orc-nl"><?php print str_replace('fr-FR', 'nl-NL', $orcLink); ?></td>
+                                          <td id="lien-orc-en-<?php print $i; ?>" class="lien-orc-en"><?php print str_replace('fr-FR', 'en-EN', $orcLink); ?></td>
+                                          <td id="lien-orc-de-<?php print $i; ?>" class="lien-orc-de"><?php print str_replace('fr-FR', 'de-DE', $orcLink); ?></td>
                                   <input id="link-<?php print $i; ?>" style="position:fixed;top:0;left:0;width:2em;height:2em;padding:0;border:none;outline:none;box-shadow:none;background:transparent;" type="text"  value="<?php print $orcLink; ?>"/>
                                   <td class="details-offre">
                                       <button class="button btn-sm m-2" onclick="copyFunction('link-<?php print $i; ?>')" title="Copier le lien Elloha FR"><i class="fa fa-copy"></i> Copier</button>
@@ -105,5 +105,4 @@
           <!--Include footer-->
           <?php get_footer(); ?>
           <?php
-
          endif;
