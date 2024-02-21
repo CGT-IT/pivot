@@ -1502,7 +1502,9 @@ function pivot_media_treatment($relation, $relation_array) {
 }
 
 function pivot_link_treatment($relation, $relation_array) {
+//  debug($relation);
   $link = array(
+    'type' => $relation->attributes()->urn->__toString(),
     'id' => $relation->offre->attributes()->codeCgt->__toString(),
     'nom' => $relation->offre->nom->__toString(),
     'idTypeOffre' => $relation->offre->typeOffre->attributes()->idTypeOffre->__toString(),
@@ -1513,10 +1515,18 @@ function pivot_link_treatment($relation, $relation_array) {
   );
 
   $lang = substr(get_locale(), 0, 2);
-  if ($lang && $lang != 'fr') {
-    foreach ($relation->offre->spec as $spec) {
+  foreach ($relation->offre->spec as $spec) {
+    if ($lang && $lang != 'fr') {
       if ($spec->attributes()->urn == $lang . ':urn:fld:nomofr') {
         $link['nom'] = $spec->value->__toString();
+      }
+      if ($spec->attributes()->urn == $lang . ':urn:fld:descmarket') {
+        $link['desc'] = $spec->value->__toString();
+        break;
+      }
+    } else {
+      if ($spec->attributes()->urn == 'urn:fld:descmarket') {
+        $link['desc'] = $spec->value->__toString();
         break;
       }
     }
