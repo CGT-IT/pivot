@@ -1439,9 +1439,28 @@ function pivot_relation_treatment($offre) {
         case "33" :
           $relation_array = pivot_closed_treatment($relation, $relation_array);
           break;
-        case "10" :
         case "23" :
           break;
+        case "10" :
+        default:
+          $relation_array = pivot_link_treatment($relation, $relation_array);
+          break;
+      }
+    }
+  }
+  foreach ($offre->relOffreTgt as $relation) {
+    if ($relation->offre->estActive == 30) {
+      $idTypeOffre = $relation->offre->typeOffre->attributes()->idTypeOffre->__toString();
+      switch ($idTypeOffre) {
+        case "268":
+          $relation_array = pivot_media_treatment($relation, $relation_array);
+          break;
+        case "33" :
+          $relation_array = pivot_closed_treatment($relation, $relation_array);
+          break;
+        case "23" :
+          break;
+        case "10" :
         default:
           $relation_array = pivot_link_treatment($relation, $relation_array);
           break;
@@ -1505,7 +1524,6 @@ function pivot_media_treatment($relation, $relation_array) {
 }
 
 function pivot_link_treatment($relation, $relation_array) {
-//  debug($relation);
   $link = array(
     'type' => $relation->attributes()->urn->__toString(),
     'id' => $relation->offre->attributes()->codeCgt->__toString(),
@@ -1525,13 +1543,23 @@ function pivot_link_treatment($relation, $relation_array) {
       }
       if ($spec->attributes()->urn == $lang . ':urn:fld:descmarket') {
         $link['desc'] = $spec->value->__toString();
-        break;
+        if ($relation->offre->typeOffre->attributes()->idTypeOffre->__toString() != 9) {
+          break;
+        }
       }
     } else {
       if ($spec->attributes()->urn == 'urn:fld:descmarket') {
         $link['desc'] = $spec->value->__toString();
-        break;
+        if ($relation->offre->typeOffre->attributes()->idTypeOffre->__toString() != 9) {
+          break;
+        }
       }
+    }
+    // Get dates of events
+    if ($spec->attributes()->urn == 'urn:obj:date') {
+      $offer_ar = [];
+      $link['date'] = pivot_date_treatment($offer_ar, $spec);
+      break;
     }
   }
 
