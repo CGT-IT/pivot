@@ -180,7 +180,7 @@ function pivot_template($name, $args) {
 function pivot_add_rewrite_rules() {
   add_rewrite_tag('%' . 'details' . '%', '([^&]+)');
   add_rewrite_rule(
-    'details' . '/([^/]*&type=\d+)/?',
+    'details' . '/([^/]*&type=\d+)/?$',
     'index.php?' . 'details' . '=$matches[1]',
     'top'
   );
@@ -195,7 +195,7 @@ function pivot_add_rewrite_rules() {
       'top'
     );
     add_rewrite_rule(
-      $pivot_page->path . '/([^/]*)/?',
+      $pivot_page->path . '/([^/]*)/?$',
       'index.php?' . $pivot_page->path . '=$matches[1]',
       'top'
     );
