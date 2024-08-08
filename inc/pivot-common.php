@@ -1562,8 +1562,11 @@ function pivot_link_treatment($relation, $relation_array) {
       break;
     }
   }
-
-  $relation_array['link'][] = $link;
+  // Check if offer is not already set.
+  // Can be the case when offer is set "to see also" and also as "child" of the same offer.
+  if (!isset($relation_array['link']) || !in_array($link['id'], array_column($relation_array['link'], 'id'))) {
+    $relation_array['link'][] = $link;
+  }
 
   return $relation_array;
 }
