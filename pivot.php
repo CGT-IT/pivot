@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 2.4.3
+ * Version: 2.4.4
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -20,9 +20,9 @@ define('MY_PLUGIN_URL', plugin_dir_url(__FILE__));
  */
 require_once('inc/external/plugin-update-checker/plugin-update-checker.php');
 $myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
-    'https://github.com/CGT-IT/pivot/',
-    __FILE__,
-    'pivot'
+  'https://github.com/CGT-IT/pivot/',
+  __FILE__,
+  'pivot'
 );
 
 // Include all files

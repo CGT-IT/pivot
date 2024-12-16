@@ -1274,7 +1274,7 @@ function endsWith($haystack, $needle) {
  */
 function pivot_offer_treatment($offre) {
   $excludedUrn = array('urn:cat:accueil:attest', 'urn:val:attestincendie:asi', 'urn:val:attestincendie:acs', 'urn:val:attestincendie:defaut', 'urn:fld:attestincendie:dateech', 'urn:fld:dateech',
-    'urn:fld:idaccessi', 'urn:fld:accessi', 'urn:fld:accessi:url', 'urn:fld:accessi:perfautroul', 'urn:fld:accessi:permardif', 'urn:fld:accessi:perave', 'urn:fld:accessi:permalvoy', 'urn:fld:accessi:persou', 'urn:fld:accessi:permalent', 'urn:fld:accessi:perdifcomp',
+    'urn:fld:idaccessi', 'urn:fld:accessi:perfautroul', 'urn:fld:accessi:permardif', 'urn:fld:accessi:perave', 'urn:fld:accessi:permalvoy', 'urn:fld:accessi:persou', 'urn:fld:accessi:permalent', 'urn:fld:accessi:perdifcomp',
     'urn:val:qw:nc', 'urn:fld:datereco', 'urn:fld:class:title', 'urn:fld:class:value', 'urn:val:class:echue', 'urn:fld:idautor');
 
   $offer_array = array(
@@ -1285,6 +1285,7 @@ function pivot_offer_treatment($offre) {
     'localite' => (isset($offre->adresse1->localite->value) ? $offre->adresse1->localite->value->__toString() : ''),
     'rue' => (isset($offre->adresse1->rue) ? $offre->adresse1->rue->__toString() : ''),
     'numero' => (isset($offre->adresse1->numero) ? $offre->adresse1->numero->__toString() : ''),
+    'boite' => (isset($offre->adresse1->boite) ? $offre->adresse1->boite->__toString() : ''),
     'commune' => (isset($offre->adresse1->commune->value) ? $offre->adresse1->commune->value->__toString() : ''),
     'lieuDit' => (isset($offre->adresse1->lieuDit) ? $offre->adresse1->lieuDit->__toString() : ''),
     'lieuPrecis' => (isset($offre->adresse1->lieuPrecis) ? $offre->adresse1->lieuPrecis->__toString() : ''),
@@ -1311,6 +1312,7 @@ function pivot_offer_treatment($offre) {
       'localite' => (isset($offre->adresse2->localite->value) ? $offre->adresse2->localite->value->__toString() : ''),
       'rue' => (isset($offre->adresse2->rue) ? $offre->adresse2->rue->__toString() : ''),
       'numero' => (isset($offre->adresse2->numero) ? $offre->adresse2->numero->__toString() : ''),
+      'boite' => (isset($offre->adresse2->boite) ? $offre->adresse2->boite->__toString() : ''),
       'commune' => (isset($offre->adresse2->commune->value) ? $offre->adresse2->commune->value->__toString() : ''),
       'lieuDit' => (isset($offre->adresse2->lieuDit) ? $offre->adresse2->lieuDit->__toString() : ''),
       'lieuPrecis' => (isset($offre->adresse2->lieuPrecis) ? $offre->adresse2->lieuPrecis->__toString() : ''),
