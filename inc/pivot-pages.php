@@ -1,6 +1,6 @@
 <?php
 if (!class_exists('WP_List_Table')) {
-  require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
+  require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
 class Pivot_Pages_List extends WP_List_Table {
@@ -36,7 +36,7 @@ class Pivot_Pages_List extends WP_List_Table {
     }
 
     $sql .= " LIMIT $per_page";
-    $sql .= ' OFFSET ' . ( $page_number - 1 ) * $per_page;
+    $sql .= ' OFFSET ' . ($page_number - 1) * $per_page;
 
     $result = $wpdb->get_results($wpdb->prepare($sql, $user_search_key), 'ARRAY_A');
 
@@ -252,7 +252,7 @@ class Pivot_Pages_List extends WP_List_Table {
     }
 
     // If the delete bulk action is triggered
-    if (( isset($_POST['action']) && $_POST['action'] == 'bulk-delete' ) || ( isset($_POST['action2']) && $_POST['action2'] == 'bulk-delete' )
+    if ((isset($_POST['action']) && $_POST['action'] == 'bulk-delete') || (isset($_POST['action2']) && $_POST['action2'] == 'bulk-delete')
     ) {
 
       $delete_ids = esc_sql($_POST['bulk-delete']);
@@ -268,7 +268,6 @@ class Pivot_Pages_List extends WP_List_Table {
       exit;
     }
   }
-
 }
 
 /**
@@ -394,9 +393,15 @@ function pivot_meta_box() {
       <?php if (isset($edit_page)): ?>
         <?php $content = $edit_page->description; ?>
       <?php endif; ?>
-      <?php wp_editor($content, 'edit-pivot-description', array('textarea_rows' => 10, 'media_buttons' => 0, 'tinymce' => 0, 'quicktags' => array('buttons' => 'strong,em,ul,ol,li,close'))); ?>
+      <?php wp_editor($content, 'edit-pivot-description', array('textarea_rows' => 10, 'media_buttons' => 0, 'tinymce' => 1, 'quicktags' => array('buttons' => 'strong,em,ul,ol,li,close'))); ?>
       <p class="description"><?php esc_html_e('Small text to display above the page under the title', 'pivot') ?></p>
   </div><br>
+  <div class="form-item form-type-textfield form-item-pivot-shortcode">
+      <label for="shortcode"><strong><?php esc_html_e('Shortcode', 'pivot') ?></strong> </label>
+      <input type="text" id="shortcode" name="shortcode" value="<?php if (isset($edit_page)) echo esc_attr($edit_page->shortcode); ?>" size="60" maxlength="128" class="form-text">
+      <p class="description"><?php esc_html_e('To insert custom presentation with a shortcode, from Elementor for example', 'pivot') ?></p>
+      <p class="description"><?php esc_html_e('Need to be implemented in your templates to be usable (not active by default) !', 'pivot') ?></p>
+  </div>
   <div class="form-item form-type-file form-item-pivot-image">
       <label><strong><?php esc_html_e('Choose an image', 'pivot'); ?></strong></label>
       <input type="file" name="my_image_upload" id="my_image_upload"  multiple="false" />
@@ -548,6 +553,7 @@ function pivot_action() {
     $path = $_POST['path'];
     $title = $_POST['title'];
     $description = $_POST['edit-pivot-description'];
+    $shortcode = isset($_POST['shortcode']) ? wp_unslash($_POST['shortcode']) : '';
 
     // Check that the nonce is valid, and the user can edit this post.
     if (isset($_POST['my_image_upload_nonce']) && wp_verify_nonce($_POST['my_image_upload_nonce'], 'my_image_upload')) {
@@ -558,9 +564,9 @@ function pivot_action() {
         // Check conditions
         if (in_array($_FILES['my_image_upload']['type'], $allowed_image_types)) {
           // These files need to be included as dependencies when on the front end.
-          require_once( ABSPATH . 'wp-admin/includes/image.php' );
-          require_once( ABSPATH . 'wp-admin/includes/file.php' );
-          require_once( ABSPATH . 'wp-admin/includes/media.php' );
+          require_once(ABSPATH . 'wp-admin/includes/image.php');
+          require_once(ABSPATH . 'wp-admin/includes/file.php');
+          require_once(ABSPATH . 'wp-admin/includes/media.php');
 
           // Let WordPress handle the upload.
           // Remember, 'my_image_upload' is the name of our file input in our form above.
@@ -596,9 +602,10 @@ function pivot_action() {
             'sortField' => $sortField,
             'nbcol' => $nbcol,
             'description' => $description,
+            'shortcode' => $shortcode,
             'image' => (isset($image_url) ? $image_url : $_POST['imageUrl'])
           ),
-          array('%s', '%s', '%s', '%s', '%d', '%s', '%d', '%s', '%s')
+          array('%s', '%s', '%s', '%s', '%d', '%s', '%d', '%s', '%s', '%s')
         );
       } else {
         // Update the data
@@ -614,10 +621,11 @@ function pivot_action() {
             'sortField' => $sortField,
             'nbcol' => $nbcol,
             'description' => $description,
+            'shortcode' => $shortcode,
             'image' => (isset($image_url) ? $image_url : $_POST['imageUrl'])
           ),
           array('id' => $_POST['page_id']),
-          array('%s', '%s', '%s', '%s', '%d', '%s', '%s', '%d', '%s', '%s'),
+          array('%s', '%s', '%s', '%s', '%d', '%s', '%s', '%d', '%s', '%s', '%s'),
           array('%d')
         );
       }

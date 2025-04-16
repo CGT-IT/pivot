@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Pivot
  * Description: Un plugin pour l'affichage et la recherche (via webservice) des offres touristiques disponibles dans la DB Pivot
- * Version: 2.4.4
+ * Version: 2.4.5
  * Author: Maxime Degembe
  * License: GPL2
  * Text Domain: pivot
@@ -201,6 +201,9 @@ function plugin_upgrade() {
   if (get_option('pivot_db_version') < 220) {
     pivot_upgrade_220();
   }
+  if (get_option('pivot_db_version') < 230) {
+    pivot_upgrade_230();
+  }
 }
 
 add_action('plugins_loaded', 'plugin_upgrade');
@@ -254,6 +257,19 @@ function pivot_upgrade_220() {
     ");
 
   update_option('pivot_db_version', 220);
+}
+
+function pivot_upgrade_230() {
+  global $wpdb;
+
+  $table_name = $wpdb->prefix . 'pivot_pages';
+
+  $wpdb->query(
+    "ALTER TABLE $table_name
+     ADD COLUMN `shortcode` varchar(255) DEFAULT NULL
+    ");
+
+  update_option('pivot_db_version', 230);
 }
 
 function pivot_deactivation() {
@@ -718,9 +734,10 @@ function _create_dom_criteria_field_element($domDocument, $filter) {
  */
 function pivot_lodging_page($page_id, $details = 2, $offers_per_page = null) {
   $field_params = array();
-
+//  global $wp_query;
   // Get current page details
   $pivot_page = pivot_get_page_path($_SESSION['pivot'][$page_id]['path']);
+//  $pivot_page = pivot_get_page_path(key($wp_query->query_vars));
   if ($pivot_page) {
     $field_params['page_type'] = $pivot_page->type;
     if ($offers_per_page == null) {
@@ -809,6 +826,7 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
   }
 
   // Get current page number (start with 0)
+  //$current_page = pivot_get_current_page();
   if (($pos = strpos($_SERVER['REQUEST_URI'], "paged=")) !== FALSE) {
     $page_number = substr($_SERVER['REQUEST_URI'], $pos + 6);
     $current_page = (int) filter_var($page_number, FILTER_SANITIZE_NUMBER_INT);
@@ -870,6 +888,7 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
       if (is_object($xml_object) && $page_id != 999) {
         // Store number of offers
         $_SESSION['pivot'][$page_id]['nb_offres'] = str_replace(', ', '', $xml_object->attributes()->count->__toString());
+//        $_SESSION['pivot'][$page_id]['token'] = $xml_object->attributes()->token->__toString();
       }
     } else {
       // Get offers
@@ -900,6 +919,9 @@ function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $pag
   }
   if (is_object($xml_object)) {
     $offres = $xml_object->offre;
+    // Store number of offers
+//    $_SESSION['pivot'][$page_id]['nb_offres'] = str_replace(', ', '', $xml_object->attributes()->count->__toString());
+//    $_SESSION['pivot'][$page_id]['token'] = $xml_object->attributes()->token->__toString();
   } else {
     $offres = $xml_object;
   }
