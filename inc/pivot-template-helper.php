@@ -401,9 +401,10 @@ function _add_section_info_points($offre) {
 function _add_section_mice_rooms($offre, $title, $faIcon = '') {
   $output = '';
 
-  $open_balise = '<link href="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.css" rel="stylesheet">'
-    . '<script src="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.js"></script>'
-    . '<p class="section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 f0fc ' . $faIcon . '"></i>' . __($title, 'pivot') . '</p>'
+  wp_enqueue_style('pivot-bootstrap-table');
+  wp_enqueue_script('pivot-bootstrap-table');
+
+  $open_balise = '<p class="section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 f0fc ' . $faIcon . '"></i>' . __($title, 'pivot') . '</p>'
     . '<div class="table-responsive-xl">'
     . '<table  data-toggle="table" data-sort-name="name" data-sort-order="asc" data-pagination="true" data-page-size="25" data-toggle="table" data-search="true"class="table table-striped">';
 
@@ -651,27 +652,20 @@ function _add_section_accessi($offre) {
  * @return string
  */
 function _add_pivot_map($map = 0, $nb_col = 12, $width = '600px', $height = '800px', $single_offer = FALSE) {
+  // Leaflet and the map script used to be echoed as raw tags in the middle of the
+  // body. Enqueueing them lets WordPress deduplicate and defer them, and keeps them
+  // off pages that do not show a map.
+  pivot_enqueue_map_assets($single_offer ? 'single' : 'list');
+
   $output = '';
   if ($single_offer == FALSE) {
-    $output = '<div id="maparea" data-nb-col="' . $nb_col . '" class="' . (($map == 1) ? 'col-' . $nb_col . ' d-none d-md-block' : '') . '">';
+    $output = '<div id="maparea" data-nb-col="' . esc_attr($nb_col) . '" class="' . (($map == 1) ? 'col-' . esc_attr($nb_col) . ' d-none d-md-block' : '') . '">';
   }
-  // Include leaflet css for map
-  $output .= ' <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
-                   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
-                   crossorigin=""/>';
-  // Include leaflet js for map
-  $output .= '<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
-                     integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
-                     crossorigin=""></script>';
   // Create Map element
-  $output .= '<div id="mapid" ' . ($single_offer ? 'class="mb-4"' : '') . ' style="height:' . $height . ';width:' . $width . ';z-index:0;"></div>';
+  $output .= '<div id="mapid" ' . ($single_offer ? 'class="mb-4"' : '') . ' style="height:' . esc_attr($height) . ';width:' . esc_attr($width) . ';z-index:0;"></div>';
 
   if ($single_offer == FALSE) {
-    // Include map custom js
-    $output .= '<script src="' . plugins_url('js/mapcardorientation.js', dirname(__FILE__)) . '"></script>';
     $output .= '</div>';
-  } else {
-    $output .= '<script src="' . plugins_url('js/mapsingleoffer.js', dirname(__FILE__)) . '"></script>';
   }
 
   return $output;

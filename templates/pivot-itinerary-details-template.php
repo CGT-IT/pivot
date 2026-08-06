@@ -56,11 +56,12 @@
               </div>
           </div>
 
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.js" charset="utf-8"></script>
-          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.2/leaflet.css" />
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.2/leaflet-src.js"></script>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.4.0/gpx.js"></script>
-          <?php print '<script src="' . MY_PLUGIN_URL . '/js/itinerary.js' . '"></script>'; ?>
+          <?php
+          // Leaflet, leaflet-gpx, d3 and the itinerary script, registered in
+          // inc/pivot-scripts.php rather than printed here mid-body.
+          wp_enqueue_style('pivot-leaflet');
+          wp_enqueue_script('pivot-itinerary');
+          ?>
           <?php foreach ($offre->relOffre as $relation): ?>
             <?php foreach ($relation as $specification): ?>
               <?php foreach ($specification->spec as $spec): ?>

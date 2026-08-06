@@ -80,43 +80,37 @@ function _get_translated_value($field) {
   }
 }
 
-function _get_event_categories() {
+/**
+ * Fetch the thesaurus entry of a URN, cached.
+ *
+ * The thesaurus describes the fields themselves (label, type, translations); it is
+ * effectively immutable between Pivot releases. It used to be fetched with a fresh
+ * HTTP request on every single call, and the callers below sit inside rendering loops:
+ * an offer page with a hundred specifications issued a hundred sequential requests,
+ * each with a two-minute timeout.
+ *
+ * Two levels of caching: a per-request memo (the same URN is typically asked for
+ * several times while rendering one page) on top of the transient cache.
+ *
+ * @param string $urn Name of the URN = field ID
+ * @return SimpleXMLElement|false
+ */
+function pivot_thesaurus_spec($urn) {
+  static $memo = array();
 
-  $uri = get_option('pivot_uri') . 'thesaurus/typeofr/9/urn:cat:classlab:classif;pretty=true;fmt=xml;';
-
-  $ssl_options = array(
-    "ssl" => array(
-      "verify_peer" => false,
-      "verify_peer_name" => false,
-    ),
-  );
-
-  $xml_response = file_get_contents($uri, false, stream_context_create($ssl_options));
-  $event_categories = simplexml_load_string($xml_response);
-  print '<pre>';
-  print_r($event_categories);
-  print '</pre>';
-
-  // une methode en accès direct pour arriver et boucler sur la spec "urn:fld:catevt"
-  // Si on veut aller plus loin et essayer de rendre la fonction utilisable dans d'autre contexte,
-  // faudrait imbriquer 2 boucles jusqu'à arriver à la spec voulue ("urn:fld:catevt" dans ce cas-ci)
-  foreach ($event_categories->spec->spec[1] as $category) {
-    if ($category->attributes()->urn) {
-      /* L'urn est un attribut voilà comment y accéder.
-       *
-       * $category->attributes()->urn
-       */
-      /* le label en français, pcq je sais que la valeur FR en tjs en première.
-       * Pour être propre faudrait faire une boucle sur les label jusqu'à trouver l'attribut lang = FR
-       *
-       * $category->label[0]->value->__toString()
-       */
-
-      // print '<pre>';print_r($category);print '</pre>';
-
-      print 'Option URN: ' . $category->attributes()->urn . ' et son label fr' . $category->label[0]->value->__toString() . '<br>';
-    }
+  if ($urn === '' || $urn === null) {
+    return false;
   }
+  if (array_key_exists($urn, $memo)) {
+    return $memo[$urn];
+  }
+
+  $url = esc_url(get_option('pivot_uri')) . 'thesaurus/urn/' . $urn . ';fmt=xml';
+  $body = pivot_http_get_cached($url, PIVOT_HTTP_CACHE_TTL, array('ws_key' => true));
+
+  $memo[$urn] = is_wp_error($body) ? false : pivot_http_parse_xml($body);
+
+  return $memo[$urn];
 }
 
 /**
@@ -126,25 +120,35 @@ function _get_event_categories() {
  * @return string urn documentation translated
  */
 function _get_urn_documentation($urn) {
-  $params['urn_name'] = $urn;
-  $xml_object = _pivot_request('thesaurus', 0, $params);
+  static $labels = array();
 
-  foreach ($xml_object->spec as $item) {
-    return _get_translated_value($item);
+  $key = substr(get_locale(), 0, 2) . '|' . $urn;
+  if (isset($labels[$key])) {
+    return $labels[$key];
   }
+
+  $label = '';
+  $xml_object = pivot_thesaurus_spec($urn);
+  if ($xml_object !== false) {
+    foreach ($xml_object->spec as $item) {
+      $label = _get_translated_value($item);
+      break;
+    }
+  }
+
+  $labels[$key] = $label;
+
+  return $label;
 }
 
 /**
  * Call the "thesaurus" web service to get the documentation Object of a specific URN
  *
  * @param string $urn Name of the URN = field ID
- * @return Object documentation of the urn
+ * @return SimpleXMLElement|false documentation of the urn, false when unavailable
  */
 function _get_urn_documentation_full_spec($urn) {
-  $params['urn_name'] = $urn;
-  $xml_object = _pivot_request('thesaurus', 0, $params);
-
-  return $xml_object;
+  return pivot_thesaurus_spec($urn);
 }
 
 /**
@@ -444,104 +448,53 @@ function _get_address_one_line($offre) {
   return $address;
 }
 
-function _get_list_mdt() {
-  $uri = get_option('pivot_uri') . 'thesaurus/tmdts;pretty=true;fmt=xml';
-
-  $ssl_options = array(
-    "ssl" => array(
-      "verify_peer" => false,
-      "verify_peer_name" => false,
-    ),
+/**
+ * Fetch a Pivot reference-data document, cached.
+ *
+ * @param string $path Path appended to the configured Pivot base URI.
+ * @return SimpleXMLElement|false
+ */
+function pivot_reference_data($path) {
+  $body = pivot_http_get_cached(
+    esc_url(get_option('pivot_uri')) . $path,
+    PIVOT_HTTP_CACHE_TTL,
+    array('ws_key' => true)
   );
 
-  $xml_response = file_get_contents($uri, false, stream_context_create($ssl_options));
-  $mdts = simplexml_load_string($xml_response);
+  return is_wp_error($body) ? false : pivot_http_parse_xml($body);
+}
+
+function _get_list_mdt() {
+  $mdts = pivot_reference_data('thesaurus/tmdts;pretty=true;fmt=xml');
   $mdt_list = '';
 
+  if ($mdts === false) {
+    return $mdt_list;
+  }
+
   foreach ($mdts as $mdt) {
-    if (get_option('pivot_mdt') == $mdt->attributes()['idMdt']) {
-      $mdt_list .= '<option selected="selected" value="' . $mdt->attributes()['idMdt'] . '">' . $mdt->value . '</option>';
-    } else {
-      $mdt_list .= '<option value="' . $mdt->attributes()['idMdt'] . '">' . $mdt->value . '</option>';
-    }
+    $id = (string) $mdt->attributes()['idMdt'];
+    $mdt_list .= '<option ' . selected(get_option('pivot_mdt'), $id, false)
+      . ' value="' . esc_attr($id) . '">' . esc_html($mdt->value) . '</option>';
   }
   return $mdt_list;
 }
 
 function _get_list_typeofr($selected_id = NULL) {
-  $uri = get_option('pivot_uri') . 'thesaurus/typeofr;fmt=xml';
-
-  $ssl_options = array(
-    "ssl" => array(
-      "verify_peer" => false,
-      "verify_peer_name" => false,
-    ),
-  );
-
-  $xml_response = file_get_contents($uri, false, stream_context_create($ssl_options));
-  $typeofr = simplexml_load_string($xml_response);
+  $typeofr = pivot_reference_data('thesaurus/typeofr;fmt=xml');
   $typeofr_list = '';
 
-  foreach ($typeofr as $type) {
-    if ($selected_id == $type->attributes()['order']) {
-      $typeofr_list .= '<option selected="selected" value="' . $type->attributes()['order'] . '">' . $type->label->value . '</option>';
-    } else {
-      $typeofr_list .= '<option value="' . $type->attributes()['order'] . '">' . $type->label->value . '</option>';
+  if ($typeofr !== false) {
+    foreach ($typeofr as $type) {
+      $order = (string) $type->attributes()['order'];
+      $typeofr_list .= '<option ' . selected($selected_id, $order, false)
+        . ' value="' . esc_attr($order) . '">' . esc_html($type->label->value) . '</option>';
     }
   }
 
-  if ($selected_id == 'custom') {
-    $typeofr_list .= '<option selected="selected" value="custom">Custom (hors Pivot) spécialement utilisé pour les vignettes en shortcode</option>';
-  } else {
-    $typeofr_list .= '<option value="custom">Custom (hors Pivot) spécialement utilisé pour les vignettes en shortcode</option>';
-  }
-  return $typeofr_list;
-}
+  $typeofr_list .= '<option ' . selected($selected_id, 'custom', false)
+    . ' value="custom">' . esc_html__('Custom (outside Pivot), meant for shortcode thumbnails', 'pivot') . '</option>';
 
-function _get_linked_mt($commune) {
-  $uri = get_option('pivot_uri');
-
-  $ssl_options = array(
-    "ssl" => array(
-      "verify_peer" => false,
-      "verify_peer_name" => false,
-    ),
-  );
-  /*
-   * <Query>
-   * <CriteriaGroup type="and">
-   *  <CriteriaField field="urn:fld:etatedit" operator="equal" target="value">
-   *   <value></value>
-   *  </CriteriaField>
-   *  <CriteriaField field="urn:fld:typeofr" operator="equal" target="value">
-   *   <value>14</value>
-   *  </CriteriaField>
-   *  <CriteriaField id="advanced" field="urn:fld:typeogt" operator="equal" target="value">
-   *   <value>urn:val:typeogt:mdt</value>
-   *  </CriteriaField>
-   *  <CriteriaField id="advanced" field="urn:fld:adrcom" operator="equal" target="value">
-   *   <value>xxx</value>
-   *  </CriteriaField>
-   * </CriteriaGroup>
-   * </Query>
-   */
-  $xml_response = file_get_contents($uri, false, stream_context_create($ssl_options));
-  $typeofr = simplexml_load_string($xml_response);
-  $typeofr_list = '';
-
-  foreach ($typeofr as $type) {
-    if ($selected_id == $type->attributes()['order']) {
-      $typeofr_list .= '<option selected="selected" value="' . $type->attributes()['order'] . '">' . $type->label->value . '</option>';
-    } else {
-      $typeofr_list .= '<option value="' . $type->attributes()['order'] . '">' . $type->label->value . '</option>';
-    }
-  }
-
-  if ($selected_id == 'custom') {
-    $typeofr_list .= '<option selected="selected" value="custom">Custom (hors Pivot) spécialement utilisé pour les vignettes en shortcode</option>';
-  } else {
-    $typeofr_list .= '<option value="custom">Custom (hors Pivot) spécialement utilisé pour les vignettes en shortcode</option>';
-  }
   return $typeofr_list;
 }
 
@@ -553,20 +506,13 @@ function _get_linked_mt($commune) {
  * @return string = list of HTML option
  */
 function _get_commune($mt_id) {
-  // Construction of request uri
-  $uri = get_option('pivot_uri') . 'thesaurus/tins/mdt/' . $mt_id . ';fmt=xml';
-  $ssl_options = array(
-    "ssl" => array(
-      "verify_peer" => false,
-      "verify_peer_name" => false,
-    ),
-  );
-
-  $xml_response = file_get_contents($uri, false, stream_context_create($ssl_options));
-  $communes = simplexml_load_string($xml_response);
+  $communes = pivot_reference_data('thesaurus/tins/mdt/' . rawurlencode($mt_id) . ';fmt=xml');
 
   // Init vars
   $commune_list = array();
+  if ($communes === false) {
+    return $commune_list;
+  }
   // Construct list
   foreach ($communes as $commune) {
     if ($commune->commune->attributes()->__toString() == 'fr' && !in_array($commune->commune->value->__toString(), $commune_list)) {
@@ -584,21 +530,17 @@ function _get_commune($mt_id) {
  * @return string = list of HTML option
  */
 function _get_commune_from_pivot($type, $value, $selected_value = NULL) {
-  // Construction of request uri
-  $uri = get_option('pivot_uri') . 'thesaurus/tins/' . $type . '/' . $value . ';pretty=true;fmt=xml';
-  $ssl_options = array(
-    "ssl" => array(
-      "verify_peer" => false,
-      "verify_peer_name" => false,
-    ),
-  );
-
-  $xml_response = file_get_contents($uri, false, stream_context_create($ssl_options));
-  $communes = simplexml_load_string($xml_response);
+  // This runs on every render of the filter widget, i.e. on every listing page view.
+  $communes = pivot_reference_data('thesaurus/tins/' . rawurlencode($type) . '/' . rawurlencode($value) . ';pretty=true;fmt=xml');
 
   // Init vars
   $commune_list = array();
   $output = '<option value="all" ' . (isset($selected_value) ? '' : 'selected') . ' >' . esc_html__('Choose a town', 'pivot') . '</option>';
+
+  if ($communes === false) {
+    return $output;
+  }
+
   // Construct list
   foreach ($communes as $commune) {
     if ($commune->commune->attributes()->__toString() == 'fr' && !in_array($commune->commune->value->__toString(), $commune_list)) {
@@ -610,11 +552,7 @@ function _get_commune_from_pivot($type, $value, $selected_value = NULL) {
 
   // Construct HTML options
   foreach ($commune_list as $commune) {
-    $output .= '<option value="' . $commune . '" ';
-    if ($selected_value == $commune) {
-      $output .= 'selected';
-    }
-    $output .= '>' . $commune . '</option>';
+    $output .= '<option value="' . esc_attr($commune) . '" ' . selected($selected_value, $commune, false) . '>' . esc_html($commune) . '</option>';
   }
   return $output;
 }
@@ -1217,30 +1155,19 @@ function _multiKeyExists(Array $array, $key) {
 
 function _pivot_export($filename, $export_id, $query_id) {
   // Get Pivot Base URI
-  $pivot_url = esc_url(get_option('pivot_uri')) . 'export/' . $export_id . '/' . $query_id . '';
-  // Get Pivot Personnal Key for Webservices
-  $pivot_key = get_option('pivot_key');
+  $pivot_url = esc_url(get_option('pivot_uri')) . 'export/' . rawurlencode($export_id) . '/' . rawurlencode($query_id);
 
-  $headers = array(
-    'WS_KEY: ' . $pivot_key,
-    'Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  $result = pivot_http_get($pivot_url, array(
+    'ws_key' => true,
+    // Building a spreadsheet server-side is slower than a regular query.
+    'timeout' => 60,
+    'headers' => array(
+      'Accept' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ),
+  ));
 
-  $request = curl_init();
-  if ($request) {
-    curl_setopt($request, CURLOPT_URL, $pivot_url);
-    curl_setopt($request, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_setopt($request, CURLOPT_SSL_VERIFYPEER, 0);
-    curl_setopt($request, CURLOPT_CONNECTTIMEOUT, 160);
-    curl_setopt($request, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($request, CURLOPT_RETURNTRANSFER, 1);
-
-    $result = curl_exec($request);
-
-    if (curl_errno($request)) {
-      echo 'Error:' . curl_error($request);
-    }
-
-    curl_close($request);
+  if (is_wp_error($result)) {
+    return _show_warning(esc_html($result->get_error_message()), 'danger');
   }
 
   // get upload directory
@@ -1249,14 +1176,15 @@ function _pivot_export($filename, $export_id, $query_id) {
   array_map('unlink', glob($upload_dir["basedir"] . '/exportpivot-*.xlsx'));
 
   // create file in the default base uploads wordpress directory
-  $filenamedated = 'exportpivot-' . $filename . '-' . date('j-F-Y H:i');
+  $filenamedated = sanitize_file_name('exportpivot-' . $filename . '-' . date('j-F-Y H:i'));
   $fp = fopen($upload_dir["basedir"] . '/' . $filenamedated . '.xlsx', 'w');
   fwrite($fp, $result);
   fclose($fp);
 
   // Provide download link
   $output = '<i class="fa fa-download"></i>'
-    . '<a href="' . $upload_dir["baseurl"] . '/' . $filenamedated . '.xlsx" download="' . $filenamedated . '.xlsx" target="_blank" type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">Télécharger le fichier ' . $filename . '</a>';
+    . '<a href="' . esc_url($upload_dir["baseurl"] . '/' . $filenamedated . '.xlsx') . '" download="' . esc_attr($filenamedated) . '.xlsx" target="_blank" type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">'
+    . esc_html(sprintf(__('Download file %s', 'pivot'), $filename)) . '</a>';
 
   return $output;
 }

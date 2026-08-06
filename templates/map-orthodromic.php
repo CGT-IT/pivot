@@ -5,14 +5,8 @@
 <?php $field_params['filters']['status']['operator'] = 'equal'; ?>
 <?php $field_params['filters']['status']['searched_value'][] = 'urn:val:etatedit:30'; ?>
 
-<!--Include leaflet css for map-->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
-      integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
-      crossorigin=""/>
-<!--Include leaflet js for map-->
-<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
-        integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
-crossorigin=""></script>
+<!--Leaflet and the orthodromic map script, registered in inc/pivot-scripts.php-->
+<?php pivot_enqueue_map_assets('orthodromic'); ?>
 
 <div class="col-12 d-none d-md-block">
     <ul class="nav nav-pills nav-justified bg-secondary m-0" id="myTab" role="tablist">
@@ -85,6 +79,5 @@ crossorigin=""></script>
     </div>
     <!--Create Map element-->
     <div id="mapid" style="height: 500px; width: 100%;"></div>
-    <script src=<?php print MY_PLUGIN_URL . "js/maporthodromic.js" ?>></script>
 
 </div>

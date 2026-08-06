@@ -310,6 +310,14 @@ function pivot_get_pages() {
  */
 function pivot_get_page_path($path) {
   global $wpdb;
+  // Called several times per request (pre_handle_404, template_include, the template
+  // itself, the filter widget, the admin bar) for the same path.
+  $cache_key = 'page_path_' . md5((string) $path);
+  $cached = wp_cache_get($cache_key, PIVOT_CACHE_GROUP);
+  if ($cached !== false) {
+    return $cached;
+  }
+
   $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}pivot_pages WHERE path= %s", $path);
   $pivot_page = $wpdb->get_row($query);
   if (isset($pivot_page)) {
@@ -318,7 +326,10 @@ function pivot_get_page_path($path) {
       if (is_string($field))
         $field = stripslashes($field);
     }
+    unset($field);
   }
+
+  wp_cache_set($cache_key, $pivot_page, PIVOT_CACHE_GROUP);
 
   return $pivot_page;
 }
@@ -331,6 +342,12 @@ function pivot_get_page_path($path) {
  */
 function pivot_get_pages_path() {
   global $wpdb;
+  // Read on every front-end request through the pre_handle_404 filter.
+  $cached = wp_cache_get('pages_path', PIVOT_CACHE_GROUP);
+  if ($cached !== false) {
+    return $cached;
+  }
+
   $query = "SELECT * FROM {$wpdb->prefix}pivot_pages";
   $pivot_pages_path = $wpdb->get_results($query, ARRAY_A);
 
@@ -340,9 +357,26 @@ function pivot_get_pages_path() {
       if (is_string($field))
         $field = stripslashes($field);
     }
+    unset($field);
   }
+  unset($pivot_page_path);
+
+  wp_cache_set('pages_path', $pivot_pages_path, PIVOT_CACHE_GROUP);
 
   return $pivot_pages_path;
+}
+
+/**
+ * Drop every cached Pivot page after a write.
+ *
+ * The cache group is non-persistent by default, but a site running a persistent
+ * object cache would otherwise keep serving pages that were just edited.
+ */
+function pivot_flush_pages_cache() {
+  wp_cache_delete('pages_path', PIVOT_CACHE_GROUP);
+  if (function_exists('wp_cache_flush_group')) {
+    wp_cache_flush_group(PIVOT_CACHE_GROUP);
+  }
 }
 
 /**
@@ -353,14 +387,27 @@ function pivot_get_pages_path() {
  */
 function pivot_get_page($id) {
   global $wpdb;
+
+  $id = absint($id);
+  $cache_key = 'page_' . $id;
+  $cached = wp_cache_get($cache_key, PIVOT_CACHE_GROUP);
+  if ($cached !== false) {
+    return $cached;
+  }
+
   $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}pivot_pages WHERE id= %d", $id);
   $pivot_page = $wpdb->get_row($query);
 
   // Unscape String
-  foreach ($pivot_page as &$field) {
-    if (is_string($field))
-      $field = stripslashes($field);
+  if ($pivot_page) {
+    foreach ($pivot_page as &$field) {
+      if (is_string($field))
+        $field = stripslashes($field);
+    }
+    unset($field);
   }
+
+  wp_cache_set($cache_key, $pivot_page, PIVOT_CACHE_GROUP);
 
   return $pivot_page;
 }
@@ -571,6 +618,9 @@ function pivot_action() {
     $wpdb->delete($wpdb->prefix . 'pivot_filter', array('page_id' => $_GET['delete']), array('%d'));
     // Delete the page
     $wpdb->delete($wpdb->prefix . 'pivot_pages', array('id' => $_GET['delete']), array('%d'));
+    pivot_flush_pages_cache();
+    // The page path no longer has a rewrite rule to serve.
+    flush_rewrite_rules();
   }
 
   if (isset($_POST['pivot_add_page'])) {
@@ -587,6 +637,10 @@ function pivot_action() {
     $title = sanitize_text_field(wp_unslash($_POST['title']));
     $description = wp_kses_post(wp_unslash($_POST['edit-pivot-description']));
     $shortcode = isset($_POST['shortcode']) ? wp_unslash($_POST['shortcode']) : '';
+
+    // Remembered so rewrite rules are only flushed when the path really changes.
+    $existing_page = empty($_POST['page_id']) ? null : pivot_get_page($_POST['page_id']);
+    $previous_path = $existing_page ? $existing_page->path : null;
 
     // Check that the nonce is valid, and the user can edit this post.
     if (isset($_POST['my_image_upload_nonce']) && wp_verify_nonce($_POST['my_image_upload_nonce'], 'my_image_upload')) {
@@ -660,11 +714,17 @@ function pivot_action() {
         icl_register_string('pivot', 'title-for-' . $query, stripslashes($title), false, substr(get_locale(), 0, 2));
         icl_register_string('pivot', 'description-for-' . $query, stripslashes($description), false, substr(get_locale(), 0, 2));
       }
+      pivot_flush_pages_cache();
+      // Rewrite rules are derived from the page paths, so they only need rebuilding
+      // when a path actually appears or changes — not on every save, and certainly
+      // not on every render of the settings screen.
+      if ($path !== $previous_path) {
+        flush_rewrite_rules();
+      }
     } else {
-      $text = esc_html__('This path already exists', 'pivot') . ': <a href="' . get_permalink($pivot_page->ID) . '">' . get_permalink($pivot_page->ID) . '</a>';
+      $text = esc_html__('This path already exists', 'pivot') . ': <a href="' . esc_url(get_permalink($pivot_page->ID)) . '">' . esc_html(get_permalink($pivot_page->ID)) . '</a>';
       print _show_admin_notice($text);
     }
-    flush_rewrite_rules();
   } else {
     if (isset($_POST['pivot_add_page']) && (!isset($_POST['query']) || $_POST['query'] == '')) {
       $text = esc_html__('Query is required', 'pivot');

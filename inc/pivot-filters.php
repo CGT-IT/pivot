@@ -691,6 +691,10 @@ function pivot_filter_csv_import($page_id) {
       if ($error == false) {
         $urn = $value[0];
         $urnDoc = _get_urn_documentation_full_spec($urn);
+        if (!$urnDoc || !isset($urnDoc->spec->type)) {
+          $text .= sprintf(esc_html__('URN %1$s is unknown to Pivot (line %2$d)', 'pivot'), esc_html($urn), $key + 1) . '</br>';
+          continue;
+        }
         $type = $urnDoc->spec->type->__toString();
         switch ($type) {
           case 'Boolean':

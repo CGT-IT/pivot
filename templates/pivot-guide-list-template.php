@@ -3,7 +3,7 @@
 <title><?php print $_SESSION['pivot'][$page->id]['page_title'] ?> - CGT</title>
 <!--Include header-->
 <?php get_header(); ?>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css">
+<?php wp_enqueue_style('bootstrapexternal'); ?>
 
 <!--Include sidebar-->
 <?php if(is_active_sidebar('et_pb_widget_area_12')): ?>

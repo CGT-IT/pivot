@@ -31,9 +31,10 @@
                   <div class="container-fluid pivot-list">
                     <?php endif; ?>
                     <div class="row p-4">
-                        <link href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css" rel="stylesheet">
-                        <script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
-                        <script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table-locale-all.min.js"></script>
+                        <?php
+                        wp_enqueue_style('pivot-bootstrap-table');
+                        wp_enqueue_script('pivot-bootstrap-table-locale');
+                        ?>
                         <script>
                           function copyFunction(linkID) {
                               /* Get the text field */

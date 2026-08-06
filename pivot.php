@@ -13,6 +13,7 @@ defined('ABSPATH') or die('No script kiddies please!');
 
 define('PIVOT_VERSION', '2.5.0');
 define('PIVOT_DB_VERSION', 240);
+define('PIVOT_CACHE_GROUP', 'pivot');
 define('PIVOT_PLUGIN_FILE', __FILE__);
 define('PIVOT_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('PIVOT_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -54,7 +55,10 @@ register_activation_hook(__FILE__, 'pivot_install_data');
 register_deactivation_hook(__FILE__, 'pivot_deactivation');
 register_uninstall_hook(__FILE__, 'pivot_uninstall');
 
-add_action('init', 'init');
+// Configuration rows are memoised for the duration of a request only: a persistent
+// object cache would otherwise keep serving pages that an editor just changed.
+wp_cache_add_non_persistent_groups(array(PIVOT_CACHE_GROUP));
+
 add_action('admin_menu', 'pivot_menu');
 add_action('admin_init', 'pivot_settings');
 add_action('init', 'pivot_load_textdomain');
@@ -333,10 +337,6 @@ function pivot_menu() {
   add_submenu_page('pivot-admin', 'Shortcode Event', 'Shortcode Event', 'manage_options', 'pivot-shortcode-event', 'pivot_build_shortcode_event_box_html');
 }
 
-function init() {
-
-}
-
 function pivot_global_js_vars() {
   echo '<script type="text/javascript">var _pivot_mapbox_token = ' . wp_json_encode(get_option('pivot_mapbox')) . ";</script>\n";
 }
@@ -437,7 +437,6 @@ function pivot_options() {
       </div>
   </form>
   <?php
-  flush_rewrite_rules();
 }
 
 /**

@@ -417,6 +417,9 @@ function pivot_custom_shortcode($atts) {
         $urn = trim($atts['filterurn']);
         // Get specification of the filtered URN
         $urnDoc = _get_urn_documentation_full_spec($urn);
+        if (!$urnDoc || !isset($urnDoc->spec->type)) {
+          return _show_warning(esc_html(sprintf(__('Unknown URN: %s', 'pivot'), $urn)), 'danger');
+        }
         // Get type of the filtered URN
         $type_urn = $urnDoc->spec->type->__toString();
 
