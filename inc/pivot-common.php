@@ -7,6 +7,10 @@
  * @param string $urn_name urn name we are looking for
  * @param string $lang current language interface
  * @return string Return string value of a urn (field)
+ * @deprecated 2.5.0 Part of the array-shaped offer API, which has no caller
+ *   anywhere in the plugin: nothing produces the array it expects except
+ *   pivot_offer_treatment(), which is itself never called. Kept for themes that
+ *   may build the array themselves; use the SimpleXML helpers instead.
  */
 function _get_urn_value_refractor($offre, $urn_cat, $urn_name) {
   if (isset($offre[$urn_cat][$urn_name]) && !empty($offre[$urn_cat][$urn_name])) {
@@ -177,6 +181,10 @@ function _get_urn_default_language($urn) {
  * @param string $color has to be RGB hexa color code like FFFFFF for black (can be '')
  * @param boolean $original set to true if you want to original color of the picto
  * @return string
+ * @deprecated 2.5.0 Part of the array-shaped offer API, which has no caller
+ *   anywhere in the plugin: nothing produces the array it expects except
+ *   pivot_offer_treatment(), which is itself never called. Kept for themes that
+ *   may build the array themselves; use the SimpleXML helpers instead.
  */
 function _search_specific_urn_img_refractor($offre, $urn_cat, $urn, $height, $color = '', $original = FALSE) {
   if (isset($offre[$urn_cat][$urn])) {
@@ -304,6 +312,10 @@ function _get_ranking_picto($offre, $color = null, $height = 20) {
  * @param Object $offre the complete offer Object
  * @param string $color color in hexadecimal format without # (null by default)
  * @return string
+ * @deprecated 2.5.0 Part of the array-shaped offer API, which has no caller
+ *   anywhere in the plugin: nothing produces the array it expects except
+ *   pivot_offer_treatment(), which is itself never called. Kept for themes that
+ *   may build the array themselves; use the SimpleXML helpers instead.
  */
 function _get_ranking_picto_refractor($offre, $color = null, $height = 20) {
   $useless = array('urn:val:class:cessation', 'urn:val:class:ecc', 'urn:val:class:echue', 'urn:val:class:nc');
@@ -330,6 +342,10 @@ function _get_ranking_picto_refractor($offre, $color = null, $height = 20) {
  * @param Object $offre the complete offer Object
  * @param string $color color in hexadecimal format without # (null by default)
  * @return string
+ * @deprecated 2.5.0 Part of the array-shaped offer API, which has no caller
+ *   anywhere in the plugin: nothing produces the array it expects except
+ *   pivot_offer_treatment(), which is itself never called. Kept for themes that
+ *   may build the array themselves; use the SimpleXML helpers instead.
  */
 function _get_resto_ranking_picto_refractor($offre, $color = null, $height = 20) {
   $searched_urn = array('urn:fld:class:michfour', 'urn:fld:class:michstar', 'urn:fld:class:gaultmiltoq');
@@ -407,7 +423,8 @@ function _get_resto_ranking_picto($offre, $color = null, $height = 20) {
  * @return int Number of offer(s)
  */
 function _get_number_of_offers($field_params, $page_id) {
-  $xml_query = _xml_query_construction($_SESSION['pivot'][$page_id]['query'], $field_params);
+  $pivot_page = pivot_get_page($page_id);
+  $xml_query = _xml_query_construction($pivot_page ? $pivot_page->query : null, $field_params);
 
   $params['type'] = 'query';
   // Define number of offers per page
@@ -635,6 +652,10 @@ function _add_meta_data($offre, $path, $default_image = null) {
  * Add metadata for twitter and og (facebook, google, ...)
  * @param Object $offre Complete Offer object
  * @param String $path path to join the offer
+ * @deprecated 2.5.0 Part of the array-shaped offer API, which has no caller
+ *   anywhere in the plugin: nothing produces the array it expects except
+ *   pivot_offer_treatment(), which is itself never called. Kept for themes that
+ *   may build the array themselves; use the SimpleXML helpers instead.
  */
 function _add_meta_data_refractor($offre, $path, $default_image = null) {
   $url = get_bloginfo('wpurl') . '/' . $path . '/' . $offre['codeCgt'] . '&type=' . $offre['idTypeOffre'];
@@ -716,14 +737,20 @@ function _pivot_create_alternate_link() {
  * @return string
  */
 function _construct_media_copyright($copyright, $date) {
-  if (!empty($copyright) && !empty($date)) {
-    $date_explode = explode('/', $date);
-    if ((strpos($copyright, '©') !== false) || (strpos($copyright, '(c)') !== false)) {
-      return str_replace('copyright', '', $copyright) . ' ' . (isset($date_explode[2]) ? $date_explode[2] : '');
-    } else {
-      return '© ' . str_replace('copyright', '', $copyright) . ' ' . $date_explode[2];
-    }
+  if (empty($copyright) || empty($date)) {
+    return '';
   }
+
+  $date_explode = explode('/', $date);
+  // Pivot dates are dd/mm/yyyy, but the field is free text: the year may be missing.
+  $year = isset($date_explode[2]) ? $date_explode[2] : '';
+  $holder = str_replace('copyright', '', $copyright);
+
+  if ((strpos($copyright, '©') !== false) || (strpos($copyright, '(c)') !== false)) {
+    return $holder . ' ' . $year;
+  }
+
+  return '© ' . $holder . ' ' . $year;
 }
 
 /**
@@ -953,6 +980,21 @@ function _get_offer_details($offer_id = NULL, $details = 3, $name = NULL) {
 }
 
 /**
+ * Whether _get_offer_details() served a cached, pre-rendered offer.
+ *
+ * It returns either a SimpleXMLElement (fresh from Pivot) or an array read back from
+ * a transient, whose 'content' key holds the already-rendered markup. Templates used
+ * to tell the two apart with $offre['content'] on a value that may be a SimpleXML
+ * object, where the same syntax means "attribute named content".
+ *
+ * @param mixed $offre
+ * @return bool
+ */
+function pivot_offer_is_cached($offre) {
+  return is_array($offre) && !empty($offre['content']);
+}
+
+/**
  * Return an array of dates in a workable format.
  *
  * @param Object $offre the complete Object Offre
@@ -1045,7 +1087,10 @@ function _check_is_offer_active($offre) {
  * @param int $page_id
  */
 function _construct_filters_array($field_params, $filter, $key = 'shortcode', $page_id = NULL) {
-  if ($filter->urn == 'urn:fld:adrcom' && isset($_SESSION['pivot']['filters']) && $_SESSION['pivot']['filters'][$page_id][$key] == 'all') {
+  $submitted_value = pivot_state_get_filter_value($page_id, $key);
+
+  // "all" is the placeholder option of the town dropdown: nothing to filter on.
+  if ($filter->urn == 'urn:fld:adrcom' && $submitted_value === 'all') {
     return $field_params;
   } else {
     switch ($filter->type) {
@@ -1069,11 +1114,7 @@ function _construct_filters_array($field_params, $filter, $key = 'shortcode', $p
     // If operator is no "exist", we need the field comparison
     if ($filter->operator != 'exist' && (!isset($parent_urn) || $parent_urn == '') && !isset($field_params['filters']['urn:fld:typeofr'])) {
       // Set value by default
-      if (!empty($_SESSION['pivot']['filters'][$page_id])) {
-        $value = $_SESSION['pivot']['filters'][$page_id][$key];
-      } else {
-        $value = $filter->filter_name;
-      }
+      $value = ($submitted_value !== null) ? $submitted_value : $filter->filter_name;
       // If the filter is a Date
       if ($filter->type === 'Date') {
         // Override value with the requested date format
@@ -1206,23 +1247,43 @@ function _get_pivot_transients($offer_id) {
 }
 
 function _get_nb_offers_from_transient($page_id) {
-  if (isset($_SESSION['pivot'][$page_id]['nb_offres'])) {
-    $nboffers = $_SESSION['pivot'][$page_id]['nb_offres'];
-  } else {
-    $key = 'nbpivot_page_token_' . $page_id;
-    $nboffers = get_transient($key);
+  $nboffers = pivot_state_get($page_id, 'nb_offres');
+  if ($nboffers !== null) {
+    return $nboffers;
   }
-  return $nboffers;
+
+  return pivot_state_get_shared_count($page_id);
 }
 
-function endsWith($haystack, $needle) {
+/**
+ * @param string $haystack
+ * @param string $needle
+ * @return bool
+ */
+function pivot_ends_with($haystack, $needle) {
   return substr_compare($haystack, $needle, -strlen($needle)) === 0;
+}
+
+/**
+ * @deprecated 2.5.0 Renamed to pivot_ends_with(). "endsWith" is generic enough to
+ *   collide with a theme or another plugin, which would be a fatal error.
+ */
+if (!function_exists('endsWith')) {
+
+  function endsWith($haystack, $needle) {
+    return pivot_ends_with($haystack, $needle);
+  }
+
 }
 
 /**
  * Will convert the XML Object into a readable array
  * @param Object $offre
  * @return array
+ * @deprecated 2.5.0 Part of the array-shaped offer API, which has no caller
+ *   anywhere in the plugin: nothing produces the array it expects except
+ *   pivot_offer_treatment(), which is itself never called. Kept for themes that
+ *   may build the array themselves; use the SimpleXML helpers instead.
  */
 function pivot_offer_treatment($offre) {
   $excludedUrn = array('urn:cat:accueil:attest', 'urn:val:attestincendie:asi', 'urn:val:attestincendie:acs', 'urn:val:attestincendie:defaut', 'urn:fld:attestincendie:dateech', 'urn:fld:dateech',
@@ -1280,7 +1341,7 @@ function pivot_get_urn_without_lang($specification) {
   $lang = substr(get_locale(), 0, 2);
 
   // Specific case where the fr version of the name is not in the same place as the other language
-  if (endsWith($specification->attributes()->urn->__toString(), 'urn:fld:nomofr')) {
+  if (pivot_ends_with($specification->attributes()->urn->__toString(), 'urn:fld:nomofr')) {
     $urn_default = 'urn:fld:nomofr';
   } else {
     if ($lang == substr($specification->attributes()->urn->__toString(), 0, 2)) {
@@ -1293,10 +1354,27 @@ function pivot_get_urn_without_lang($specification) {
   return $urn_default;
 }
 
-function debug($p) {
+/**
+ * Dump a value while building a template.
+ *
+ * @param mixed $p
+ */
+function pivot_debug($p) {
   print '<pre>';
   print_r($p);
   print '</pre>';
+}
+
+/**
+ * @deprecated 2.5.0 Renamed to pivot_debug(). "debug" is generic enough to collide
+ *   with a theme or another plugin, which would be a fatal error.
+ */
+if (!function_exists('debug')) {
+
+  function debug($p) {
+    pivot_debug($p);
+  }
+
 }
 
 /**
@@ -1347,6 +1425,11 @@ function pivot_specification_treatment($specification, $offer_array) {
 }
 
 function pivot_date_treatment($offer_array, $specification) {
+  // Dates are grouped under the start date, which Pivot always sends first. Seed it
+  // anyway: an offer with an end date but no start date used to read $index before it
+  // was ever assigned.
+  $index = 0;
+
   if ($specification->attributes()->urn->__toString() == 'urn:obj:date') {
     foreach ($specification->spec as $dateObj) {
       if ($dateObj->type->__toString() == 'Date') {
@@ -1383,44 +1466,32 @@ function pivot_date_treatment($offer_array, $specification) {
 
 function pivot_relation_treatment($offre) {
   $relation_array = [];
-  foreach ($offre->relOffre as $relation) {
-    if ($relation->offre->estActive == 30) {
-      $idTypeOffre = $relation->offre->typeOffre->attributes()->idTypeOffre->__toString();
-      switch ($idTypeOffre) {
+
+  // Relations pointing outwards and relations pointing at this offer get the exact
+  // same treatment; the switch below used to be written out twice.
+  foreach (array($offre->relOffre, $offre->relOffreTgt) as $relations) {
+    foreach ($relations as $relation) {
+      if ($relation->offre->estActive != 30) {
+        continue;
+      }
+      switch ($relation->offre->typeOffre->attributes()->idTypeOffre->__toString()) {
         case "268":
           $relation_array = pivot_media_treatment($relation, $relation_array);
           break;
-        case "33" :
+        case "33":
           $relation_array = pivot_closed_treatment($relation, $relation_array);
           break;
-        case "23" :
+        // 23 is a contact offer: nothing to display.
+        case "23":
           break;
-        case "10" :
+        case "10":
         default:
           $relation_array = pivot_link_treatment($relation, $relation_array);
           break;
       }
     }
   }
-  foreach ($offre->relOffreTgt as $relation) {
-    if ($relation->offre->estActive == 30) {
-      $idTypeOffre = $relation->offre->typeOffre->attributes()->idTypeOffre->__toString();
-      switch ($idTypeOffre) {
-        case "268":
-          $relation_array = pivot_media_treatment($relation, $relation_array);
-          break;
-        case "33" :
-          $relation_array = pivot_closed_treatment($relation, $relation_array);
-          break;
-        case "23" :
-          break;
-        case "10" :
-        default:
-          $relation_array = pivot_link_treatment($relation, $relation_array);
-          break;
-      }
-    }
-  }
+
   return $relation_array;
 }
 

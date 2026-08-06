@@ -4,7 +4,7 @@
 <?php else: ?>
   <?php $current_template_name = basename(__FILE__, '.php'); ?>
   <?php $offre = _get_offer_details(null, 3, $current_template_name); ?>
-  <?php if (get_option('pivot_transient') == 'on' && $offre['content']): ?>
+  <?php if (pivot_offer_is_cached($offre)): ?>
     <?php
     $key = 'pivot_meta_' . $offre['offerid'];
     if (get_transient($key)) {
@@ -34,7 +34,7 @@
   <?php endif; ?>
 <?php endif; ?>
 
-<?php if (!isset($offre['content'])): ?>
+<?php if (!pivot_offer_is_cached($offre)): ?>
   <article class="pivot-offer row m-3">
       <div class="col-xs-12 col-md-8">
           <div class="row">
@@ -72,6 +72,6 @@
   </article>
 <?php endif; ?>
 
-<?php if (!isset($args->estActive) || $offre['content'] == true): ?>
+<?php if (!isset($args->estActive) || pivot_offer_is_cached($offre)): ?>
   <?php get_footer(); ?>
 <?php endif; ?>

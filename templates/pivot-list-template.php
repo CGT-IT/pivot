@@ -1,0 +1,71 @@
+<?php
+/**
+ * Generic listing template.
+ *
+ * Used for every offer category that does not ship a template of its own. The
+ * activite, default, itinerary, mice and restauration listings were five byte-for-byte
+ * identical copies of this file; pivot_locate_template() now falls back here.
+ *
+ * To customise one category, copy this file into your theme as
+ * pivot-<category>-list-template.php — the per-category name still wins.
+ */
+?>
+<?php $pivot_page = pivot_get_page_path(_get_path()); ?>
+<title><?php print esc_html(__($pivot_page->title, 'pivot') . ' - ' . get_bloginfo('name')); ?></title>
+<!--Include header-->
+<?php get_header(); ?>
+
+<!--Get filters-->
+<?php $filters = pivot_add_filters(); ?>
+<!--Get offers-->
+<?php $offres = pivot_lodging_page($pivot_page->id); ?>
+<?php $nb_offres = pivot_get_nb_offers($pivot_page->id); ?>
+
+<div class="container-fluid pivot-list">
+    <?php print _add_banner_image($pivot_page->image); ?>
+    <div class="row m-4">
+        <div class="col-12">
+            <h1 class="text-center"><?php _e($pivot_page->title, 'pivot'); ?></h1>
+            <div id="pivot-page-description" class="text-center"><?php _e($pivot_page->description, 'pivot'); ?></div>
+        </div>
+    </div>
+    <div class="row">
+        <?php if (!(empty($filters))): ?>
+          <div class="col-xs-12 col-md-3">
+              <?php print $filters; ?>
+          </div>
+          <div class="col-xs-12 col-md-9 bg-white border-left">
+          <?php else: ?>
+            <div class="col-xs-12 col-md-12 bg-white">
+            <?php endif; ?>
+            <div class="row p-3">
+                <div class="col-xs-12 col-sm-12 col-md-11 col-lg-11 col-xl-11 pt-3" style="background-color:#f5f5f5;">
+                    <p class="h5"><?php echo esc_html(sprintf(_n('There is %s offer', 'There are %s offers', (int) $nb_offres, 'pivot'), $nb_offres)); ?></p>
+                </div>
+                <div class="d-none d-md-block col-1" role="button">
+                    <i id="carte" class="float-right fas <?php print ($pivot_page->map == 1) ? 'fa-list' : 'fa-map-marked-alt'; ?> fa-2x" role="button"></i>
+                </div>
+            </div>
+            <div class="row">
+                <div id="offers-area" class="<?php print ($pivot_page->map == 1) ? 'col-xs-12 col-sm-12 col-md-5 col-lg-5 col-xl-5 pivot-offer-list' : 'col-12'; ?>">
+                    <div class="row d-flex flex-wrap">
+                        <?php print pivot_render_offer_thumbnails($offres, $pivot_page); ?>
+                    </div>
+                </div>
+
+                <?php print _add_pivot_map($pivot_page->map, 7); ?>
+
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="float-right">
+                        <?php echo _add_pagination($nb_offres, $pivot_page->nbcol); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Include footer-->
+<?php get_footer();

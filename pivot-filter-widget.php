@@ -163,23 +163,31 @@ function pivot_reset_filters($page_id) {
   // If filter form is well submited
   if (isset($_POST['filter-submit'])) {
     // Unset everything on filters
-    unset($_SESSION['pivot']['filters']);
+    pivot_state_reset_all_filters();
+
+    $filters = array();
     // Loop on each parameters
     foreach ($_POST as $key => $value) {
       // Except 'op' and 'filter-submit' parameters
-      if ($key != 'op' && $key != 'filter-submit') {
-        if (!empty($value)) {
-          if ($value != 'on') {
-            $_SESSION['pivot']['filters'][$page_id][$key] = $value;
-          } else {
-            $_SESSION['pivot']['filters'][$page_id][$key] = TRUE;
-          }
-        }
+      if ($key === 'op' || $key === 'filter-submit' || $key === '_wpnonce' || $key === '_wp_http_referer') {
+        continue;
       }
+      if (empty($value)) {
+        continue;
+      }
+      // Filter ids are the keys; anything else in the POST body is not a filter.
+      if (!is_numeric($key)) {
+        continue;
+      }
+      $value = is_array($value) ? array_map('sanitize_text_field', wp_unslash($value)) : sanitize_text_field(wp_unslash($value));
+      // A checked checkbox posts "on"; store it as a boolean.
+      $filters[absint($key)] = ($value === 'on') ? TRUE : $value;
     }
+
+    pivot_state_set_filters($page_id, $filters);
   } else {
     if (isset($_POST['filter-reset'])) {
-      $_SESSION['pivot']['filters'][$page_id] = array();
+      pivot_state_set_filters($page_id, array());
     }
   }
 }
@@ -193,116 +201,126 @@ function pivot_reset_filters($page_id) {
  * @return string HTML output (div containing filter)
  */
 function pivot_add_filter_to_form($page_id, $filter, $group = NULL) {
-  $field_params = array();
   $output = '';
-  if ($filter->operator == 'exist') {
-    $field_params['filters'][$filter->filter_name]['name'] = $filter->urn;
-    $field_params['filters'][$filter->filter_name]['operator'] = 'equal';
-    $field_params['filters'][$filter->filter_name]['searched_value'][] = 'true';
-  }
 
   if (isset($group) && !empty($group)) {
-    $output .= '<div class="filter-group text-uppercase font-weight-bolder p-2 mb-2 mt-2 bg-light">' . __($group, 'pivot') . '</div>';
+    $output .= '<div class="filter-group text-uppercase font-weight-bolder p-2 mb-2 mt-2 bg-light">' . esc_html(__($group, 'pivot')) . '</div>';
   }
-  // check if current language is different from fr
-  $lang = substr(get_locale(), 0, 2);
-  if ($lang != 'fr') {
-    // Check if filter title is translated in WPML
-    if ($filter->filter_title != __($filter->filter_title, 'pivot')) {
-      $title = __($filter->filter_title, 'pivot');
-    } else {
-      // Otherwise, Get translated title from Pivot
-      switch ($lang) {
-        case 'nl':
-          $title_translated = $filter->filter_title_nl;
-          break;
-        case 'en':
-          $title_translated = $filter->filter_title_en;
-          break;
-        case 'de':
-          $title_translated = $filter->filter_title_de;
-          break;
-        default:
-          $title_translated = $filter->filter_title;
-          break;
-      }
-      if (empty($title_translated)) {
-        // If Pivot translation is empty, display title even if same in differents languages
-        $title = _get_urn_documentation($filter->urn);
-      } else {
-        $title = $title_translated;
-      }
-    }
-  } else {
-    $title = $filter->filter_title;
-  }
-  switch ($filter->type) {
-    case 'Boolean':
-      $output .= '<div class="pl-2 form-item form-item-' . $filter->filter_name . '">'
-        . '<label title="" data-toggle="tooltip" class="control-label" for="edit-' . $filter->filter_name . '" data-original-title="Filter on ' . $title . '">'
-        . '<input type="checkbox" id="edit-' . $filter->filter_name . '" name="' . $filter->id . '"  class="form-checkbox"' . (isset($_SESSION['pivot']['filters'][$page_id][$filter->id]) ? 'checked' : '') . '> '
-        . $title
-        . '</label>'
-        . '</div>';
 
-      return $output;
-    case 'Type':
-    case 'Value':
-      $output .= '<div class="pl-2 form-item form-item-' . $filter->filter_name . '">'
-        . '<label title="" data-toggle="tooltip" class="control-label" for="edit-' . $filter->filter_name . '" data-original-title="Filter on ' . $title . '">'
-        . '<input type="checkbox" id="edit-' . $filter->filter_name . '" name="' . $filter->id . '"  class="form-checkbox"' . (isset($_SESSION['pivot']['filters'][$page_id][$filter->id]) ? 'checked' : '') . '> '
-        . $title
-        . '</label>'
-        . '</div>';
-      return $output;
-    case 'Date':
-      $output .= '<div class="pl-2 form-item form-item-' . $filter->filter_name . '">'
-        . '<label title="" data-toggle="tooltip" class="w-50 control-label" for="edit-' . $filter->filter_name . '" data-original-title="Filter on ' . $title . '">'
-        . $title
-        . '</label>'
-        . '<input type="date" class="w-50" id="edit-' . $filter->filter_name . '" name="' . $filter->id . '" value="' . (isset($_SESSION['pivot']['filters'][$page_id][$filter->id]) ? $_SESSION['pivot']['filters'][$page_id][$filter->id] : '') . '">'
-        . '</div>';
-      return $output;
-    case 'UInt':
-      $output .= '<div class="pl-2 form-item form-item-' . $filter->filter_name . '">'
-        . '<label title="" data-toggle="tooltip" class="w-50 control-label" for="edit-' . $filter->filter_name . '" data-original-title="Filter on ' . $title . '">'
-        . $title
-        . '</label>'
-        . '<input type="number" class="w-50" id="edit-' . $filter->filter_name . '" name="' . $filter->id . '" min="1" max="1000" placeholder="' . $title . '"  value="' . (isset($_SESSION['pivot']['filters'][$page_id][$filter->id]) ? $_SESSION['pivot']['filters'][$page_id][$filter->id] : '') . '">'
-        . '</div>';
-      return $output;
-    case 'String':
-      if ($filter->urn == 'urn:fld:adrcom') {
-        $output .= '<div class="pl-2 form-item form-item-' . $filter->filter_name . ' form-type-select select">'
-          . '<label title="" data-toggle="tooltip" class="w-50 control-label" for="edit-' . $filter->filter_name . '" data-original-title="Filter on ' . $title . '">' . $title . '</label>'
-          . '<select id="edit-' . $filter->filter_name . '" class="w-50" name="' . $filter->id . '">'
-          . _get_commune_from_pivot('mdt', get_option('pivot_mdt'), (isset($_SESSION['pivot']['filters'][$page_id][$filter->id]) ? $_SESSION['pivot']['filters'][$page_id][$filter->id] : null))
-          . '</select>'
-          . '</div>';
-      } else {
-        if ($filter->urn == 'urn:fld:idorc') {
-          $output .= '<div class="pl-2 form-item form-item-' . $filter->filter_name . '">'
-            . '<label title="" data-toggle="tooltip" class="control-label" for="edit-' . $filter->filter_name . '" data-original-title="Filter on ' . $title . '">'
-            . '<input type="checkbox" id="edit-' . $filter->filter_name . '" name="' . $filter->id . '"  class="form-checkbox"' . (isset($_SESSION['pivot']['filters'][$page_id][$filter->id]) ? 'checked' : '') . '> '
-            . $title
-            . '</label>'
-            . '</div>';
-        } else {
-          $output .= '<div class="pl-2 form-item form-item-' . $filter->filter_name . '">'
-            . '<label title="' . $title . '" data-toggle="tooltip" class="w-50 control-label" for="edit-' . $filter->filter_name . '" data-original-title="Filter on ' . $title . '">' . $title . '</label>'
-            . '<input type="text" id="edit-' . $filter->filter_name . '" class="w-50" name="' . $filter->id . '" value="' . (isset($_SESSION['pivot']['filters'][$page_id][$filter->id]) ? $_SESSION['pivot']['filters'][$page_id][$filter->id] : '') . '">'
-            . '</div>';
-        }
-      }
-      return $output;
-    default:
-      $output .= '<div class="pl-2 form-item form-item-' . $filter->filter_name . '">'
-        . '<label title="' . $title . '" data-toggle="tooltip" class="w-50 control-label" for="edit-' . $filter->filter_name . '" data-original-title="Filter on ' . $title . '">'
-        . $title
-        . '</label>'
-        . '<input placeholder="' . $title . '" type="text" class="w-50" id="edit-' . $filter->filter_name . '" name="' . $filter->id . '" value="' . (isset($_SESSION['pivot']['filters'][$page_id][$filter->id]) ? $_SESSION['pivot']['filters'][$page_id][$filter->id] : '') . '">'
-        . '</div>';
-      return $output;
+  $title = pivot_get_filter_title($filter);
+  $value = pivot_state_get_filter_value($page_id, $filter->id);
+
+  // Booleans, Types, Values and the "online booking" flag all render the same
+  // checkbox; they used to be four copies of the same markup.
+  $renders_as_checkbox = in_array($filter->type, array('Boolean', 'Type', 'Value'), true)
+    || ($filter->type === 'String' && $filter->urn === 'urn:fld:idorc');
+
+  if ($renders_as_checkbox) {
+    return $output . pivot_render_filter_checkbox($filter, $title, $value !== null);
   }
-  return;
+
+  if ($filter->type === 'String' && $filter->urn === 'urn:fld:adrcom') {
+    return $output . pivot_render_filter_field(
+      $filter,
+      $title,
+      '<select id="edit-' . esc_attr($filter->filter_name) . '" class="w-50" name="' . esc_attr($filter->id) . '">'
+        . _get_commune_from_pivot('mdt', get_option('pivot_mdt'), $value)
+        . '</select>',
+      'form-type-select select'
+    );
+  }
+
+  switch ($filter->type) {
+    case 'Date':
+      $input_type = 'date';
+      break;
+    case 'UInt':
+      $input_type = 'number';
+      break;
+    default:
+      $input_type = 'text';
+      break;
+  }
+
+  $attributes = ($input_type === 'number') ? ' min="1" max="1000"' : '';
+  $input = '<input type="' . $input_type . '" class="w-50" id="edit-' . esc_attr($filter->filter_name) . '"'
+    . ' name="' . esc_attr($filter->id) . '"' . $attributes
+    . ' placeholder="' . esc_attr($title) . '"'
+    . ' value="' . esc_attr($value === null ? '' : $value) . '">';
+
+  return $output . pivot_render_filter_field($filter, $title, $input);
+}
+
+/**
+ * Title of a filter in the visitor's language.
+ *
+ * WPML string translation wins when the site defines one; otherwise the translation
+ * columns filled from Pivot are used, and the thesaurus label is the last resort.
+ *
+ * @param Object $filter
+ * @return string
+ */
+function pivot_get_filter_title($filter) {
+  $lang = substr(get_locale(), 0, 2);
+
+  if ($lang === 'fr') {
+    return $filter->filter_title;
+  }
+
+  // Check if filter title is translated in WPML
+  if ($filter->filter_title != __($filter->filter_title, 'pivot')) {
+    return __($filter->filter_title, 'pivot');
+  }
+
+  $columns = array(
+    'nl' => 'filter_title_nl',
+    'en' => 'filter_title_en',
+    'de' => 'filter_title_de',
+  );
+  $translated = isset($columns[$lang]) ? $filter->{$columns[$lang]} : $filter->filter_title;
+
+  if (empty($translated)) {
+    // If Pivot translation is empty, fall back on the thesaurus label
+    return _get_urn_documentation($filter->urn);
+  }
+
+  return $translated;
+}
+
+/**
+ * Checkbox rendering shared by the Boolean, Type, Value and idorc filters.
+ *
+ * @param Object $filter
+ * @param string $title
+ * @param bool $checked
+ * @return string
+ */
+function pivot_render_filter_checkbox($filter, $title, $checked) {
+  return '<div class="pl-2 form-item form-item-' . esc_attr($filter->filter_name) . '">'
+    . '<label title="" data-toggle="tooltip" class="control-label" for="edit-' . esc_attr($filter->filter_name) . '"'
+    . ' data-original-title="' . esc_attr(sprintf(__('Filter on %s', 'pivot'), $title)) . '">'
+    . '<input type="checkbox" id="edit-' . esc_attr($filter->filter_name) . '" name="' . esc_attr($filter->id) . '" class="form-checkbox"'
+    . checked($checked, true, false) . '> '
+    . esc_html($title)
+    . '</label>'
+    . '</div>';
+}
+
+/**
+ * Labelled field rendering shared by the text, number, date and select filters.
+ *
+ * @param Object $filter
+ * @param string $title
+ * @param string $input Already-escaped input markup.
+ * @param string $extra_class
+ * @return string
+ */
+function pivot_render_filter_field($filter, $title, $input, $extra_class = '') {
+  return '<div class="pl-2 form-item form-item-' . esc_attr($filter->filter_name) . ' ' . esc_attr($extra_class) . '">'
+    . '<label title="' . esc_attr($title) . '" data-toggle="tooltip" class="w-50 control-label" for="edit-' . esc_attr($filter->filter_name) . '"'
+    . ' data-original-title="' . esc_attr(sprintf(__('Filter on %s', 'pivot'), $title)) . '">'
+    . esc_html($title)
+    . '</label>'
+    . $input
+    . '</div>';
 }

@@ -9,6 +9,116 @@ add_shortcode('pivot_orc_list', 'pivot_custom_shortcode_orc_list');
 
 add_shortcode('export_pivot', 'export_pivot');
 
+/** Comparison operators accepted on a date attribute of the event shortcodes. */
+function pivot_shortcode_date_operators() {
+  return array('equal', 'lesser', 'lesserequal', 'greater', 'greaterequal');
+}
+
+/**
+ * Turn a date/operator/value attribute triplet into a Pivot filter.
+ *
+ * pivot_custom_shortcode_event() validated date1 and date2 with two identical blocks.
+ *
+ * @param array $atts Shortcode attributes.
+ * @param int $index 1 or 2.
+ * @param array $field_params Filters built so far, modified in place.
+ * @return string|null Warning markup when the triplet is invalid, null when valid.
+ */
+function pivot_shortcode_date_filter($atts, $index, &$field_params) {
+  $date = $atts['date' . $index];
+  if (empty($date)) {
+    return null;
+  }
+
+  $operator = $atts['operator' . $index];
+  $value = $atts['value' . $index];
+
+  if (empty($operator)) {
+    return _show_warning(esc_html(sprintf(
+      /* translators: %s: shortcode attribute name. */
+      __('The attribute "%s" is required as you defined a date attribute', 'pivot'),
+      'operator' . $index
+    )), 'danger');
+  }
+
+  if (!in_array($operator, pivot_shortcode_date_operators(), true)) {
+    $operator_list = '<ul><li>' . implode('</li><li>', pivot_shortcode_date_operators()) . '</li></ul>';
+
+    return _show_warning(esc_html(sprintf(
+      __('The attribute "%s" is not valid, it should be one of these:', 'pivot'),
+      'operator' . $index
+    )) . $operator_list, 'danger');
+  }
+
+  if (empty($value)) {
+    return _show_warning(esc_html(sprintf(
+      __('The attribute "%s" is required as you defined a date attribute', 'pivot'),
+      'value' . $index
+    )), 'danger');
+  }
+
+  $key = ($index == 1) ? 'shortcode_date_start' : 'shortcode_date_end';
+  $field_params['filters'][$key]['name'] = $date;
+  $field_params['filters'][$key]['operator'] = $operator;
+  $field_params['filters'][$key]['searched_value'][] = date("d/m/Y", strtotime($value));
+
+  return null;
+}
+
+/**
+ * Apply the sortmode / sortfield attributes shared by every listing shortcode.
+ *
+ * @param array $atts
+ * @param array $field_params Modified in place.
+ */
+function pivot_shortcode_apply_sort($atts, &$field_params) {
+  if (empty($atts['sortmode'])) {
+    return;
+  }
+
+  $field_params['sortMode'] = trim($atts['sortmode']);
+  if (!empty($atts['sortfield']) && $atts['sortmode'] != 'shuffle') {
+    $field_params['sortField'] = trim($atts['sortfield']);
+  }
+}
+
+/**
+ * Render a set of offers with a template, inside a wrapper.
+ *
+ * The listing shortcodes all followed the same shape: fetch offers, bail out with the
+ * error string when the fetch failed, otherwise loop and concatenate.
+ *
+ * @param Object|string $offres Result of pivot_construct_output().
+ * @param string $template_name Template applied to each offer.
+ * @param string $open Markup opening the wrapper.
+ * @param string $close Markup closing the wrapper.
+ * @param array $per_offer Properties set on each offer before rendering.
+ * @param bool $mark_first Set ->first on the first offer (carousels).
+ * @return string
+ */
+function pivot_render_offers($offres, $template_name, $open, $close, $per_offer = array(), $mark_first = false) {
+  // On failure pivot_construct_output() hands back ready-made warning markup.
+  if (!is_object($offres)) {
+    return $offres;
+  }
+
+  $output = $open;
+  $i = 0;
+  foreach ($offres as $offre) {
+    $offre->path = 'details';
+    foreach ($per_offer as $property => $value) {
+      $offre->{$property} = $value;
+    }
+    if ($mark_first && $i === 0) {
+      $offre->first = TRUE;
+    }
+    $output .= pivot_template($template_name, $offre);
+    $i++;
+  }
+
+  return $output . $close;
+}
+
 function export_pivot($atts) {
   $field_params = array();
   // Attributes
@@ -51,58 +161,35 @@ function pivot_custom_shortcode_slider($atts) {
 
   // Check if attribute "query" is not empty
   if (empty($atts['query'])) {
-    $text = __('The <strong>query</strong> argument is missing', 'pivot');
-    print _show_warning($text, 'danger');
-  } else {
-    if (!empty($atts['sortmode'])) {
-      $field_params['sortMode'] = $atts['sortmode'];
-      if (!empty($atts['sortfield']) && $atts['sortmode'] != 'shuffle') {
-        $field_params['sortField'] = $atts['sortfield'];
-      }
-    }
-
-    $xml_query = _xml_query_construction($atts['query'], $field_params);
-
-    // Get template name depending of query type
-    $template_name = 'pivot-shortcode-slider-template';
-
-    // Get offers
-    $offres = pivot_construct_output('shortcode', $atts['nboffers'], $xml_query, $atts['query']);
-
-    if (is_object($offres)) {
-      // Open HTML balises
-      $output = '<div class="container-fluid">
-                  <div id="pivot-shortcode-carousel" class="carousel slide" data-ride="carousel">
-                    <div class="carousel-inner row w-100 mx-auto nb-col-' . $atts['nbcol'] . '" data-nbcol="' . $atts['nbcol'] . '">';
-
-      // Add main HTML content in output
-      $i = 0;
-      foreach ($offres as $offre) {
-        $offre->path = 'details';
-        $offre->nb_per_row = $atts['nbcol'];
-        // Will add an 'active' class for the first element
-        if ($i == 0) {
-          $offre->first = TRUE;
-        }
-        $output .= pivot_template($template_name, $offre);
-        $i++;
-      }
-
-      // Close HTML balises
-      $output .= '<a class="carousel-control-prev" href="#pivot-shortcode-carousell" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">' . __('Previous') . '</span>
-                  </a>
-                  <a class="carousel-control-next" href="#pivot-shortcode-carousel" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">' . __('Next') . '</span>
-                  </a>
-                </div></div></div>';
-    } else {
-      $output = $offres;
-    }
+    return _show_warning(__('The <strong>query</strong> argument is missing', 'pivot'), 'danger');
   }
-  return $output;
+
+  pivot_shortcode_apply_sort($atts, $field_params);
+
+  $xml_query = _xml_query_construction($atts['query'], $field_params);
+  $offres = pivot_construct_output('shortcode', $atts['nboffers'], $xml_query, $atts['query']);
+
+  $open = '<div class="container-fluid">
+              <div id="pivot-shortcode-carousel" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner row w-100 mx-auto nb-col-' . esc_attr($atts['nbcol']) . '" data-nbcol="' . esc_attr($atts['nbcol']) . '">';
+  $close = '<a class="carousel-control-prev" href="#pivot-shortcode-carousel" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">' . esc_html__('Previous') . '</span>
+              </a>
+              <a class="carousel-control-next" href="#pivot-shortcode-carousel" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">' . esc_html__('Next') . '</span>
+              </a>
+            </div></div></div>';
+
+  return pivot_render_offers(
+    $offres,
+    'pivot-shortcode-slider-template',
+    $open,
+    $close,
+    array('nb_per_row' => $atts['nbcol']),
+    true
+  );
 }
 
 /**
@@ -128,51 +215,27 @@ function pivot_custom_shortcode_event_slider($atts) {
 
   // Check if attribute "query" is not empty
   if (empty($atts['query'])) {
-    $text = __('The <strong>query</strong> argument is missing', 'pivot');
-    print _show_warning($text, 'danger');
-  } else {
-    if (!empty($atts['sortmode'])) {
-      $field_params['sortMode'] = $atts['sortmode'];
-      if (!empty($atts['sortfield']) && $atts['sortmode'] != 'shuffle') {
-        $field_params['sortField'] = $atts['sortfield'];
-      }
-    }
-
-    $field_params['page_type'] = 'activite';
-    $xml_query = _xml_query_construction($atts['query'], $field_params);
-
-    // Get template name depending of query type
-    $template_name = 'pivot-eventslider-details-part-template';
-
-    // Get offers
-    $offres = pivot_construct_output('shortcode', $atts['nboffers'], $xml_query, $atts['query']);
-
-    if (is_object($offres)) {
-      // Open HTML balises
-      $output = '<div class="container-fluid">
-                  <div id="pivot-shortcode-carousel" class="carousel slide" data-ride="carousel">
-                    <div class="carousel-inner row w-100 mx-auto nb-col-' . $atts['nbcol'] . '" data-nbcol="' . $atts['nbcol'] . '">';
-
-      // Add main HTML content in output
-      $i = 0;
-      foreach ($offres as $offre) {
-        $offre->path = 'details';
-        $offre->nb_per_row = $atts['nbcol'];
-        // Will add an 'active' class for the first element
-        if ($i == 0) {
-          $offre->first = TRUE;
-        }
-        $output .= pivot_template($template_name, $offre);
-        $i++;
-      }
-
-      // Close HTML balises
-      $output .= '</div></div></div>';
-    } else {
-      $output = $offres;
-    }
+    return _show_warning(__('The <strong>query</strong> argument is missing', 'pivot'), 'danger');
   }
-  return $output;
+
+  pivot_shortcode_apply_sort($atts, $field_params);
+
+  $field_params['page_type'] = 'activite';
+  $xml_query = _xml_query_construction($atts['query'], $field_params);
+  $offres = pivot_construct_output('shortcode', $atts['nboffers'], $xml_query, $atts['query']);
+
+  $open = '<div class="container-fluid">
+              <div id="pivot-shortcode-carousel" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner row w-100 mx-auto nb-col-' . esc_attr($atts['nbcol']) . '" data-nbcol="' . esc_attr($atts['nbcol']) . '">';
+
+  return pivot_render_offers(
+    $offres,
+    'pivot-eventslider-details-part-template',
+    $open,
+    '</div></div></div>',
+    array('nb_per_row' => $atts['nbcol']),
+    true
+  );
 }
 
 /**
@@ -277,101 +340,29 @@ function pivot_custom_shortcode_event($atts) {
 
   // Check if attribute "query" is not empty
   if (empty($atts['query'])) {
-    $text = __('The <strong>query</strong> argument is missing', 'pivot');
-    return _show_warning($text, 'danger');
-  } else {
-    // Construct filter if set for first date
-    if (!empty($atts['date1'])) {
-      // Operator is required so check if it is well set
-      if (empty($atts['operator1'])) {
-        $text = __('The attribute "operator1" is required as you defined a startdate attribute', 'pivot');
-        return _show_warning($text, 'danger');
-      } else {
-        $valid_operator = array("equal", "lesser", "lesserequal", "greater", "greaterequal");
-        // Check if operator is valid
-        if (in_array($atts['operator1'], $valid_operator)) {
-          if (!empty($atts['value1'])) {
-            $field_params['filters']['shortcode_date_start']['name'] = $atts['date1'];
-            $field_params['filters']['shortcode_date_start']['operator'] = $atts['operator1'];
-            $field_params['filters']['shortcode_date_start']['searched_value'][] = date("d/m/Y", strtotime($atts['value1']));
-          } else {
-            $text = __('The attribute "value1" is required as you defined a startdate attribute', 'pivot');
-            return _show_warning($text, 'danger');
-          }
-        } else {
-          // If operator not valid, construction of error message
-          $operator_list = '<ul>';
-          foreach ($valid_operator as $operator) {
-            $operator_list .= '<li>' . $operator . '</li>';
-          }
-          $operator_list .= '</ul>';
-          $text = __('The attribute "operator1" is not valid, it should be one of these: ' . $operator_list, 'pivot');
-          return _show_warning($text, 'danger');
-        }
-      }
-    }
-    // Construct filter if set for second date
-    if (!empty($atts['date2'])) {
-      // Operator is required so check if it is well set
-      if (empty($atts['operator2'])) {
-        $text = __('The attribute "operator2" is required as you defined a startdate attribute', 'pivot');
-        return _show_warning($text, 'danger');
-      } else {
-        $valid_operator = array("equal", "lesser", "lesserequal", "greater", "greaterequal");
-        // Check if operator is valid
-        if (in_array($atts['operator2'], $valid_operator)) {
-          if (!empty($atts['value2'])) {
-            $field_params['filters']['shortcode_date_end']['name'] = $atts['date2'];
-            $field_params['filters']['shortcode_date_end']['operator'] = $atts['operator2'];
-            $field_params['filters']['shortcode_date_end']['searched_value'][] = date("d/m/Y", strtotime($atts['value2']));
-          } else {
-            $text = __('The attribute "value2" is required as you defined a startdate attribute', 'pivot');
-            return _show_warning($text, 'danger');
-          }
-        } else {
-          // If operator not valid, construction of error message
-          $operator_list = '<ul>';
-          foreach ($valid_operator as $operator) {
-            $operator_list .= '<li>' . $operator . '</li>';
-          }
-          $operator_list .= '</ul>';
-          $text = __('The attribute "operator2" is not valid, it should be one of these: ' . $operator_list, 'pivot');
-          return _show_warning($text, 'danger');
-        }
-      }
-    }
-    // Check sorting
-    if (!empty($atts['sortmode'])) {
-      $field_params['sortMode'] = $atts['sortmode'];
-      if (!empty($atts['sortfield']) && $atts['sortmode'] != 'shuffle') {
-        $field_params['sortField'] = $atts['sortfield'];
-      }
-    }
+    return _show_warning(__('The <strong>query</strong> argument is missing', 'pivot'), 'danger');
+  }
 
-    $xml_query = _xml_query_construction($atts['query'], $field_params);
-
-    // Get template name depending of query type
-    $template_name = 'pivot-activite-details-part-template';
-
-    // Get offers
-    $offres = pivot_construct_output('shortcode', $atts['nboffers'], $xml_query, $atts['query']);
-    if (is_object($offres)) {
-      $output = '<div class="container-fluid pivot-list">'
-        . '<div class="row row-eq-height pivot-row d-flex flex-wrap">';
-
-      // Add main HTML content in output
-      foreach ($offres as $offre) {
-        $offre->path = 'details';
-        $offre->nb_per_row = $atts['nbcol'];
-        $output .= pivot_template($template_name, $offre);
-      }
-
-      $output .= '</div></div>';
-    } else {
-      $output = $offres;
+  // Construct filters if set for the first and second date
+  foreach (array(1, 2) as $index) {
+    $error = pivot_shortcode_date_filter($atts, $index, $field_params);
+    if ($error !== null) {
+      return $error;
     }
   }
-  return $output;
+
+  pivot_shortcode_apply_sort($atts, $field_params);
+
+  $xml_query = _xml_query_construction($atts['query'], $field_params);
+  $offres = pivot_construct_output('shortcode', $atts['nboffers'], $xml_query, $atts['query']);
+
+  return pivot_render_offers(
+    $offres,
+    'pivot-activite-details-part-template',
+    '<div class="container-fluid pivot-list"><div class="row row-eq-height pivot-row d-flex flex-wrap">',
+    '</div></div>',
+    array('nb_per_row' => $atts['nbcol'])
+  );
 }
 
 /**
@@ -486,12 +477,7 @@ function pivot_custom_shortcode($atts) {
         $field_params = _construct_filters_array($field_params, $filter);
       }
       // Check sorting
-      if (!empty($atts['sortmode'])) {
-        $field_params['sortMode'] = trim($atts['sortmode']);
-        if (!empty($atts['sortfield']) && $atts['sortmode'] != 'shuffle') {
-          $field_params['sortField'] = trim($atts['sortfield']);
-        }
-      }
+      pivot_shortcode_apply_sort($atts, $field_params);
       if ($atts['type'] == 'activite') {
         $field_params['page_type'] = 'activite';
       }
@@ -506,26 +492,18 @@ function pivot_custom_shortcode($atts) {
        */
       $offres = pivot_construct_output('shortcode', $atts['nboffers'], $xml_query, trim($atts['query']) . trim($atts['filterurn']) . trim($atts['filtervalue']), $atts['details']);
 
-      if (is_object($offres)) {
-        $output = '<div class="container-fluid pivot-list">';
-        // Change display as we want to display only title and url on list
-        if ($atts['details'] == 1) {
-          $output .= '<div class="list-group">';
-        } else {
-          $output .= '<div class="row row-eq-height pivot-row d-flex flex-wrap">';
-        }
+      // Change display as we want to display only title and url on list
+      $inner = ($atts['details'] == 1)
+        ? '<div class="list-group">'
+        : '<div class="row row-eq-height pivot-row d-flex flex-wrap">';
 
-        // Add main HTML content in output
-        foreach ($offres as $offre) {
-          $offre->path = 'details';
-          $offre->nb_per_row = $atts['nbcol'];
-          $output .= pivot_template($template_name, $offre);
-        }
-
-        $output .= '</div></div>';
-      } else {
-        $output = $offres;
-      }
+      $output = pivot_render_offers(
+        $offres,
+        $template_name,
+        '<div class="container-fluid pivot-list">' . $inner,
+        '</div></div>',
+        array('nb_per_row' => $atts['nbcol'])
+      );
     } else {
       $text = __('The <strong>type</strong> attributes for the query is wrong or missing ', 'pivot');
       print _show_warning($text, 'danger');

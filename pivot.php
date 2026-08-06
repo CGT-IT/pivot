@@ -135,7 +135,9 @@ function pivot_install() {
   require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
   $charset_collate = $wpdb->get_charset_collate();
 
-  // Set the custom table name with the wp prefix "pivot"
+  // The schema below is the full, current one. It used to describe the tables as they
+  // were several releases ago, so a fresh install was missing every column added by
+  // the migrations — which then replayed their ALTER TABLE statements and failed.
   $table_name = $wpdb->prefix . "pivot_pages";
   // Define sql statement to create the table
   $sql = "CREATE TABLE " . $table_name . " (
@@ -147,6 +149,10 @@ function pivot_install() {
             map tinyint(1) NOT NULL,
             sortMode varchar(50) DEFAULT NULL,
             sortField varchar(100) DEFAULT NULL,
+            nbcol smallint(1) DEFAULT '4',
+            description longtext DEFAULT NULL,
+            image varchar(255) DEFAULT NULL,
+            shortcode varchar(255) DEFAULT NULL,
             PRIMARY KEY (id)
           ) $charset_collate;";
   // Execute the sql statement to create the custom table
@@ -159,11 +165,15 @@ function pivot_install() {
             page_id int(11) NOT NULL,
             filter_name varchar(200) NOT NULL,
             filter_title varchar(200) NOT NULL,
+            filter_title_nl varchar(200) NOT NULL DEFAULT '',
+            filter_title_en varchar(200) NOT NULL DEFAULT '',
+            filter_title_de varchar(200) NOT NULL DEFAULT '',
             urn varchar(200) NOT NULL,
             operator varchar(200) NOT NULL,
             type varchar(100) NOT NULL,
             filter_group varchar(200) DEFAULT NULL,
-            PRIMARY KEY (id)
+            PRIMARY KEY (id),
+            KEY page_id (page_id)
           ) $charset_collate;";
   // Execute the sql statement to create the custom table
   dbDelta($sql);
@@ -178,6 +188,10 @@ function pivot_install() {
           ) $charset_collate;";
   // Execute the sql statement to create the custom table
   dbDelta($sql);
+
+  // A fresh install is already at the latest schema: record it so plugin_upgrade()
+  // does not replay the migrations below.
+  update_option('pivot_db_version', PIVOT_DB_VERSION);
 }
 
 /**
@@ -206,22 +220,39 @@ function pivot_install_data() {
   wp_insert_rows($data_set, $table_name);
 }
 
-function plugin_upgrade() {
-  if (get_option('pivot_db_version') < 200) {
+function pivot_plugin_upgrade() {
+  $installed = (int) get_option('pivot_db_version');
+
+  // Already current: nothing to do, and above all no ALTER TABLE to replay.
+  if ($installed >= PIVOT_DB_VERSION) {
+    return;
+  }
+
+  if ($installed < 200) {
     pivot_upgrade_200();
   }
-  if (get_option('pivot_db_version') < 210) {
+  if ($installed < 210) {
     pivot_upgrade_210();
   }
-  if (get_option('pivot_db_version') < 220) {
+  if ($installed < 220) {
     pivot_upgrade_220();
   }
-  if (get_option('pivot_db_version') < 230) {
+  if ($installed < 230) {
     pivot_upgrade_230();
   }
+
+  update_option('pivot_db_version', PIVOT_DB_VERSION);
 }
 
-add_action('plugins_loaded', 'plugin_upgrade');
+add_action('plugins_loaded', 'pivot_plugin_upgrade');
+
+/**
+ * @deprecated 2.5.0 Renamed to pivot_plugin_upgrade(); "plugin_upgrade" was a global
+ *   name generic enough to collide with a theme or another plugin.
+ */
+function plugin_upgrade() {
+  pivot_plugin_upgrade();
+}
 
 function pivot_upgrade_200() {
   global $wpdb;
@@ -725,10 +756,8 @@ function _create_dom_criteria_field_element($domDocument, $filter) {
  */
 function pivot_lodging_page($page_id, $details = 2, $offers_per_page = null) {
   $field_params = array();
-//  global $wp_query;
   // Get current page details
-  $pivot_page = pivot_get_page_path($_SESSION['pivot'][$page_id]['path']);
-//  $pivot_page = pivot_get_page_path(key($wp_query->query_vars));
+  $pivot_page = pivot_get_page($page_id);
   if ($pivot_page) {
     $field_params['page_type'] = $pivot_page->type;
     if ($offers_per_page == null) {
@@ -744,11 +773,14 @@ function pivot_lodging_page($page_id, $details = 2, $offers_per_page = null) {
   }
 
   // Check if there is at least ONE active filter
-  if (isset($_SESSION['pivot']['filters'][$page_id]) && count($_SESSION['pivot']['filters'][$page_id]) > 0) {
+  if (pivot_state_has_filters($page_id)) {
     $between = array();
-    foreach ($_SESSION['pivot']['filters'][$page_id] as $key => $value) {
+    foreach (pivot_state_get_filters($page_id) as $key => $value) {
       // Get details of filter based on his ID
       $filter = pivot_get_filter($key);
+      if (!$filter) {
+        continue;
+      }
 
       $field_params = _construct_filters_array($field_params, $filter, $key, $page_id);
 
@@ -756,9 +788,6 @@ function pivot_lodging_page($page_id, $details = 2, $offers_per_page = null) {
       if ($filter->urn == 'urn:fld:date:datedeb' || $filter->urn == 'urn:fld:date:datefin') {
         $between[$key] = $filter->urn;
       }
-
-      // Reset var
-      $parent_urn = '';
     }
 
     // If dateDeb and dateFin has been set we remove them from classic filters
@@ -773,7 +802,7 @@ function pivot_lodging_page($page_id, $details = 2, $offers_per_page = null) {
     }
   }
 
-  $xml_query = _xml_query_construction($_SESSION['pivot'][$page_id]['query'], $field_params);
+  $xml_query = _xml_query_construction($pivot_page ? $pivot_page->query : null, $field_params);
 
   // define call case depending there is a filter or not
   if (isset($field_params['filters'])) {
@@ -795,126 +824,145 @@ function pivot_lodging_page($page_id, $details = 2, $offers_per_page = null) {
  * @return string part of HTML to display
  */
 function pivot_construct_output($case, $offers_per_page, $xml_query = NULL, $page_id = NULL, $details = 2) {
-//  if ($case != 'offer-search') {
-  // Define query type
-  $params['type'] = 'query';
-  if ($page_id != NULL) {
-    if (is_numeric($page_id)) {
-      $params['page_id'] = $page_id;
-      // build transient key to store page token
-      $key = 'pivot_page_token_' . $page_id;
-    } else {
-      // build transient key to store shortcode token
-      // page_id = query ID in this case
-      $key = 'pivot_shortcode_token_' . $page_id;
-      $shortcode = true;
-      $case = 'shortcode';
-    }
-    // get token from transient if there is one
-    $stored_token = get_transient($key);
+  $context = pivot_build_request_context($case, $offers_per_page, $page_id);
+
+  if ($context['is_shortcode']) {
+    $xml_object = pivot_fetch_shortcode_offers($context, $xml_query, $details);
   } else {
-    $stored_token = false;
+    $xml_object = pivot_fetch_page_offers($context, $xml_query, $details);
   }
 
-  // Get current page number (start with 0)
-  //$current_page = pivot_get_current_page();
-  if (($pos = strpos($_SERVER['REQUEST_URI'], "paged=")) !== FALSE) {
-    $page_number = substr($_SERVER['REQUEST_URI'], $pos + 6);
-    $current_page = (int) filter_var($page_number, FILTER_SANITIZE_NUMBER_INT);
-  } else {
-    $current_page = 1;
-  }
-  // In case there is a shortcode with offers included in a pivot page.
-  // don't take page argument, reset to 1.
-  if (isset($shortcode) && $shortcode === true) {
-    $current_page = 1;
+  // On failure _pivot_request() returns either an error string or nothing at all;
+  // callers test is_object() to tell the two apart.
+  return is_object($xml_object) ? $xml_object->offre : $xml_object;
+}
+
+/**
+ * Gather everything a Pivot listing request depends on.
+ *
+ * A numeric $page_id is a listing page from wp_pivot_pages; anything else is a
+ * shortcode, identified by its query.
+ *
+ * @param string $case
+ * @param int $offers_per_page
+ * @param int|string|null $page_id
+ * @return array
+ */
+function pivot_build_request_context($case, $offers_per_page, $page_id) {
+  $is_shortcode = ($page_id !== NULL && !is_numeric($page_id));
+  $page = (!$is_shortcode && $page_id !== NULL) ? pivot_get_page($page_id) : null;
+
+  $params = array(
+    'type' => 'query',
+    'items_per_page' => $offers_per_page,
+  );
+  if ($is_shortcode) {
     $params['shortcode'] = true;
-    $case = 'shortcode';
+  } elseif ($page_id !== NULL) {
+    $params['page_id'] = $page_id;
   }
 
-  // Define number of offers per page
-  $params['items_per_page'] = $offers_per_page;
-  if (isset($page->sortMode) && $page->sortMode == 'shuffle') {
+  // $page was read before it was loaded, so shuffle never reached Pivot on a
+  // listing page.
+  if ($page && $page->sortMode === 'shuffle') {
     $params['shuffle'] = TRUE;
   }
-  // Check current page.
-  // If 0 we need to define params to get all offers (depending on filters)
-  if ($current_page == 1 || ($stored_token === false && $case != 'offer-search')) {
-    if ($current_page > 1 && !isset($_SESSION['pivot'][$page_id]['token']) && $page_id != 999) {
-      print _show_warning('Token has been lost, reload first page');
-    }
 
-    if ($page_id != NULL && is_numeric($page_id) && $page_id != 999) {
-      $page = pivot_get_page($page_id);
-    }
+  return array(
+    'case' => $is_shortcode ? 'shortcode' : $case,
+    'page_id' => $page_id,
+    'page' => $page,
+    'is_shortcode' => $is_shortcode,
+    // A shortcode always renders its first page, whatever ?paged= says: it can sit
+    // inside a paginated listing page.
+    'current_page' => $is_shortcode ? 1 : pivot_get_current_page(),
+    'has_filters' => ($page_id !== NULL) && pivot_state_has_filters($page_id),
+    'params' => $params,
+  );
+}
 
-    // If no filter, then same page for everyone, get initial token
-    if ((!isset($_SESSION['pivot']['filters'][$page_id]) || count(($_SESSION['pivot']['filters'][$page_id])) == 0)) {
-      if ($stored_token === false) {
-        if ($case == 'shortcode') {
-          $xml_object = _pivot_request($case, $details, $params, $xml_query);
-        } else {
-          $xml_object = _pivot_request('offer-init-list', $details, $params, $xml_query);
-          if (is_object($xml_object) && isset($key)) {
-            $key_nbOffers = 'nb' . $key;
-            if (isset($page) && $page->type != 'activite') {
-              // store token and nboffers in transient with a validity of 1 day
-              set_transient($key, $xml_object->attributes()->token->__toString(), 86400);
-              set_transient($key_nbOffers, str_replace(', ', '', $xml_object->attributes()->count->__toString()), 86400);
-            } else {
-              // store token and nboffers in transient with a validity of 12h
-              set_transient($key, $xml_object->attributes()->token->__toString(), 43200);
-              set_transient($key_nbOffers, str_replace(', ', '', $xml_object->attributes()->count->__toString()), 43200);
-            }
-          }
-        }
-      } else {
-        if ($case == 'shortcode') {
-          $xml_object = _pivot_request($case, $details, $params, $xml_query);
-        } else {
-          $params['token'] = '/' . $stored_token . '/' . $current_page;
-          $xml_object = _pivot_request('offer-pager', $details, $params);
-        }
-      }
-      if (is_object($xml_object) && $page_id != 999) {
-        // Store number of offers
-        $_SESSION['pivot'][$page_id]['nb_offres'] = str_replace(', ', '', $xml_object->attributes()->count->__toString());
-//        $_SESSION['pivot'][$page_id]['token'] = $xml_object->attributes()->token->__toString();
-      }
-    } else {
-      // Get offers
-      if ($case == 'shortcode') {
-        $xml_object = _pivot_request($case, $details, $params, $xml_query);
-      } else {
-        $xml_object = _pivot_request('offer-init-list', $details, $params, $xml_query);
-        if (is_object($xml_object) && $page_id != 999) {
-          // Store number of offers
-          $_SESSION['pivot'][$page_id]['nb_offres'] = str_replace(', ', '', $xml_object->attributes()->count->__toString());
-          // Store the token to get next x items
-          $_SESSION['pivot'][$page_id]['token'] = $xml_object->attributes()->token->__toString();
-        }
-      }
-    }
-  } else {
-    if ((!isset($_SESSION['pivot']['filters'][$page_id]) || count(($_SESSION['pivot']['filters'][$page_id])) == 0)) {
-      $params['token'] = '/' . $stored_token . '/' . $current_page;
-    } else {
-      $params['token'] = '/' . $_SESSION['pivot'][$page_id]['token'] . '/' . $current_page;
-    }
-    // Get offers
-    if ($case == 'shortcode') {
-      $xml_object = _pivot_request($case, $details, $params);
-    } else {
-      $xml_object = _pivot_request('offer-pager', $details, $params);
-    }
+/**
+ * Offers of a shortcode: one stateless request, no pagination.
+ *
+ * @param array $context
+ * @param string $xml_query
+ * @param int $details
+ * @return SimpleXMLElement|string
+ */
+function pivot_fetch_shortcode_offers($context, $xml_query, $details) {
+  return _pivot_request('shortcode', $details, $context['params'], $xml_query);
+}
+
+/**
+ * Offers of a listing page, with pagination.
+ *
+ * Pivot paginates with a token returned by the first request. Unfiltered listings
+ * are identical for every visitor, so their token is shared through a transient;
+ * a filtered search is specific to one visitor and its token lives in their state.
+ *
+ * @param array $context
+ * @param string $xml_query
+ * @param int $details
+ * @return SimpleXMLElement|string
+ */
+function pivot_fetch_page_offers($context, $xml_query, $details) {
+  $page_id = $context['page_id'];
+  $params = $context['params'];
+  $current_page = $context['current_page'];
+
+  $token = $context['has_filters']
+    ? pivot_state_get($page_id, 'token')
+    : pivot_state_get_shared_token($page_id);
+
+  // Past the first page we can only ask Pivot for more of an existing result set.
+  if ($current_page > 1 && !empty($token)) {
+    $params['token'] = '/' . $token . '/' . $current_page;
+
+    return _pivot_request('offer-pager', $details, $params);
   }
+
+  if ($current_page > 1) {
+    print _show_warning(__('Your search has expired, showing the first page again.', 'pivot'));
+  }
+
+  $xml_object = _pivot_request('offer-init-list', $details, $params, $xml_query);
+
   if (is_object($xml_object)) {
-    $offres = $xml_object->offre;
-    // Store number of offers
-//    $_SESSION['pivot'][$page_id]['nb_offres'] = str_replace(', ', '', $xml_object->attributes()->count->__toString());
-//    $_SESSION['pivot'][$page_id]['token'] = $xml_object->attributes()->token->__toString();
-  } else {
-    $offres = $xml_object;
+    pivot_store_pagination_state($context, $xml_object);
   }
-  return $offres;
+
+  return $xml_object;
+}
+
+/**
+ * Remember the token and the offer count returned by an initial listing request.
+ *
+ * @param array $context
+ * @param SimpleXMLElement $xml_object
+ */
+function pivot_store_pagination_state($context, $xml_object) {
+  $page_id = $context['page_id'];
+  if ($page_id === NULL) {
+    return;
+  }
+
+  $attributes = $xml_object->attributes();
+  $token = isset($attributes->token) ? $attributes->token->__toString() : '';
+  $count = isset($attributes->count) ? str_replace(', ', '', $attributes->count->__toString()) : '0';
+
+  pivot_state_set($page_id, 'nb_offres', $count);
+
+  if ($context['has_filters']) {
+    // Specific to this visitor's search.
+    pivot_state_set($page_id, 'token', $token);
+
+    return;
+  }
+
+  // Events churn faster than the rest of the catalogue, so their token expires sooner.
+  $page = $context['page'];
+  $ttl = ($page && $page->type === 'activite') ? 12 * HOUR_IN_SECONDS : DAY_IN_SECONDS;
+
+  pivot_state_set_shared_token($page_id, $token, $ttl);
+  pivot_state_set_shared_count($page_id, $count, $ttl);
 }

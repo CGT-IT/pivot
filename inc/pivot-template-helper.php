@@ -123,6 +123,57 @@ function _add_section_themes($offre) {
 }
 
 /**
+ * Total number of offers of a listing page.
+ *
+ * @param int $page_id
+ * @return int
+ */
+function pivot_get_nb_offers($page_id) {
+  return (int) _get_nb_offers_from_transient($page_id);
+}
+
+/**
+ * Render the thumbnail of every offer of a listing page.
+ *
+ * Every list template carried its own copy of this loop, transient handling included.
+ *
+ * @param Object $offres Offers returned by pivot_lodging_page().
+ * @param Object $pivot_page Page row.
+ * @return string
+ */
+function pivot_render_offer_thumbnails($offres, $pivot_page) {
+  if (!is_object($offres) && !is_array($offres)) {
+    return '';
+  }
+
+  $output = '';
+  $template = 'pivot-' . $pivot_page->type . '-details-part-template';
+  $use_transient = (get_option('pivot_transient') == 'on');
+  $lang = substr(get_locale(), 0, 2);
+
+  foreach ($offres as $offre) {
+    $offre->path = $pivot_page->path;
+    $offre->map = $pivot_page->map;
+    $offre->nb_per_row = $pivot_page->nbcol;
+
+    if (!$use_transient) {
+      $output .= pivot_template($template, $offre);
+      continue;
+    }
+
+    $key = 'pivot_offer_part_' . $lang . '_' . $offre->attributes()->codeCgt->__toString();
+    $data = get_transient($key);
+    if ($data === false) {
+      $data = pivot_template($template, $offre);
+      set_transient($key, $data, get_option('pivot_transient_time'));
+    }
+    $output .= $data;
+  }
+
+  return $output;
+}
+
+/**
  * Return a HTML section with facebook and twitter share link
  * @param Object $offre
  * @return string
@@ -144,52 +195,93 @@ function _add_section_share($offre) {
  * @return string
  */
 function _add_section_contact($offre) {
-  $output = '<p class="section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-id-card"></i>' . esc_html('Contact', 'pivot') . '</p>'
+  $output = '<p class="section-title h5 lis-font-weight-500"><i class="fas fas-align-right pr-2 fa-id-card"></i>' . esc_html__('Contact', 'pivot') . '</p>'
     . '<section class="pivot-contacts card lis-brd-light wow fadeInUp mb-4">'
     . '<div class="card-body p-4">'
     . '<p class="h6 pivo-title">' . _get_urn_value($offre, 'urn:fld:nomofr') . '</p>'
-    . '<ul class="list-unstyled lis-line-height-2 m-0">';
-  foreach ($offre->spec as $specification) {
-    if ($specification->urnCat->__toString() == 'urn:cat:moycom' && $specification->urnSubCat->__toString() != 'urn:cat:moycom:sitereservation') {
-      if ($specification->type->__toString() != 'StringML') {
-        $output .= '<li>'
-          . '<img class="pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $specification->attributes()->urn->__toString() . ';h=16" width="16" height="16"/>';
-        switch ($specification->type->__toString()) {
-          case 'EMail':
-            $output .= ' <a class="' . $specification->type->__toString() . '" href="mailto:' . $specification->value->__toString() . '">' . strrev($specification->value->__toString()) . '</a>';
-            break;
-          case 'URL':
-            $output .= ' <a class="' . $specification->type->__toString() . '" target="_blank" href="' . esc_url($specification->value->__toString()) . '">' . strrev(esc_url($specification->value->__toString())) . '</a>';
-            break;
-          case 'URLInstagram':
-            $output .= ' <a class="' . $specification->type->__toString() . '" target="_blank" href="' . esc_url($specification->value->__toString()) . '"> ' . strrev('Instagram') . '</a>';
-            break;
-          case 'URLFacebook':
-            $output .= ' <a class="' . $specification->type->__toString() . '" target="_blank" href="' . esc_url($specification->value->__toString()) . '"> ' . strrev('Facebook') . '</a>';
-            break;
-          case 'GSM':
-            $output .= ' <a class="' . $specification->type->__toString() . '" href="tel:' . $specification->value->__toString() . '">' . strrev($specification->value->__toString()) . '</a>';
-            break;
-          case 'Phone':
-            $output .= ' <a class="' . $specification->type->__toString() . '" href="tel:' . $specification->value->__toString() . '">' . strrev($specification->value->__toString()) . '</a>';
-            break;
-        }
-        $output .= '</li>';
-      }
-    }
-  }
-  $output .= '</ul>';
-
-  $output .= '<ul class="adr list-unstyled lis-line-height-2 m-0">'
-    . '<li class="street-address"><i class="fas fa-map"></i> ' . $offre->adresse1->rue->__toString() . ', ' . $offre->adresse1->numero->__toString() . '</li>'
-    . '<span class="postal-code">' . $offre->adresse1->cp->__toString() . ' </span>'
-    . '<span class="locality">' . (isset($offre->adresse1->localite) ? $offre->adresse1->localite->value->__toString() : '') . '</span>'
-    . '<li class="country-name">' . $offre->adresse1->pays->__toString() . '</li>'
-    . '<li class="pivot-latitude d-none">' . $offre->adresse1->latitude->__toString() . '</li>'
-    . '<li class="pivot-longitude d-none">' . $offre->adresse1->longitude->__toString() . '</li>'
-    . '</ul></div></section>';
+    . _pivot_contact_list($offre)
+    . _pivot_address_list($offre)
+    . '</div></section>';
 
   return $output;
+}
+
+/**
+ * Communication means of an offer (mail, phone, social networks) as a <ul>.
+ *
+ * Shared by _add_section_contact() and _add_section_contact_version2(), which carried
+ * two copies of this loop.
+ *
+ * @param Object $offre complete offer object
+ * @return string
+ */
+function _pivot_contact_list($offre) {
+  $output = '<ul class="list-unstyled lis-line-height-2 m-0">';
+
+  foreach ($offre->spec as $specification) {
+    if ($specification->urnCat->__toString() != 'urn:cat:moycom'
+      || $specification->urnSubCat->__toString() == 'urn:cat:moycom:sitereservation'
+      || $specification->type->__toString() == 'StringML') {
+      continue;
+    }
+
+    $type = $specification->type->__toString();
+    $value = $specification->value->__toString();
+
+    // The label is reversed on purpose: CSS flips it back, which keeps naive email
+    // harvesters from reading it out of the markup.
+    switch ($type) {
+      case 'EMail':
+        $link = '<a class="' . esc_attr($type) . '" href="mailto:' . esc_attr($value) . '">' . esc_html(strrev($value)) . '</a>';
+        break;
+      case 'GSM':
+      case 'Phone':
+        $link = '<a class="' . esc_attr($type) . '" href="tel:' . esc_attr($value) . '">' . esc_html(strrev($value)) . '</a>';
+        break;
+      case 'URLInstagram':
+        $link = '<a class="' . esc_attr($type) . '" target="_blank" href="' . esc_url($value) . '"> ' . esc_html(strrev('Instagram')) . '</a>';
+        break;
+      case 'URLFacebook':
+        $link = '<a class="' . esc_attr($type) . '" target="_blank" href="' . esc_url($value) . '"> ' . esc_html(strrev('Facebook')) . '</a>';
+        break;
+      case 'URL':
+        $link = '<a class="' . esc_attr($type) . '" target="_blank" href="' . esc_url($value) . '">' . esc_html(strrev(esc_url($value))) . '</a>';
+        break;
+      default:
+        $link = '';
+        break;
+    }
+
+    $output .= '<li>'
+      . '<img class="pivot-picto" src="' . esc_url(get_option('pivot_uri') . 'img/' . $specification->attributes()->urn->__toString() . ';h=16') . '" width="16" height="16"/>'
+      . ' ' . $link
+      . '</li>';
+  }
+
+  return $output . '</ul>';
+}
+
+/**
+ * Postal address of an offer, with the coordinates the map scripts read.
+ *
+ * @param Object $offre complete offer object
+ * @param bool $with_type_offre Also expose the offer type id, needed by the map.
+ * @return string
+ */
+function _pivot_address_list($offre, $with_type_offre = false) {
+  $output = '<ul class="adr list-unstyled lis-line-height-2 m-0">'
+    . '<li class="street-address"><i class="fas fa-map"></i> ' . esc_html($offre->adresse1->rue->__toString()) . ', ' . esc_html($offre->adresse1->numero->__toString()) . '</li>'
+    . '<span class="postal-code">' . esc_html($offre->adresse1->cp->__toString()) . ' </span>'
+    . '<span class="locality">' . (isset($offre->adresse1->localite) ? esc_html($offre->adresse1->localite->value->__toString()) : '') . '</span>'
+    . '<li class="country-name">' . esc_html($offre->adresse1->pays->__toString()) . '</li>'
+    . '<li class="pivot-latitude d-none">' . esc_html($offre->adresse1->latitude->__toString()) . '</li>'
+    . '<li class="pivot-longitude d-none">' . esc_html($offre->adresse1->longitude->__toString()) . '</li>';
+
+  if ($with_type_offre) {
+    $output .= '<li class="pivot-id-type-offre d-none">' . esc_html($offre->typeOffre->attributes()->idTypeOffre->__toString()) . '</li>';
+  }
+
+  return $output . '</ul>';
 }
 
 /**
@@ -198,46 +290,12 @@ function _add_section_contact($offre) {
  * @return string
  */
 function _add_section_contact_version2($offre) {
-  $output = '<section class="pivot-contacts card lis-brd-light wow fadeInUp mb-4 shadow">'
+  return '<section class="pivot-contacts card lis-brd-light wow fadeInUp mb-4 shadow">'
     . '<div class="card-body p-4">'
     . '<p class="h3 pivo-title">' . _get_urn_value($offre, 'urn:fld:nomofr') . '</p>'
-    . '<ul class="adr list-unstyled lis-line-height-2 m-0">'
-    . '<li class="street-address"><i class="fas fa-map"></i> ' . $offre->adresse1->rue->__toString() . ', ' . $offre->adresse1->numero->__toString() . '</li>'
-    . '<span class="postal-code">' . $offre->adresse1->cp->__toString() . ' </span>'
-    . '<span class="locality">' . (isset($offre->adresse1->localite) ? $offre->adresse1->localite->value->__toString() : '') . '</span>'
-    . '<li class="country-name">' . $offre->adresse1->pays->__toString() . '</li>'
-    . '<li class="pivot-latitude d-none">' . $offre->adresse1->latitude->__toString() . '</li>'
-    . '<li class="pivot-longitude d-none">' . $offre->adresse1->longitude->__toString() . '</li>'
-    . '<li class="pivot-id-type-offre d-none">' . $offre->typeOffre->attributes()->idTypeOffre->__toString() . '</li>'
-    . '</ul>'
-    . '<ul class="list-unstyled lis-line-height-2 m-0">';
-  foreach ($offre->spec as $specification) {
-    if ($specification->urnCat->__toString() == 'urn:cat:moycom' && $specification->urnSubCat->__toString() != 'urn:cat:moycom:sitereservation') {
-      if ($specification->type->__toString() != 'StringML') {
-        $output .= '<li>'
-          . '<img class="pivot-picto" src="' . get_option('pivot_uri') . 'img/' . $specification->attributes()->urn->__toString() . ';h=16" width="16" height="16"/>';
-        switch ($specification->type->__toString()) {
-          case 'EMail':
-            $output .= ' <a class="' . $specification->type->__toString() . '" href="mailto:' . $specification->value->__toString() . '">' . strrev($specification->value->__toString()) . '</a>';
-            break;
-          case 'URL':
-          case 'URLFacebook':
-            $output .= ' <a class="' . $specification->type->__toString() . '" target="_blank" href="' . esc_url($specification->value->__toString()) . '">' . strrev(esc_url($specification->value->__toString())) . '</a>';
-            break;
-          case 'GSM':
-            $output .= ' <a class="' . $specification->type->__toString() . '" href="tel:' . $specification->value->__toString() . '">' . strrev($specification->value->__toString()) . '</a>';
-            break;
-          case 'Phone':
-            $output .= ' <a class="' . $specification->type->__toString() . '" href="tel:' . $specification->value->__toString() . '">' . strrev($specification->value->__toString()) . '</a>';
-            break;
-        }
-        $output .= '</li>';
-      }
-    }
-  }
-  $output .= '</ul></div></section>';
-
-  return $output;
+    . _pivot_address_list($offre, true)
+    . _pivot_contact_list($offre)
+    . '</div></section>';
 }
 
 /**
@@ -747,6 +805,10 @@ function _add_banner_image($image, $height = '400px') {
  * @param int $width wanted width in px set to null if you want original. Useless if media is not really stored in Pivot
  * @param int $height wanted height in px set to null if you want original. Useless if media is not really stored in Pivot
  * @return string
+ * @deprecated 2.5.0 Part of the array-shaped offer API, which has no caller
+ *   anywhere in the plugin: nothing produces the array it expects except
+ *   pivot_offer_treatment(), which is itself never called. Kept for themes that
+ *   may build the array themselves; use the SimpleXML helpers instead.
  */
 function _get_offer_default_image_refractor($codeCgt, $width = 428, $height = 285, $noimg_src = NULL) {
   $output = get_option('pivot_uri') . 'img/' . $codeCgt . ';w=' . $width . ';h=' . $height;

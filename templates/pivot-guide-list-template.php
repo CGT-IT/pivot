@@ -1,6 +1,6 @@
 
 <?php $page = pivot_get_page_path(_get_path()); ?>
-<title><?php print $_SESSION['pivot'][$page->id]['page_title'] ?> - CGT</title>
+<title><?php print esc_html($page->title) ?> - CGT</title>
 <!--Include header-->
 <?php get_header(); ?>
 <?php wp_enqueue_style('bootstrapexternal'); ?>
@@ -103,6 +103,6 @@
   </div>
 </div>
 
-<?php echo _add_pagination($_SESSION['pivot'][$page->id]['nb_offres']); ?>
+<?php echo _add_pagination(pivot_get_nb_offers($page->id), $page->nbcol); ?>
 
 <?php get_footer();

@@ -78,18 +78,8 @@ function pivot_template_include($template) {
       $new_template = pivot_locate_template('pivot-' . $pivot_page->type . '-details-template.php');
     }
   }
-  if (isset($pivot_page->map)) {
-    $_SESSION['pivot'][$pivot_page->id]['map'] = $pivot_page->map;
-  }
-  if (isset($pivot_page->path) && $pivot_page->path != 'details') {
-    $_SESSION['pivot'][$pivot_page->id]['path'] = $pivot_page->path;
-  }
-  if (isset($pivot_page->query)) {
-    $_SESSION['pivot'][$pivot_page->id]['query'] = $pivot_page->query;
-  }
-  if (isset($pivot_page->title)) {
-    $_SESSION['pivot'][$pivot_page->id]['page_title'] = $pivot_page->title;
-  }
+  // map / path / query / page_title used to be copied into the session here. They are
+  // columns of the page row, so templates read them straight off pivot_get_page().
 
   if ($new_template != '') {
     return $new_template;
@@ -123,6 +113,15 @@ function pivot_locate_template($template_name, $template_path = '', $default_pat
   // Get plugins template file.
   if (!$template) {
     $template = $default_path . $template_name;
+  }
+
+  // Fall back on the generic listing template. Most categories render an identical
+  // list, so they no longer need a file of their own — a category-specific template,
+  // in the theme or in the plugin, still takes precedence.
+  if (!file_exists($template) && substr($template_name, -18) === '-list-template.php') {
+    $generic = 'pivot-list-template.php';
+    $theme_generic = locate_template(array($template_path . $generic, $generic));
+    $template = $theme_generic ? $theme_generic : $default_path . $generic;
   }
 
   // Ensure the file exists
@@ -215,9 +214,8 @@ add_filter('pre_handle_404', function ($preempt, $wp_query) {
   // If Session has been too long or token is lost, reload first page
   if (strpos($wp->request, '&paged=')) {
     $page_id = $customPages[$key]['id'];
-    $transient_key = 'pivot_page_token_' . $page_id;
-    $stored_token = get_transient($transient_key);
-    if (!isset($_SESSION['pivot'][$page_id]['token']) && $stored_token === false) {
+    $stored_token = pivot_state_get_shared_token($page_id);
+    if (pivot_state_get($page_id, 'token') === null && $stored_token === false) {
       $pos = strpos($_SERVER['REQUEST_URI'], "&paged=");
       $url = substr($_SERVER['REQUEST_URI'], 0, $pos);
       header('Location:' . $url);
@@ -309,14 +307,14 @@ function pivot_create_fake_post($title, $path, $description, $post_type = 'page'
  */
 
 function pivot_get_current_page() {
-  // Check position of "paged=" in current uri
-  if (($pos = strpos($_SERVER['REQUEST_URI'], "paged=")) !== FALSE) {
-    // Get number after paged= (position of first letter + length of "paged="
-    $current_page = substr($_SERVER['REQUEST_URI'], $pos + strlen("paged="));
-    //$current_page = (int) filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_NUMBER_INT);
-  } else {
-    $current_page = 0;
+  // The page number used to be parsed in two places with different conventions: here,
+  // returning a raw substring starting at 0, and again in pivot_construct_output(),
+  // returning an int starting at 1. This is now the single implementation.
+  if (($pos = strpos($_SERVER['REQUEST_URI'], "paged=")) === FALSE) {
+    return 1;
   }
 
-  return $current_page;
+  $current_page = absint(substr($_SERVER['REQUEST_URI'], $pos + strlen("paged=")));
+
+  return max(1, $current_page);
 }
