@@ -1,0 +1,14 @@
+/vendor/
+composer.lock
+.phpcs.cache
+.phpunit.result.cache
+
+# Editors
+.idea/
+.vscode/
+*.sublime-*
+nbproject/
+
+# OS
+.DS_Store
+Thumbs.db
