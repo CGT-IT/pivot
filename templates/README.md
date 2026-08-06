@@ -20,13 +20,29 @@ Il en faut 3 par catégorie structurés de la façon suivante:
     > Il représente la vignette d'une offre.
     > Ce template est inclus dans le template n°1 et sera également appelé dans les shortcodes
 
+> **Depuis la 2.5.0 — le plugin n'utilise plus `$_SESSION`.**
+> Un template cloné qui lit `$_SESSION['pivot'][...]` doit être mis à jour:
+>
+> | Avant | Maintenant |
+> |---|---|
+> | `$_SESSION['pivot'][$id]['page_title']` | `$pivot_page->title` |
+> | `$_SESSION['pivot'][$id]['path']` | `$pivot_page->path` |
+> | `$_SESSION['pivot'][$id]['nb_offres']` | `pivot_get_nb_offers($pivot_page->id)` |
+>
+> Les filtres actifs voyagent désormais dans la querystring (`pf[<id du filtre>]`),
+> ce qui rend les recherches partageables et les pages cachables.
+
+Si vous n'avez pas besoin de personnaliser le listing, **ne clonez rien**:
+`pivot-list-template.php` sert de template générique pour toutes les catégories
+qui n'ont pas de fichier dédié.
+
 Following lines should be included in ***.list-template.php**
 
 ```php
 // To know on which page you are
 <?php $pivot_page = pivot_get_page_path(_get_path()); ?>
 // Should be mandatory, will override "404" title with real title (coming from 'manage page')
-<title><?php print $_SESSION['pivot'][$pivot_page->id]['page_title'] .' - '. get_bloginfo('name');?></title>
+<title><?php print esc_html($pivot_page->title .' - '. get_bloginfo('name'));?></title>
 
 // Include default header
 <?php get_header(); ?>
@@ -38,19 +54,24 @@ Following lines should be included in ***.list-template.php**
 
 // Get offers
 <?php $offres = pivot_lodging_page($pivot_page->id); ?>
-// Loop on offers
-<?php foreach($offres as $offre): ?>
-  // Construct file name for the template "details part"
-  <?php $name = 'pivot-'.$pivot_page->type.'-details-part-template'; ?>
-  // Add Path to $offre object
-  <?php $offre->path = $_SESSION['pivot'][$pivot_page->id]['path']; ?>
-  // Print "vignette" of the offer detail
-  <?php print pivot_template($name, $offre); ?>
-<?php endforeach; ?>
+<?php $nb_offres = pivot_get_nb_offers($pivot_page->id); ?>
 
-// Add pagination
-<?php echo _add_pagination($_SESSION['pivot'][$pivot_page->id]['nb_offres']); ?>
+// Print every thumbnail (handles the per-offer transient cache for you)
+<?php print pivot_render_offer_thumbnails($offres, $pivot_page); ?>
+
+// Add pagination. Passing the page id keeps the active filters in the paged URLs.
+<?php echo _add_pagination($nb_offres, $pivot_page->nbcol, null, $pivot_page->id); ?>
 ```
+
+Pour que la recherche asynchrone fonctionne, le template doit exposer trois
+points d'accroche (voir `pivot-list-template.php`):
+
+* `id="offers-area"` sur le conteneur des offres,
+* `data-pivot-count` sur l'élément affichant le nombre d'offres,
+* `data-pivot-pagination` sur le conteneur de la pagination.
+
+Sans eux — ou sans JavaScript — le formulaire de filtres reste un formulaire GET
+classique et le rendu se fait côté serveur, comme avant.
 
 $offre is an object with all details. You'll have to var_dump it to see what it contains. It depends of each type of offers.
 

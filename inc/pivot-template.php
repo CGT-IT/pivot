@@ -211,16 +211,9 @@ add_filter('pre_handle_404', function ($preempt, $wp_query) {
   // To be sure paged case are also treated
   $request_path = rtrim(strtok($wp->request, '&'), '/');
   $key = array_search($request_path, array_column($customPages, 'path'));
-  // If Session has been too long or token is lost, reload first page
-  if (strpos($wp->request, '&paged=')) {
-    $page_id = $customPages[$key]['id'];
-    $stored_token = pivot_state_get_shared_token($page_id);
-    if (pivot_state_get($page_id, 'token') === null && $stored_token === false) {
-      $pos = strpos($_SERVER['REQUEST_URI'], "&paged=");
-      $url = substr($_SERVER['REQUEST_URI'], 0, $pos);
-      header('Location:' . $url);
-    }
-  }
+  // The defensive redirect that used to live here — "the session is gone, send the
+  // visitor back to page 1" — is no longer needed: a missing token simply makes
+  // pivot_fetch_page_offers() ask Pivot for a fresh one.
   if (isset($key) && is_int($key)) {
     pivot_create_fake_post($customPages[$key]['title'], $customPages[$key]['path'], $customPages[$key]['description']);
     $preempt = true;
@@ -307,6 +300,12 @@ function pivot_create_fake_post($title, $path, $description, $post_type = 'page'
  */
 
 function pivot_get_current_page() {
+  // A REST call carries the page number as a parameter, not in the listing URL.
+  $forced = pivot_force_current_page();
+  if ($forced !== null) {
+    return $forced;
+  }
+
   // The page number used to be parsed in two places with different conventions: here,
   // returning a raw substring starting at 0, and again in pivot_construct_output(),
   // returning an int starting at 1. This is now the single implementation.

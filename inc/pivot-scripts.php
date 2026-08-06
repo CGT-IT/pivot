@@ -1,8 +1,5 @@
 <?php
 
-add_action('init', 'pivot_start_session', 1);
-add_action('end_session_action', 'pivot_end_session');
-
 // register jquery and style on initialization
 add_action('init', 'pivot_register_script');
 
@@ -10,19 +7,19 @@ add_action('admin_enqueue_scripts', 'pivot_enqueue_admin_script');
 add_action('wp_enqueue_scripts', 'pivot_enqueue_script');
 
 /**
- * Init Session
+ * @deprecated 2.5.0 The plugin no longer uses PHP sessions. Starting one on every
+ *   request sent a Set-Cookie and a no-cache header site-wide, which disabled page
+ *   caching everywhere and required sticky sessions behind a load balancer.
  */
 function pivot_start_session() {
-  if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-  }
+
 }
 
 /**
- * End Session
+ * @deprecated 2.5.0 See pivot_start_session().
  */
 function pivot_end_session() {
-  session_destroy();
+
 }
 
 /**
@@ -74,6 +71,7 @@ function pivot_register_script() {
   wp_register_script('bootstrapmin', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js', array('jquery', 'poppermin'), '4.3.1', true);
   wp_register_script('dataTablesmin', 'https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js', array('jquery'), '1.10.19', true);
   wp_register_script('itinerary', PIVOT_PLUGIN_URL . 'js/itinerary.js', array(), PIVOT_VERSION, true);
+  wp_register_script('pivot-listing', PIVOT_PLUGIN_URL . 'js/pivot-listing.js', array(), PIVOT_VERSION, true);
   wp_register_script('pivotshortcodecarousel', PIVOT_PLUGIN_URL . 'js/pivotshortcodecarousel.js', array(), PIVOT_VERSION, true);
 
   // Map assets, enqueued on demand by _add_pivot_map().
@@ -92,6 +90,36 @@ function pivot_register_script() {
   wp_register_script('pivot-d3', 'https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.js', array(), '4.13.0', true);
   wp_register_script('pivot-leaflet-gpx', 'https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.4.0/gpx.js', array('pivot-leaflet'), '1.4.0', true);
   wp_register_script('pivot-itinerary', PIVOT_PLUGIN_URL . 'js/itinerary.js', array('pivot-leaflet-gpx', 'pivot-d3'), PIVOT_VERSION, true);
+}
+
+/**
+ * Enqueue the script that turns the filter form into an asynchronous search.
+ *
+ * Without it the form still works: it is a plain GET form pointing at the listing
+ * page, which the server renders normally.
+ *
+ * @param Object $pivot_page
+ */
+function pivot_enqueue_listing_script($pivot_page) {
+  if (!$pivot_page || empty($pivot_page->id)) {
+    return;
+  }
+
+  wp_enqueue_script('pivot-listing');
+  wp_localize_script('pivot-listing', 'pivotListing', array(
+    'endpoint' => rest_url(PIVOT_REST_NAMESPACE . '/pages/' . absint($pivot_page->id) . '/offers'),
+    'pageId' => absint($pivot_page->id),
+    'pageUrl' => pivot_page_url($pivot_page),
+    'param' => PIVOT_FILTER_PARAM,
+    'perPage' => _define_nb_offers_per_page($pivot_page->nbcol),
+    'i18n' => array(
+      'loading' => __('Searching…', 'pivot'),
+      'error' => __('The search failed, please try again.', 'pivot'),
+      /* translators: %s: number of offers. */
+      'countOne' => __('There is %s offer', 'pivot'),
+      'countMany' => __('There are %s offers', 'pivot'),
+    ),
+  ));
 }
 
 /**

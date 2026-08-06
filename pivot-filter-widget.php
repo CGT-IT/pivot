@@ -76,9 +76,9 @@ function pivot_display_widget($instance = NULL) {
     }
 
     // Print head section and HTML Form
-    $lang = substr(get_locale(), 0, 2);
+    pivot_enqueue_listing_script($pivot_page);
     $output = '<section id="block-pivot-filters" class="block block-pivot block-pivot-filter clearfix">'
-      . '<form action="' . get_site_url() . '/' . (($lang == 'fr') ? '' : $lang . '/') . $pivot_page->path . '" method="post" id="pivot-filter-form" accept-charset="UTF-8">';
+      . '<form action="' . esc_url(pivot_page_url($pivot_page)) . '" method="get" id="pivot-filter-form" accept-charset="UTF-8">';
 
     foreach ($filters as $filter) {
       // if not first iteration and filter is member of a group already inserted, we do not recreate this group
@@ -92,8 +92,7 @@ function pivot_display_widget($instance = NULL) {
     }
 
     // Print footer section and close HTML form
-    $output .= '<div><button type="submit" id="filter-submit" name="filter-submit" value="' . esc_html__('Search', 'pivot') . '"class="btn btn-lg form-submit" style="background-color:#f5f5f5;"><i class="fas fa-search"></i> ' . esc_html__('Search', 'pivot') . '</button></div>'
-      . '</div>'
+    $output .= '<div><button type="submit" id="filter-submit" class="btn btn-lg form-submit" style="background-color:#f5f5f5;"><i class="fas fa-search"></i> ' . esc_html__('Search', 'pivot') . '</button></div>'
       . '</form>'
       . '</section>';
 
@@ -125,10 +124,14 @@ function pivot_add_filters() {
       return;
     }
 
-    $lang = substr(get_locale(), 0, 2);
-    // Print head section and HTML Form
+    // The listing script upgrades this form into an asynchronous search; without
+    // JavaScript the browser simply submits it and the server renders the results.
+    pivot_enqueue_listing_script($pivot_page);
+
+    // GET rather than POST: the search then lives in the URL, so it can be shared,
+    // bookmarked, indexed and cached.
     $output = '<section id="block-pivot-filters" class="block block-pivot block-pivot-filter clearfix">'
-      . '<form action="' . get_site_url() . '/' . (($lang == 'fr') ? '' : $lang . '/') . $pivot_page->path . '" method="post" id="pivot-filter-form" accept-charset="UTF-8">'
+      . '<form action="' . esc_url(pivot_page_url($pivot_page)) . '" method="get" id="pivot-filter-form" accept-charset="UTF-8">'
       . '<div  id="edit-filter-body">';
 
     foreach ($filters as $filter) {
@@ -143,13 +146,15 @@ function pivot_add_filters() {
     }
 
     // Print footer section and close HTML form
+    // Reset is a link back to the unfiltered page, so it works without JavaScript
+    // and does not add an empty parameter to the URL.
     $output .= '</div>'
       . '<div class="row mt-2 filter-buttons">'
       . '<div class="col-xl-7 col-12">'
-      . '<button type="submit" id="filter-submit" name="filter-submit" value="' . esc_html__('Search', 'pivot') . '" class="btn btn-lg btn-block form-submit text-white" style="background-color:#555555;"><i class="fas fa-search"></i> ' . esc_html__('Search', 'pivot') . '</button>'
+      . '<button type="submit" id="filter-submit" class="btn btn-lg btn-block form-submit text-white" style="background-color:#555555;"><i class="fas fa-search"></i> ' . esc_html__('Search', 'pivot') . '</button>'
       . '</div>'
       . '<div class="col-xl-5 col-12">'
-      . '<button type="submit" id="filter-reset" name="filter-reset" value="' . esc_html__('Reset', 'pivot') . '"class="btn text-dark btn-lg btn-block form-submit" style="background-color:#f5f5f5;"><i class="fas fa-redo-alt"></i> ' . esc_html__('Reset', 'pivot') . '</button>'
+      . '<a href="' . esc_url(pivot_page_url($pivot_page)) . '" id="filter-reset" class="btn text-dark btn-lg btn-block form-submit" style="background-color:#f5f5f5;"><i class="fas fa-redo-alt"></i> ' . esc_html__('Reset', 'pivot') . '</a>'
       . '</div>'
       . '</div>'
       . '</form>'
@@ -159,36 +164,24 @@ function pivot_add_filters() {
   }
 }
 
+/**
+ * Legacy entry point kept for themes calling it from a cloned template.
+ *
+ * Filters are read straight from the query string now, so there is nothing left to
+ * copy into per-visitor storage. A POST from an old cached form is still honoured.
+ *
+ * @param int $page_id
+ */
 function pivot_reset_filters($page_id) {
-  // If filter form is well submited
+  if (isset($_POST['filter-reset'])) {
+    pivot_state_set_filters($page_id, array());
+
+    return;
+  }
+
+  // An old cloned template may still POST its filters under bare numeric names.
   if (isset($_POST['filter-submit'])) {
-    // Unset everything on filters
-    pivot_state_reset_all_filters();
-
-    $filters = array();
-    // Loop on each parameters
-    foreach ($_POST as $key => $value) {
-      // Except 'op' and 'filter-submit' parameters
-      if ($key === 'op' || $key === 'filter-submit' || $key === '_wpnonce' || $key === '_wp_http_referer') {
-        continue;
-      }
-      if (empty($value)) {
-        continue;
-      }
-      // Filter ids are the keys; anything else in the POST body is not a filter.
-      if (!is_numeric($key)) {
-        continue;
-      }
-      $value = is_array($value) ? array_map('sanitize_text_field', wp_unslash($value)) : sanitize_text_field(wp_unslash($value));
-      // A checked checkbox posts "on"; store it as a boolean.
-      $filters[absint($key)] = ($value === 'on') ? TRUE : $value;
-    }
-
-    pivot_state_set_filters($page_id, $filters);
-  } else {
-    if (isset($_POST['filter-reset'])) {
-      pivot_state_set_filters($page_id, array());
-    }
+    pivot_state_set_filters($page_id, pivot_sanitize_filters(wp_unslash($_POST)));
   }
 }
 
@@ -223,7 +216,7 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL) {
     return $output . pivot_render_filter_field(
       $filter,
       $title,
-      '<select id="edit-' . esc_attr($filter->filter_name) . '" class="w-50" name="' . esc_attr($filter->id) . '">'
+      '<select id="edit-' . esc_attr($filter->filter_name) . '" class="w-50" name="' . esc_attr(PIVOT_FILTER_PARAM . '[' . $filter->id . ']') . '">'
         . _get_commune_from_pivot('mdt', get_option('pivot_mdt'), $value)
         . '</select>',
       'form-type-select select'
@@ -244,7 +237,7 @@ function pivot_add_filter_to_form($page_id, $filter, $group = NULL) {
 
   $attributes = ($input_type === 'number') ? ' min="1" max="1000"' : '';
   $input = '<input type="' . $input_type . '" class="w-50" id="edit-' . esc_attr($filter->filter_name) . '"'
-    . ' name="' . esc_attr($filter->id) . '"' . $attributes
+    . ' name="' . esc_attr(PIVOT_FILTER_PARAM . '[' . $filter->id . ']') . '"' . $attributes
     . ' placeholder="' . esc_attr($title) . '"'
     . ' value="' . esc_attr($value === null ? '' : $value) . '">';
 
@@ -299,7 +292,7 @@ function pivot_render_filter_checkbox($filter, $title, $checked) {
   return '<div class="pl-2 form-item form-item-' . esc_attr($filter->filter_name) . '">'
     . '<label title="" data-toggle="tooltip" class="control-label" for="edit-' . esc_attr($filter->filter_name) . '"'
     . ' data-original-title="' . esc_attr(sprintf(__('Filter on %s', 'pivot'), $title)) . '">'
-    . '<input type="checkbox" id="edit-' . esc_attr($filter->filter_name) . '" name="' . esc_attr($filter->id) . '" class="form-checkbox"'
+    . '<input type="checkbox" id="edit-' . esc_attr($filter->filter_name) . '" name="' . esc_attr(PIVOT_FILTER_PARAM . '[' . $filter->id . ']') . '" class="form-checkbox"'
     . checked($checked, true, false) . '> '
     . esc_html($title)
     . '</label>'

@@ -367,6 +367,19 @@ function pivot_get_pages_path() {
 }
 
 /**
+ * Public URL of a Pivot listing page, in the current language.
+ *
+ * @param Object $pivot_page
+ * @return string
+ */
+function pivot_page_url($pivot_page) {
+  $lang = substr(get_locale(), 0, 2);
+  $prefix = ($lang === 'fr') ? '' : $lang . '/';
+
+  return home_url('/' . $prefix . $pivot_page->path);
+}
+
+/**
  * Drop every cached Pivot page after a write.
  *
  * The cache group is non-persistent by default, but a site running a persistent

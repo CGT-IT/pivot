@@ -29,7 +29,7 @@
                 <?php endif; ?>
                 <div class="row p-3">
                     <div class="col-xs-12 col-sm-12 col-md-11 col-lg-11 col-xl-11 pt-3" style="background-color:#f5f5f5;">
-                        <p class="h5"><?php echo esc_html(sprintf(_n('There is %s offer', 'There are %s offers', (int) $nb_offres, 'pivot'), $nb_offres)); ?></p>
+                        <p class="h5" data-pivot-count><?php echo esc_html(sprintf(_n('There is %s offer', 'There are %s offers', (int) $nb_offres, 'pivot'), $nb_offres)); ?></p>
                     </div>
                     <div class="d-none d-md-block col-1" role="button">
                         <i id="carte" class="float-right fas <?php print ($pivot_page->map == 1) ? 'fa-list' : 'fa-map-marked-alt'; ?> fa-2x" role="button"></i>
@@ -47,8 +47,8 @@
                 </div>
                 <div class="row mt-3">
                     <div class="col-12">
-                        <div class="float-right">
-                            <?php echo _add_pagination($nb_offres, $pivot_page->nbcol); ?>
+                        <div class="float-right" data-pivot-pagination>
+                            <?php echo _add_pagination($nb_offres, $pivot_page->nbcol, null, $pivot_page->id); ?>
                         </div>
                     </div>
                 </div>

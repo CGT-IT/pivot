@@ -803,7 +803,7 @@ function _define_nb_offers_per_page($nbcol) {
  * @param int $offers_per_page in case function force number of offers per page
  * @return string HTML containing pagination
  */
-function _add_pagination($nb_offres, $nbcol, $offers_per_page = null) {
+function _add_pagination($nb_offres, $nbcol, $offers_per_page = null, $page_id = null) {
   if ($offers_per_page == null) {
     /* Init pagination */
     $total = ceil($nb_offres / _define_nb_offers_per_page($nbcol));
@@ -814,7 +814,7 @@ function _add_pagination($nb_offres, $nbcol, $offers_per_page = null) {
   // Check if we have more than 1 page!
   if ($total > 1) {
     // Get the current page
-    $current_page = max(1, abs((int) get_query_var('paged')));
+    $current_page = pivot_get_current_page();
 
     // Set format
     $format = '/&paged=%#%';
@@ -823,7 +823,10 @@ function _add_pagination($nb_offres, $nbcol, $offers_per_page = null) {
       'format' => $format,
       'current' => $current_page,
       'total' => $total,
-      'type' => 'array'
+      'type' => 'array',
+      // Keep the active search in the paged URLs, so page 2 of a filtered listing is
+      // as shareable as page 1.
+      'add_args' => ($page_id === null) ? array() : pivot_state_pagination_args($page_id),
     ));
     return _display_pagination($pagination);
   }
@@ -843,6 +846,11 @@ function _display_pagination($pagination) {
     $output .= '<li class="page-item ';
     if (strpos($page_link, 'current') !== false) {
       $output .= ' active';
+    }
+    // data-pivot-page lets the listing script intercept the link instead of
+    // reloading the whole page; without the script the href works as before.
+    if (preg_match('/>(\d+)</', $page_link, $match)) {
+      $page_link = str_replace('<a ', '<a data-pivot-page="' . esc_attr($match[1]) . '" ', $page_link);
     }
     $output .= '">' . str_replace("numbers", "link", $page_link) . '</li>';
   }

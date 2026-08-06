@@ -910,9 +910,10 @@ function pivot_fetch_page_offers($context, $xml_query, $details) {
   $params = $context['params'];
   $current_page = $context['current_page'];
 
-  $token = $context['has_filters']
-    ? pivot_state_get($page_id, 'token')
-    : pivot_state_get_shared_token($page_id);
+  // The transient key embeds a signature of the active filters, so a filtered search
+  // now has a shared token too: two visitors running the same search reuse it, and it
+  // survives across requests instead of dying with the session.
+  $token = pivot_state_get_shared_token($page_id);
 
   // Past the first page we can only ask Pivot for more of an existing result set.
   if ($current_page > 1 && !empty($token)) {
@@ -921,14 +922,24 @@ function pivot_fetch_page_offers($context, $xml_query, $details) {
     return _pivot_request('offer-pager', $details, $params);
   }
 
-  if ($current_page > 1) {
-    print _show_warning(__('Your search has expired, showing the first page again.', 'pivot'));
-  }
-
   $xml_object = _pivot_request('offer-init-list', $details, $params, $xml_query);
 
-  if (is_object($xml_object)) {
-    pivot_store_pagination_state($context, $xml_object);
+  if (!is_object($xml_object)) {
+    return $xml_object;
+  }
+
+  pivot_store_pagination_state($context, $xml_object);
+
+  // Deep link straight to page N with no token cached — now that searches live in
+  // shareable URLs this is a normal entry point, not an expired session. Replay the
+  // request with the token we just obtained instead of silently showing page 1.
+  if ($current_page > 1) {
+    $fresh_token = pivot_state_get_shared_token($page_id);
+    if (!empty($fresh_token)) {
+      $params['token'] = '/' . $fresh_token . '/' . $current_page;
+
+      return _pivot_request('offer-pager', $details, $params);
+    }
   }
 
   return $xml_object;
@@ -952,16 +963,14 @@ function pivot_store_pagination_state($context, $xml_object) {
 
   pivot_state_set($page_id, 'nb_offres', $count);
 
-  if ($context['has_filters']) {
-    // Specific to this visitor's search.
-    pivot_state_set($page_id, 'token', $token);
-
-    return;
-  }
-
   // Events churn faster than the rest of the catalogue, so their token expires sooner.
   $page = $context['page'];
   $ttl = ($page && $page->type === 'activite') ? 12 * HOUR_IN_SECONDS : DAY_IN_SECONDS;
+  // A filtered search is one visitor's query: keep it around long enough to page
+  // through the results, not for a day.
+  if ($context['has_filters']) {
+    $ttl = HOUR_IN_SECONDS;
+  }
 
   pivot_state_set_shared_token($page_id, $token, $ttl);
   pivot_state_set_shared_count($page_id, $count, $ttl);
