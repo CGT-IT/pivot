@@ -904,6 +904,30 @@ function _show_warning($text, $severity = 'warning') {
 }
 
 /**
+ * Build a safe "ORDER BY <column> <direction>" clause from request parameters.
+ *
+ * esc_sql() escapes values, not identifiers: it does not make an ORDER BY built from
+ * $_REQUEST safe. Column names are therefore matched against an explicit allow list.
+ *
+ * @param array $allowed_columns Column names that may be sorted on.
+ * @param string $default_column Column used when the request asks for nothing valid.
+ * @return string SQL fragment, empty when no sorting applies.
+ */
+function pivot_build_order_by(array $allowed_columns, $default_column = '') {
+  $requested = isset($_REQUEST['orderby']) ? sanitize_key(wp_unslash($_REQUEST['orderby'])) : '';
+  $column = in_array($requested, $allowed_columns, true) ? $requested : $default_column;
+
+  if ($column === '') {
+    return '';
+  }
+
+  $requested_order = isset($_REQUEST['order']) ? strtoupper(sanitize_key(wp_unslash($_REQUEST['order']))) : '';
+  $direction = ($requested_order === 'DESC') ? 'DESC' : 'ASC';
+
+  return ' ORDER BY `' . $column . '` ' . $direction;
+}
+
+/**
  * Show notice message on wordpress admin pages
  * Available severity (updated, error, update-nag)
  * @param string $text

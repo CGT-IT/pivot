@@ -46,9 +46,9 @@ function pivot_template_include($template) {
     if ($path == 'details') {
       if (($pos = strpos($_SERVER['REQUEST_URI'], "&type=")) !== FALSE) {
         $pivot_page = new stdClass();
-        // Get number after paged= (position of first letter + length of "paged="
-        $type_id = substr($_SERVER['REQUEST_URI'], $pos + strlen("&type="));
-        $type = pivot_get_offer_type($type_id);
+        // Offer type id, straight out of the URL: cast it before it reaches any query.
+        $type_id = absint(substr($_SERVER['REQUEST_URI'], $pos + strlen("&type=")));
+        $type = $type_id ? pivot_get_offer_type($type_id) : null;
         if (isset($type->parent)) {
           $pivot_page->type = $type->parent;
           $pivot_page->path = 'details';

@@ -10,9 +10,16 @@
  */
 
 defined('ABSPATH') or die('No script kiddies please!');
-// define
-define('MY_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('MY_PLUGIN_URL', plugin_dir_url(__FILE__));
+
+define('PIVOT_VERSION', '2.5.0');
+define('PIVOT_DB_VERSION', 240);
+define('PIVOT_PLUGIN_FILE', __FILE__);
+define('PIVOT_PLUGIN_PATH', plugin_dir_path(__FILE__));
+define('PIVOT_PLUGIN_URL', plugin_dir_url(__FILE__));
+
+// Legacy aliases: templates cloned into client themes reference these names.
+define('MY_PLUGIN_PATH', PIVOT_PLUGIN_PATH);
+define('MY_PLUGIN_URL', PIVOT_PLUGIN_URL);
 
 /*
  * Helper to check if there is an update for the plugin.
@@ -26,20 +33,17 @@ $myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
 );
 
 // Include all files
-foreach (glob(MY_PLUGIN_PATH . "inc/*.php") as $file) {
+foreach (glob(PIVOT_PLUGIN_PATH . "inc/*.php") as $file) {
   require_once $file;
 }
-// Include all external files
-foreach (glob(MY_PLUGIN_PATH . "inc/external/*.php") as $file) {
-  // Not automatically include the gpxdownloader.php file.
-  // Will be include when necessary on itinerary details template
-  if (strpos($file, 'downloader.php') === false) {
-    require_once $file;
-  }
+// Include all external files.
+// These are libraries only: no file in inc/external/ may run code at include time.
+foreach (glob(PIVOT_PLUGIN_PATH . "inc/external/*.php") as $file) {
+  require_once $file;
 }
 
-require_once(MY_PLUGIN_PATH . 'pivot-filter-widget.php');
-require_once(MY_PLUGIN_PATH . 'pivot-shortcode.php');
+require_once(PIVOT_PLUGIN_PATH . 'pivot-filter-widget.php');
+require_once(PIVOT_PLUGIN_PATH . 'pivot-shortcode.php');
 
 $bitly_params = array();
 $bitly_params['access_token'] = get_option('pivot_bitly');
@@ -90,18 +94,25 @@ function add_clear_pivot_cache_menu_item($wp_admin_bar) {
         'parent' => null,
         'group' => null,
         'title' => __('Clear current page Pivot cache', 'pivot'),
-        'href' => admin_url('admin.php?page=pivot-pages&amp;clear-pivot-cache=' . absint($pivot_page->id)),
+        'href' => wp_nonce_url(
+          admin_url('admin.php?page=pivot-pages&clear-pivot-cache=' . absint($pivot_page->id)),
+          'pivot_clear_cache_' . absint($pivot_page->id)
+        ),
       );
       $wp_admin_bar->add_node($args);
     }
     // case offer details page
     if (get_option('pivot_transient') == 'on' && isset($wp_query->post->pivot_id)) {
+      $offer_id = sanitize_text_field($wp_query->post->pivot_id);
       $args = array(
         'id' => 'clear-pivot-cache',
         'parent' => null,
         'group' => null,
         'title' => __('Clear current page Pivot cache', 'pivot'),
-        'href' => admin_url('admin.php?page=pivot-pages&amp;clear-pivot-offer-cache=' . $wp_query->post->pivot_id),
+        'href' => wp_nonce_url(
+          admin_url('admin.php?page=pivot-pages&clear-pivot-offer-cache=' . rawurlencode($offer_id)),
+          'pivot_clear_offer_cache_' . $offer_id
+        ),
       );
       $wp_admin_bar->add_node($args);
     }
@@ -444,8 +455,6 @@ function _pivot_request($type, $detail, $params = NULL, $postfields = NULL) {
   }
   // Get Pivot Base URI
   $pivot_url = esc_url(get_option('pivot_uri'));
-  // Get Pivot Personnal Key for Webservices
-  $pivot_key = get_option('pivot_key');
 
   // Construct URL depending on query type
   switch ($type) {
@@ -472,85 +481,68 @@ function _pivot_request($type, $detail, $params = NULL, $postfields = NULL) {
       break;
   }
 
-  // Define Headers with Pivot Personnal Key and set format as XML
-  $headers = array(
-    'WS_KEY: ' . $pivot_key,
-    'Content-type: application/xml',
-    'Accept: application/xml');
-
-  $request = curl_init();
-  if ($request) {
-    curl_setopt($request, CURLOPT_URL, $pivot_url);
-    curl_setopt($request, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_setopt($request, CURLOPT_SSL_VERIFYPEER, 0);
-    curl_setopt($request, CURLOPT_CONNECTTIMEOUT, 120);
-    curl_setopt($request, CURLOPT_TIMEOUT, 120);
-    curl_setopt($request, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($request, CURLOPT_RETURNTRANSFER, 1);
-    if ($postfields != NULL) {
-      curl_setopt($request, CURLOPT_POST, 1);
-      curl_setopt($request, CURLOPT_POSTFIELDS, $postfields);
-    }
-
-    $response = curl_exec($request);
-
-    if (curl_errno($request)) {
-      echo 'Error:' . curl_error($request);
-    }
-
-    curl_close($request);
-    /* Check if the response is well an XML file.
-     * Could be an error like "[CCM006] Results not found (token and/or page number are incorrect)"
-     */
-    if (strpos($response, '<?xml') !== FALSE) {
-      // Load XML response in an Object
-      $xml_object = simplexml_load_string($response);
-      // Check type of response
-      if (($xml_object->attributes()) !== null) {
-        // Check if case there is no result
-        if (isset($xml_object->attributes()->count) && $xml_object->attributes()->count->__toString() == 0) {
-          $error = __('No offer at this time ! Come back later ...', 'pivot');
-          print _show_warning($error);
-        }
-      }
-      return $xml_object;
-    } else {
-      if (isset($params['page_id']) || isset($params['shortcode'])) {
-        if (isset($params['page_id'])) {
-          // If it is event, show a specific error message
-          $page = pivot_get_page($params['page_id']);
-          if ($page->type == 'activite') {
-            $error = __('Too bad, no event planned at this time ! Come back later ...', 'pivot');
-          } else {
-            $error = __('No offer at this time ! Come back later ...', 'pivot');
-          }
-          $output = '<div class="container">'
-            . '<div class="row">'
-            . '<div class="col mx-auto my-5">'
-            . _show_warning($error)
-            . '<form>'
-            . '<input class="btn btn-outline-dark btn-lg btn-block btn-filter shadow py-3" type="button" value="' . __('Go back!') . '" onclick="history.back()">'
-            . '</form>'
-            . '</div></div></div>';
-          print $output;
-          get_footer();
-        }
-        // case shortcode and error, avoid page construction errors
-        if ((isset($params['shortcode']) && $params['shortcode'] == true)) {
-          $error = __('No offer at this time ! Come back later ...', 'pivot');
-          $output = '<div class="container">'
-            . '<div class="row">'
-            . '<div class="col mx-auto my-5">'
-            . _show_warning($error)
-            . '</div></div></div>';
-          return $output;
-        }
-      } else {
-        print pivot_template('pivot-problem-template', $response);
-      }
-      exit();
-    }
+  $request_args = array('ws_key' => true);
+  if ($postfields != NULL) {
+    $request_args['method'] = 'POST';
+    $request_args['body'] = $postfields;
   }
+
+  $response = pivot_http_request($pivot_url, $request_args);
+
+  if (is_wp_error($response)) {
+    $response = $response->get_error_message();
+  }
+
+  /* Check if the response is well an XML file.
+   * Could be an error like "[CCM006] Results not found (token and/or page number are incorrect)"
+   */
+  $xml_object = pivot_http_parse_xml($response);
+  if ($xml_object !== false) {
+    // Check type of response
+    if (($xml_object->attributes()) !== null) {
+      // Check if case there is no result
+      if (isset($xml_object->attributes()->count) && $xml_object->attributes()->count->__toString() == 0) {
+        $error = __('No offer at this time ! Come back later ...', 'pivot');
+        print _show_warning($error);
+      }
+    }
+    return $xml_object;
+  }
+
+  if (isset($params['page_id']) || isset($params['shortcode'])) {
+    if (isset($params['page_id'])) {
+      // If it is event, show a specific error message
+      $page = pivot_get_page($params['page_id']);
+      if ($page && $page->type == 'activite') {
+        $error = __('Too bad, no event planned at this time ! Come back later ...', 'pivot');
+      } else {
+        $error = __('No offer at this time ! Come back later ...', 'pivot');
+      }
+      $output = '<div class="container">'
+        . '<div class="row">'
+        . '<div class="col mx-auto my-5">'
+        . _show_warning($error)
+        . '<form>'
+        . '<input class="btn btn-outline-dark btn-lg btn-block btn-filter shadow py-3" type="button" value="' . esc_attr__('Go back!') . '" onclick="history.back()">'
+        . '</form>'
+        . '</div></div></div>';
+      print $output;
+      get_footer();
+    }
+    // case shortcode and error, avoid page construction errors
+    if ((isset($params['shortcode']) && $params['shortcode'] == true)) {
+      $error = __('No offer at this time ! Come back later ...', 'pivot');
+      $output = '<div class="container">'
+        . '<div class="row">'
+        . '<div class="col mx-auto my-5">'
+        . _show_warning($error)
+        . '</div></div></div>';
+      return $output;
+    }
+  } else {
+    print pivot_template('pivot-problem-template', $response);
+  }
+  exit();
 }
 
 /**

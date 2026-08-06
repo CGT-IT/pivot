@@ -26,21 +26,26 @@ class Pivot_Pages_List extends WP_List_Table {
     global $wpdb;
 
     $sql = "SELECT * FROM {$wpdb->prefix}pivot_pages";
-    if ($user_search_key != ' ') {
-      $sql .= ' WHERE title LIKE "%%%s%%"';
+    $searching = ($user_search_key !== '' && $user_search_key !== ' ');
+    if ($searching) {
+      $sql .= ' WHERE title LIKE %s';
     }
 
-    if (!empty($_REQUEST['orderby'])) {
-      $sql .= ' ORDER BY ' . esc_sql($_REQUEST['orderby']);
-      $sql .= !empty($_REQUEST['order']) ? ' ' . esc_sql($_REQUEST['order']) : ' ASC';
+    $sql .= pivot_build_order_by(
+      array('query', 'type', 'nbcol', 'path', 'title', 'map', 'sortMode'),
+      'id'
+    );
+
+    $sql .= ' LIMIT ' . absint($per_page);
+    $sql .= ' OFFSET ' . absint(($page_number - 1) * $per_page);
+
+    // prepare() must only be called when the statement actually has a placeholder,
+    // otherwise WordPress raises a _doing_it_wrong notice.
+    if ($searching) {
+      $sql = $wpdb->prepare($sql, '%' . $wpdb->esc_like($user_search_key) . '%');
     }
 
-    $sql .= " LIMIT $per_page";
-    $sql .= ' OFFSET ' . ($page_number - 1) * $per_page;
-
-    $result = $wpdb->get_results($wpdb->prepare($sql, $user_search_key), 'ARRAY_A');
-
-    return $result;
+    return $wpdb->get_results($sql, 'ARRAY_A');
   }
 
   /**
@@ -87,33 +92,34 @@ class Pivot_Pages_List extends WP_List_Table {
   public function column_default($item, $column_name) {
     switch ($column_name) {
       case 'query':
-        return $item[$column_name];
       case 'type':
-        return $item[$column_name];
       case 'nbcol':
-        return $item[$column_name];
+        return esc_html($item[$column_name]);
       case 'path':
-        return '<a target="_blank" href="' . get_bloginfo('wpurl') . '/' . $item[$column_name] . '">' . $item[$column_name] . '</a>';
+        return '<a target="_blank" href="' . esc_url(home_url('/' . $item[$column_name])) . '">' . esc_html($item[$column_name]) . '</a>';
       case 'title':
-        return stripslashes($item[$column_name]);
+        return esc_html(stripslashes($item[$column_name]));
       case 'map':
         return ($item[$column_name] == 1) ? '&#10004;' : '&#10008;';
       case 'sortMode':
         if ($item[$column_name] != '') {
-          $r = $item[$column_name];
+          $r = esc_html($item[$column_name]);
           if ($item['sortField'] != '') {
-            $r .= ' on ' . $item['sortField'];
+            $r .= ' on ' . esc_html($item['sortField']);
           }
         } else {
           $r = '-';
         }
         return $r;
       case 'filters':
-        $val = '<input type="button" class="button-secondary" value="' . esc_html__('View filter(s)', 'pivot') . '" onclick="window.location=\'?page=pivot-filters&amp;page_id=' . $item['id'] . '\'"/>';
-        $val .= '<input type="button" class="button-secondary" value="' . esc_html__('Add a filter', 'pivot') . '" onclick="window.location=\'?page=pivot-filters&amp;page_id=' . $item['id'] . '&amp;edit=true\'" />';
+        $view_url = admin_url('admin.php?page=pivot-filters&page_id=' . absint($item['id']));
+        $add_url = admin_url('admin.php?page=pivot-filters&page_id=' . absint($item['id']) . '&edit=true');
+        $val = '<a class="button button-secondary" href="' . esc_url($view_url) . '">' . esc_html__('View filter(s)', 'pivot') . '</a> ';
+        $val .= '<a class="button button-secondary" href="' . esc_url($add_url) . '">' . esc_html__('Add a filter', 'pivot') . '</a>';
         return $val;
       default:
-        return print_r($item, true); //Show the whole array for troubleshooting purposes
+        // Dumping the whole row leaked raw database content into the page.
+        return isset($item[$column_name]) ? esc_html($item[$column_name]) : '';
     }
   }
 
@@ -126,7 +132,7 @@ class Pivot_Pages_List extends WP_List_Table {
    */
   function column_cb($item) {
     return sprintf(
-      '<input type="checkbox" name="bulk-delete[]" value="%s" />', $item['id']
+      '<input type="checkbox" name="bulk-delete[]" value="%d" />', absint($item['id'])
     );
   }
 
@@ -144,8 +150,15 @@ class Pivot_Pages_List extends WP_List_Table {
     $title = '<strong>' . $item['query'] . '</strong>';
 
     $actions['edit'] = sprintf('<a href="?page=pivot-pages&amp;id=%d&amp;edit=true">' . esc_html__('Edit') . '</a>', absint($item['id']));
-    $actions['delete'] = sprintf('<a href="?page=pivot-pages&amp;delete=%d">' . esc_html__('Delete') . '</a>', absint($item['id']));
-    $actions['clear-pivot-cache'] = sprintf('<a href="?page=pivot-pages&amp;clear-pivot-cache=%d">' . esc_html__('Clear Pivot cache') . '</a>', absint($item['id']));
+    $actions['delete'] = sprintf(
+      '<a href="%s" onclick="return confirm(\'%s\');">' . esc_html__('Delete') . '</a>',
+      esc_url(wp_nonce_url(admin_url('admin.php?page=pivot-pages&delete=' . absint($item['id'])), 'pivot_delete_page_' . absint($item['id']))),
+      esc_js(__('Are you sure you want to delete this page?', 'pivot'))
+    );
+    $actions['clear-pivot-cache'] = sprintf(
+      '<a href="%s">' . esc_html__('Clear Pivot cache') . '</a>',
+      esc_url(wp_nonce_url(admin_url('admin.php?page=pivot-pages&clear-pivot-cache=' . absint($item['id'])), 'pivot_clear_cache_' . absint($item['id'])))
+    );
 
     return $title . $this->row_actions($actions);
   }
@@ -233,14 +246,18 @@ class Pivot_Pages_List extends WP_List_Table {
 
   public function process_bulk_action() {
 
+    if (!current_user_can('delete_others_pages')) {
+      return;
+    }
+
     //Detect when a bulk action is being triggered...
     if ('delete' === $this->current_action()) {
 
       // In our file that handles the request, verify the nonce.
-      $nonce = esc_attr($_REQUEST['_wpnonce']);
+      $nonce = isset($_REQUEST['_wpnonce']) ? sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])) : '';
 
       if (!wp_verify_nonce($nonce, 'pivot_delete_pages')) {
-        die('Go get a life script kiddies');
+        wp_die(esc_html__('Security check failed.', 'pivot'), '', array('response' => 403));
       } else {
         self::delete_page(absint($_GET['pages']));
 
@@ -254,8 +271,10 @@ class Pivot_Pages_List extends WP_List_Table {
     // If the delete bulk action is triggered
     if ((isset($_POST['action']) && $_POST['action'] == 'bulk-delete') || (isset($_POST['action2']) && $_POST['action2'] == 'bulk-delete')
     ) {
+      // WP_List_Table renders a "bulk-action" nonce field with its form.
+      check_admin_referer('bulk-' . $this->_args['plural']);
 
-      $delete_ids = esc_sql($_POST['bulk-delete']);
+      $delete_ids = isset($_POST['bulk-delete']) ? array_map('absint', (array) $_POST['bulk-delete']) : array();
 
       // loop over the array of record IDs and delete them
       foreach ($delete_ids as $id) {
@@ -351,7 +370,7 @@ function pivot_meta_box() {
   ?>
   <div class="form-item form-type-textfield form-item-pivot-query">
       <label for="edit-pivot-query"><strong><?php esc_html_e('Query', 'pivot') ?></strong></label>
-      <input type="text" id="edit-pivot-query" name="query" value="<?php if (isset($edit_page)) echo $edit_page->query; ?>" size="60" maxlength="128" class="form-text">
+      <input type="text" id="edit-pivot-query" name="query" value="<?php if (isset($edit_page)) echo esc_attr($edit_page->query); ?>" size="60" maxlength="128" class="form-text">
       <p class="description"><?php esc_html_e('Pivot predefined query', 'pivot') ?></p>
   </div>
   <div class="form-item form-type-textfield form-item-pivot-type">
@@ -363,7 +382,7 @@ function pivot_meta_box() {
   </div>
   <div class="form-item form-type-textfield form-item-pivot-path">
       <label for="edit-pivot-path"><strong><?php esc_html_e('Path', 'pivot') ?></strong> </label>
-      <input type="text" id="edit-pivot-path" name="path" value="<?php if (isset($edit_page)) echo $edit_page->path; ?>" size="60" maxlength="128" class="form-text">
+      <input type="text" id="edit-pivot-path" name="path" value="<?php if (isset($edit_page)) echo esc_attr($edit_page->path); ?>" size="60" maxlength="128" class="form-text">
       <p class="description"><?php esc_html_e('Path to access results', 'pivot') ?></p>
   </div>
 
@@ -384,7 +403,7 @@ function pivot_meta_box() {
   </div>
   <div class="form-item form-type-textfield form-item-pivot-title">
       <label for="edit-pivot-title"><strong><?php esc_html_e('Title', 'pivot') ?></strong> </label>
-      <input type="text" id="edit-pivot-title" name="title" value="<?php if (isset($edit_page)) echo $edit_page->title; ?>" size="60" maxlength="128" class="form-text">
+      <input type="text" id="edit-pivot-title" name="title" value="<?php if (isset($edit_page)) echo esc_attr($edit_page->title); ?>" size="60" maxlength="128" class="form-text">
       <p class="description"><?php esc_html_e('Page title', 'pivot') ?></p>
   </div>
   <div class="form-item form-type-textfield form-item-pivot-description">
@@ -409,9 +428,9 @@ function pivot_meta_box() {
       <p class="description"><?php esc_html_e('This image will be displayed full width between menu and page title', 'pivot') ?></p>
       <p class="description"><b><?php esc_html_e('Perfect format would be 1920x400 px', 'pivot') ?></b></p>
       <p><label><strong><?php esc_html_e('Current image or link', 'pivot'); ?></strong></label></p>
-      <input type="url" id="imageUrl" name="imageUrl" value="<?php if (isset($edit_page)) echo $edit_page->image; ?>">
-      <a class="imageUrl" target="_blank" href="<?php if (isset($edit_page)) echo $edit_page->image; ?>">
-          <img width="300px" src="<?php if (isset($edit_page)) echo $edit_page->image; ?>"/>
+      <input type="url" id="imageUrl" name="imageUrl" value="<?php if (isset($edit_page)) echo esc_url($edit_page->image); ?>">
+      <a class="imageUrl" target="_blank" href="<?php if (isset($edit_page)) echo esc_url($edit_page->image); ?>">
+          <img width="300px" src="<?php if (isset($edit_page)) echo esc_url($edit_page->image); ?>"/>
       </a>
       <button class="ed_button button button-small" type='reset' id='reset_img'/><?php _e('Remove'); ?> image</button>
   </div>
@@ -432,7 +451,7 @@ function pivot_meta_box() {
   </div>
   <div class="form-item form-type-textfield form-item-pivot-sortField">
       <label for="edit-pivot-sortField"><strong><?php esc_html_e('Sort Field', 'pivot') ?></strong> </label>
-      <input type="text" id="edit-pivot-sortField" name="sortField" value="<?php if (isset($edit_page)) echo $edit_page->sortField; ?>" size="60" maxlength="128" class="form-text">
+      <input type="text" id="edit-pivot-sortField" name="sortField" value="<?php if (isset($edit_page)) echo esc_attr($edit_page->sortField); ?>" size="60" maxlength="128" class="form-text">
       <p class="description"><?php esc_html_e('Define the field on which the sort mode will apply', 'pivot') ?></p>
   </div>
   <?php
@@ -501,20 +520,29 @@ function pivot_pages_settings() {
 function pivot_action() {
   global $wpdb;
 
+  // Every branch below writes to the database or flushes caches: none of them used to
+  // check who was calling, nor that the request was actually issued from the admin UI.
+  if (!current_user_can('delete_others_pages')) {
+    return;
+  }
+
   // Delete the transient of the specified page
   if (isset($_GET['clear-pivot-cache'])) {
     $page_id = absint($_GET['clear-pivot-cache']);
+    check_admin_referer('pivot_clear_cache_' . $page_id);
     $key = 'pivot_page_token_' . $page_id;
     $response = delete_transient($key);
     if ($response === true) {
-      print _show_admin_notice("Cache Pivot cleared for the page : " . $page_id, "success");
+      print _show_admin_notice(sprintf(esc_html__('Pivot cache cleared for page %d', 'pivot'), $page_id), "success");
     } else {
-      print _show_admin_notice("No Pivot cache for the page : " . $page_id);
+      print _show_admin_notice(sprintf(esc_html__('No Pivot cache for page %d', 'pivot'), $page_id));
     }
   }
   // Delete the transient of the specified page
   if (isset($_GET['clear-pivot-offer-cache'])) {
-    $offer_id = $_GET['clear-pivot-offer-cache'];
+    $offer_id = sanitize_text_field(wp_unslash($_GET['clear-pivot-offer-cache']));
+    check_admin_referer('pivot_clear_offer_cache_' . $offer_id);
+    $response = false;
     // Get all transients concerning this offer
     $keys = _get_pivot_transients($offer_id);
     foreach ($keys as $key) {
@@ -523,15 +551,16 @@ function pivot_action() {
       $response = delete_transient($key);
     }
     if ($response === true) {
-      print _show_admin_notice("Cache Pivot cleared for the offer : " . $offer_id, "success");
+      print _show_admin_notice(sprintf(esc_html__('Pivot cache cleared for offer %s', 'pivot'), esc_html($offer_id)), "success");
     } else {
-      print _show_admin_notice("No Pivot cache for the offer : " . $offer_id);
+      print _show_admin_notice(sprintf(esc_html__('No Pivot cache for offer %s', 'pivot'), esc_html($offer_id)));
     }
   }
 
   // Delete the data if the variable "delete" is set
   if (isset($_GET['delete'])) {
     $_GET['delete'] = absint($_GET['delete']);
+    check_admin_referer('pivot_delete_page_' . $_GET['delete']);
     // IF WPML is active unregister title from translatable string
     if (is_plugin_active('wpml-string-translation/plugin.php')) {
       $page_details = pivot_get_page($_GET['delete']);
@@ -544,15 +573,19 @@ function pivot_action() {
     $wpdb->delete($wpdb->prefix . 'pivot_pages', array('id' => $_GET['delete']), array('%d'));
   }
 
+  if (isset($_POST['pivot_add_page'])) {
+    check_admin_referer('pivot_save_page');
+  }
+
   // Process the changes in the custom table
   if (isset($_POST['pivot_add_page']) && $_POST['type'] != '' && $_POST['query'] != '' && $_POST['path'] != '' && $_POST['title'] != '') {
     // Add new row in the custom table
-    $type = $_POST['type'];
-    $query = preg_replace('/[^A-Za-z0-9\-]/', '', $_POST['query']);
-    $nbcol = $_POST['nbcol'];
-    $path = $_POST['path'];
-    $title = $_POST['title'];
-    $description = $_POST['edit-pivot-description'];
+    $type = sanitize_text_field(wp_unslash($_POST['type']));
+    $query = preg_replace('/[^A-Za-z0-9\-]/', '', wp_unslash($_POST['query']));
+    $nbcol = absint($_POST['nbcol']);
+    $path = sanitize_title(wp_unslash($_POST['path']));
+    $title = sanitize_text_field(wp_unslash($_POST['title']));
+    $description = wp_kses_post(wp_unslash($_POST['edit-pivot-description']));
     $shortcode = isset($_POST['shortcode']) ? wp_unslash($_POST['shortcode']) : '';
 
     // Check that the nonce is valid, and the user can edit this post.
@@ -584,48 +617,41 @@ function pivot_action() {
     }
 
     $map = isset($_POST['map']) ? 1 : 0;
-    $sortMode = $_POST['sortMode'];
-    $sortField = $_POST['sortField'];
+    $sortMode = isset($_POST['sortMode']) ? sanitize_text_field(wp_unslash($_POST['sortMode'])) : '';
+    if (!in_array($sortMode, array('', 'ASC', 'DESC', 'shuffle'), true)) {
+      $sortMode = '';
+    }
+    $sortField = isset($_POST['sortField']) ? sanitize_text_field(wp_unslash($_POST['sortField'])) : '';
+    $image = isset($image_url) ? $image_url : (isset($_POST['imageUrl']) ? esc_url_raw(wp_unslash($_POST['imageUrl'])) : '');
+
+    $columns = array(
+      'type' => $type,
+      'query' => $query,
+      'path' => $path,
+      'title' => $title,
+      'map' => $map,
+      'sortMode' => $sortMode,
+      'sortField' => $sortField,
+      'nbcol' => $nbcol,
+      'description' => $description,
+      'shortcode' => $shortcode,
+      'image' => $image,
+    );
+    // One format per column, in order. The insert used to declare ten formats for
+    // eleven columns, with sortField typed as %d.
+    $formats = array('%s', '%s', '%s', '%s', '%d', '%s', '%s', '%d', '%s', '%s', '%s');
 
     // Check if path already exist in wordpress or not (to avoid duplicate and conflict)
     if (!$pivot_page = get_page_by_path($path)) {
       if (empty($_POST['page_id'])) {
-        $inserted = $wpdb->insert(
-          $wpdb->prefix . 'pivot_pages',
-          array(
-            'type' => $type,
-            'query' => $query,
-            'path' => $path,
-            'title' => $title,
-            'map' => $map,
-            'sortMode' => $sortMode,
-            'sortField' => $sortField,
-            'nbcol' => $nbcol,
-            'description' => $description,
-            'shortcode' => $shortcode,
-            'image' => (isset($image_url) ? $image_url : $_POST['imageUrl'])
-          ),
-          array('%s', '%s', '%s', '%s', '%d', '%s', '%d', '%s', '%s', '%s')
-        );
+        $inserted = $wpdb->insert($wpdb->prefix . 'pivot_pages', $columns, $formats);
       } else {
         // Update the data
         $inserted = $wpdb->update(
           $wpdb->prefix . 'pivot_pages',
-          array(
-            'type' => $type,
-            'query' => $query,
-            'path' => $path,
-            'title' => $title,
-            'map' => $map,
-            'sortMode' => $sortMode,
-            'sortField' => $sortField,
-            'nbcol' => $nbcol,
-            'description' => $description,
-            'shortcode' => $shortcode,
-            'image' => (isset($image_url) ? $image_url : $_POST['imageUrl'])
-          ),
-          array('id' => $_POST['page_id']),
-          array('%s', '%s', '%s', '%s', '%d', '%s', '%s', '%d', '%s', '%s', '%s'),
+          $columns,
+          array('id' => absint($_POST['page_id'])),
+          $formats,
           array('%d')
         );
       }
@@ -666,7 +692,7 @@ function pivot_action() {
 function pivot_add_page() {
   $page_id = 0;
   if (isset($_GET['id']))
-    $page_id = $_GET['id'];
+    $page_id = absint($_GET['id']);
 
   // Get an specific row from the table wp_pivot
   global $edit_page;
@@ -681,12 +707,13 @@ function pivot_add_page() {
   <div class="wrap">
       <div id="faq-wrapper">
           <form method="post" enctype="multipart/form-data" action="?page=pivot-pages">
-              <h2><?php echo $tf_title = ($page_id == 0) ? $tf_title = esc_attr('Add page', 'pivot') : $tf_title = esc_attr('Edit page', 'pivot'); ?></h2>
+              <?php wp_nonce_field('pivot_save_page'); ?>
+              <h2><?php echo $tf_title = ($page_id == 0) ? esc_html__('Add page', 'pivot') : esc_html__('Edit page', 'pivot'); ?></h2>
               <div id="poststuff" class="metabox-holder">
                   <?php do_meta_boxes('pivot', 'normal', 'low'); ?>
               </div>
-              <input type="hidden" name="page_id" value="<?php echo $page_id ?>" />
-              <input type="submit" value="<?php echo $tf_title; ?>" name="pivot_add_page" id="pivot_add_page" class="button-secondary">
+              <input type="hidden" name="page_id" value="<?php echo esc_attr($page_id) ?>" />
+              <input type="submit" value="<?php echo esc_attr($tf_title); ?>" name="pivot_add_page" id="pivot_add_page" class="button-secondary">
           </form>
       </div>
   </div>

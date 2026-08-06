@@ -67,12 +67,15 @@
                 <?php if ($spec->attributes()->urn == 'urn:fld:typmed'): ?>
                   <!--if it's well a GPX-->
                   <?php if ($spec->value->__toString() == "urn:val:typmed:gpx"): ?>
-                    <div id="gpx-file-id" class="d-none"><?php print $relation->offre->attributes()->codeCgt; ?></div>
-                    <p><button class="btn"><i class="fa fa-download"></i>
-                            <a id="gpx-file" href="<?php print MY_PLUGIN_URL; ?>inc/external/gpxdownloader.php?n=<?php print preg_replace('/[^A-Za-z0-9]/', "", $offerTitle); ?>&f=<?php print _get_urn_value($relation->offre, 'urn:fld:url'); ?>" download="gpxfile.gpx" target="_blank" type="application/octet-stream">
-                                <?php _e('Download GPX file', 'pivot'); ?>
-                            </a>
-                        </button></p>
+                    <div id="gpx-file-id" class="d-none"><?php print esc_html($relation->offre->attributes()->codeCgt); ?></div>
+                    <?php $gpx_url = pivot_download_url(_get_urn_value($relation->offre, 'urn:fld:url'), $offerTitle, 'gpx'); ?>
+                    <?php if ($gpx_url): ?>
+                      <p><button class="btn"><i class="fa fa-download"></i>
+                              <a id="gpx-file" href="<?php print esc_url($gpx_url); ?>" download="gpxfile.gpx" type="application/octet-stream">
+                                  <?php _e('Download GPX file', 'pivot'); ?>
+                              </a>
+                          </button></p>
+                    <?php endif; ?>
                     <div id="gpx-map" class="gpx" style="height: 500px"></div>
 
                   <?php endif; ?>
