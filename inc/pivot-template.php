@@ -115,13 +115,25 @@ function pivot_locate_template($template_name, $template_path = '', $default_pat
     $template = $default_path . $template_name;
   }
 
-  // Fall back on the generic listing template. Most categories render an identical
-  // list, so they no longer need a file of their own — a category-specific template,
-  // in the theme or in the plugin, still takes precedence.
-  if (!file_exists($template) && substr($template_name, -18) === '-list-template.php') {
-    $generic = 'pivot-list-template.php';
-    $theme_generic = locate_template(array($template_path . $generic, $generic));
-    $template = $theme_generic ? $theme_generic : $default_path . $generic;
+  // Fall back on a generic template. Most categories render an identical list, so
+  // they no longer need a file of their own, and a category without a detail template
+  // used to render an empty page with a warning (guide and organisme both did).
+  // A category-specific template, in the theme or in the plugin, still takes
+  // precedence.
+  if (!file_exists($template)) {
+    $generic = '';
+    if (substr($template_name, -18) === '-list-template.php') {
+      $generic = 'pivot-list-template.php';
+    } elseif (substr($template_name, -21) === '-details-template.php') {
+      $generic = 'pivot-default-details-template.php';
+    } elseif (substr($template_name, -26) === '-details-part-template.php') {
+      $generic = 'pivot-default-details-part-template.php';
+    }
+
+    if ($generic !== '' && $generic !== $template_name) {
+      $theme_generic = locate_template(array($template_path . $generic, $generic));
+      $template = $theme_generic ? $theme_generic : $default_path . $generic;
+    }
   }
 
   // Ensure the file exists
