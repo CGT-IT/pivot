@@ -12,7 +12,7 @@ function _get_urn_value_refractor($offre, $urn_cat, $urn_name) {
   if (isset($offre[$urn_cat][$urn_name]) && !empty($offre[$urn_cat][$urn_name])) {
     return $offre[$urn_cat][$urn_name]['value'];
   }
-  return '';
+  return 0;
 }
 
 /**
@@ -1464,6 +1464,7 @@ function pivot_relation_treatment($offre) {
           break;
         case "10" :
         default:
+          $relation->relOffreTgt = true;
           $relation_array = pivot_link_treatment($relation, $relation_array);
           break;
       }
@@ -1527,6 +1528,7 @@ function pivot_media_treatment($relation, $relation_array) {
 
 function pivot_link_treatment($relation, $relation_array) {
   $link = array(
+    'offreTgt' => (isset($relation->relOffreTgt) ? true : false),
     'type' => $relation->attributes()->urn->__toString(),
     'id' => $relation->offre->attributes()->codeCgt->__toString(),
     'nom' => $relation->offre->nom->__toString(),
