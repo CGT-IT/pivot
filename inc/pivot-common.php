@@ -12,7 +12,7 @@ function _get_urn_value_refractor($offre, $urn_cat, $urn_name) {
   if (isset($offre[$urn_cat][$urn_name]) && !empty($offre[$urn_cat][$urn_name])) {
     return $offre[$urn_cat][$urn_name]['value'];
   }
-  return 0;
+  return;
 }
 
 /**
